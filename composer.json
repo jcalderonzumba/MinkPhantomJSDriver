@@ -21,7 +21,7 @@
   ],
   "require": {
     "php": ">=5.3.1",
-    "behat/mink": "~1.7@dev",
+    "behat/mink": "~1.6",
     "symfony/process": "~2.1",
     "jonnyw/php-phantomjs": "~3.1"
   },
