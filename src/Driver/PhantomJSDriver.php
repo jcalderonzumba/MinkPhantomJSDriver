@@ -172,4 +172,36 @@ class PhantomJSDriver extends BasePhantomJSDriver {
     return trim($text);
   }
 
+  /**
+   * {@inheritdoc}
+   * @param string $xpath
+   * @return mixed
+   */
+  public function getHtml($xpath) {
+    // cut the tag itself (making innerHTML out of outerHTML)
+    return preg_replace('/^\<[^\>]+\>|\<[^\>]+\>$/', '', $this->getOuterHtml($xpath));
+  }
+
+  /**
+   * {@inheritdoc}
+   * @param string $xpath
+   * @return string
+   * @throws DriverException
+   */
+  public function getOuterHtml($xpath) {
+    $node = $this->getCrawlerNode($this->getFilteredCrawler($xpath));
+
+    return $node->ownerDocument->saveXML($node);
+  }
+
+  /**
+   * {@inheritdoc}
+   * @param string $xpath
+   * @return string
+   * @throws DriverException
+   */
+  public function getTagName($xpath) {
+    return $this->getCrawlerNode($this->getFilteredCrawler($xpath))->nodeName;
+  }
+
 }

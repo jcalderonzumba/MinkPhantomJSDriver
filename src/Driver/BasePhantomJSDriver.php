@@ -151,4 +151,38 @@ class BasePhantomJSDriver extends CoreDriver {
 
     return $crawler;
   }
+
+  /**
+   * @param Crawler $crawler
+   * @return object
+   * @throws DriverException
+   */
+  protected function getCrawlerNode(Crawler $crawler) {
+    $crawler->rewind();
+    $node = $crawler->current();
+
+    if (null !== $node) {
+      return $node;
+    }
+
+    throw new DriverException('The element does not exist');
+  }
+
+  /**
+   * {@inheritdoc}
+   * @param string $xpath
+   * @param string $name
+   * @return string
+   * @throws DriverException
+   */
+  public function getAttribute($xpath, $name) {
+    $node = $this->getFilteredCrawler($xpath);
+
+    if ($this->getCrawlerNode($node)->hasAttribute($name)) {
+      return $node->attr($name);
+    }
+
+    return null;
+  }
+
 }
