@@ -188,7 +188,12 @@ class PhantomJSDriver extends CoreDriver {
    */
   public function setCookie($name, $value = null) {
     $cookieHeader = sprintf("%s=%s; path=/", $name, $value);
-    $this->headers["Set-Cookie"][] = $cookieHeader;
+    //TODO: handle null value as DELETING THE COOKIE
+    if (isset($this->headers["Cookie"])) {
+      $this->headers["Cookie"] = sprintf("%s %s", $this->headers["Cookie"], $cookieHeader);
+    } else {
+      $this->headers["Cookie"] = $cookieHeader;
+    }
   }
 
   /**
