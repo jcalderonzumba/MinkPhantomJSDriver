@@ -73,6 +73,7 @@ class PhantomJSDriver extends BasePhantomJSDriver {
 
       $this->addHeadersToRequest();
       $this->getPjsClient()->send($request, $response);
+      $this->addCookiesFromResponse();
 
       if ($response->isRedirect()) {
         return $this->visit($this->getRedirectUrl());
