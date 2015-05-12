@@ -38,6 +38,9 @@ class PhantomJSFactory implements DriverFactory {
    * @param ArrayNodeDefinition $builder
    */
   public function configure(ArrayNodeDefinition $builder) {
+    $children = $builder->children();
+    $children->scalarNode('phantom_bin')->defaultValue('bin/phantomjs')->end();
+    $children->scalarNode('phantom_loader')->defaultValue('bin/phantomloader')->end();
   }
 
   /**
