@@ -107,7 +107,7 @@ class PhantomJSDriver extends BasePhantomJSDriver {
    * @param string $value
    */
   public function setCookie($name, $value = null) {
-    $cookieHeader = sprintf("%s=%s; path=/", $name, $value);
+    $cookieHeader = sprintf("%s=%s;", $name, $value);
     //TODO: handle null value as DELETING THE COOKIE
     $this->addCookieToHeaders($cookieHeader);
   }

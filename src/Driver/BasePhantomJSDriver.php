@@ -106,9 +106,14 @@ class BasePhantomJSDriver extends CoreDriver {
    * If we have a response that sends cookies, we will add them to the headers we have
    */
   protected function addCookiesFromResponse() {
+    //TODO: Overlapping cookies, we should update them not just add another
     $cookies = $this->response->getHeader("Set-Cookie");
     if (!empty($cookies)) {
-      $this->addCookieToHeaders($cookies);
+      $regexp = "#^(([^=]+)=([^;]+))#";
+      if (preg_match($regexp, $cookies, $match) === 1) {
+        $cookie = "{$match[1]};";
+        $this->addCookieToHeaders($cookie);
+      }
     }
   }
 
