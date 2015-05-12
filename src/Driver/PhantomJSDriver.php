@@ -2,106 +2,15 @@
 
 namespace Behat\PhantomJSExtension\Driver;
 
-use Behat\Mink\Driver\CoreDriver;
 use Behat\Mink\Exception\DriverException;
 use Behat\Mink\Session;
-use JonnyW\PhantomJs\Client;
 use JonnyW\PhantomJs\Message\Request;
-use JonnyW\PhantomJs\Message\Response;
-use Symfony\Component\DomCrawler\Crawler;
 
 /**
  * Class PhantomJSDriver
  * @package Behat\Mink\Driver
  */
-class PhantomJSDriver extends CoreDriver {
-
-  /** @var Request */
-  private $request;
-  /** @var Client */
-  private $pjsClient;
-  /** @var  Response */
-  private $response;
-  /** @var   array */
-  private $headers;
-  /** @var  string */
-  private $baseUrl;
-  /** @var  Session */
-  private $session;
-  /** @var  Crawler */
-  private $crawler;
-
-  /**
-   * @param string $binLocation Location of the phantomjs binary
-   * @param string $loaderLocation Location of the phantomjs loader
-   * @param string $baseUrl base url for request
-   */
-  public function __construct($binLocation, $loaderLocation, $baseUrl) {
-    $this->request = null;
-    $this->headers = null;
-    $this->response = null;
-    $this->crawler = null;
-    $this->pjsClient = Client::getInstance();
-    $this->pjsClient->setPhantomJs($binLocation);
-    $this->pjsClient->setPhantomLoader($loaderLocation);
-    $this->baseUrl = $baseUrl;
-  }
-
-  /**
-   * @return Crawler
-   */
-  protected function getCrawler() {
-    return $this->crawler;
-  }
-
-  /**
-   * @param Crawler $crawler
-   */
-  protected function setCrawler(Crawler $crawler) {
-    $this->crawler = $crawler;
-  }
-
-  /**
-   * @return Request
-   */
-  protected function getRequest() {
-    return $this->request;
-  }
-
-  /**
-   * @return Response
-   */
-  protected function getResponse() {
-    return $this->response;
-  }
-
-  /**
-   *  Adds the possible headers to the request
-   */
-  protected function addHeadersToRequest() {
-    //Header management
-    if ($this->headers !== null && count($this->headers) > 0) {
-      foreach ($this->headers as $headerName => $headerValues) {
-        if (is_array($headerValues)) {
-          foreach ($headerValues as $headerValue) {
-            $this->request->addHeader($headerName, $headerValue);
-          }
-        } else {
-          $this->request->addHeader($headerName, $headerValues);
-        }
-      }
-    }
-  }
-
-  /**
-   * Creates a crawler from a given content response
-   * @param Response $response
-   */
-  protected function createCrawlerFromResponse(Response $response) {
-    $crawler = new Crawler();
-    $crawler->addContent($response->getContent(), $response->getContentType());
-    $this->setCrawler($crawler);
-  }
+class PhantomJSDriver extends BasePhantomJSDriver {
 
   /**
    * {@inheritdoc}
@@ -115,9 +24,9 @@ class PhantomJSDriver extends CoreDriver {
    * {@inheritdoc}
    */
   public function start() {
-    if ($this->request === null) {
-      $this->request = $this->pjsClient->getMessageFactory()->createRequest();
-      $this->response = $this->pjsClient->getMessageFactory()->createResponse();
+    if ($this->getRequest() === null) {
+      $this->request = $this->getPjsClient()->getMessageFactory()->createRequest();
+      $this->response = $this->getPjsClient()->getMessageFactory()->createResponse();
     }
   }
 
@@ -126,7 +35,7 @@ class PhantomJSDriver extends CoreDriver {
    * @return bool
    */
   public function isStarted() {
-    return ($this->request !== null && $this->request instanceof Request);
+    return ($this->getRequest() !== null && $this->getRequest() instanceof Request);
   }
 
   /**
@@ -152,14 +61,25 @@ class PhantomJSDriver extends CoreDriver {
    * {@inheritdoc}
    * @param string $url
    * @throws DriverException
+   * @return boolean
    */
   public function visit($url) {
     try {
-      $this->request->setMethod("GET");
-      $this->request->setUrl($url);
+      $request = $this->getRequest();
+      $response = $this->getResponse();
+
+      $request->setMethod("GET");
+      $request->setUrl($url);
+
       $this->addHeadersToRequest();
-      $this->pjsClient->send($this->request, $this->response);
-      $this->createCrawlerFromResponse($this->response);
+      $this->getPjsClient()->send($request, $response);
+
+      if ($response->isRedirect()) {
+        return $this->visit($response->getRedirectUrl());
+      }
+
+      $this->createCrawlerFromResponse($this->getResponse());
+      return true;
     } catch (\Exception $e) {
       throw new DriverException("VISIT_EXCEPTION", -1, $e);
     }
@@ -240,19 +160,6 @@ class PhantomJSDriver extends CoreDriver {
   public function setBasicAuth($user, $password) {
     $value = base64_encode(sprintf("%s:%s", $user, $password));
     $this->headers["Authorization"] = sprintf("Basic $value");
-  }
-
-  /**
-   * @param $xpath
-   * @return Crawler
-   * @throws DriverException
-   */
-  protected function getFilteredCrawler($xpath) {
-    if (!count($crawler = $this->getCrawler()->filterXPath($xpath))) {
-      throw new DriverException(sprintf('There is no element matching XPath "%s"', $xpath));
-    }
-
-    return $crawler;
   }
 
   /**
