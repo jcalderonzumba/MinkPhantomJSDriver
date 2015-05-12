@@ -82,6 +82,36 @@ class BasePhantomJSDriver extends CoreDriver {
     return $this->response;
   }
 
+
+  /**
+   * Returns the redirect location since response->getRedirectUrl seems not to work..
+   * @return string
+   */
+  protected function getRedirectUrl() {
+    return trim($this->response->getHeader("Location"));
+  }
+
+  /**
+   * @param $cookieHeader
+   */
+  protected function addCookieToHeaders($cookieHeader) {
+    if (isset($this->headers["Cookie"])) {
+      $this->headers["Cookie"] = sprintf("%s %s", $this->headers["Cookie"], $cookieHeader);
+    } else {
+      $this->headers["Cookie"] = $cookieHeader;
+    }
+  }
+
+  /**
+   * If we have a response that sends cookies, we will add them to the headers we have
+   */
+  protected function addCookiesFromResponse() {
+    $cookies = $this->response->getHeader("Set-Cookie");
+    if (!empty($cookies)) {
+      $this->addCookieToHeaders($cookies);
+    }
+  }
+
   /**
    *  Adds the possible headers to the request
    */

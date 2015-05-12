@@ -75,7 +75,7 @@ class PhantomJSDriver extends BasePhantomJSDriver {
       $this->getPjsClient()->send($request, $response);
 
       if ($response->isRedirect()) {
-        return $this->visit($response->getRedirectUrl());
+        return $this->visit($this->getRedirectUrl());
       }
 
       $this->createCrawlerFromResponse($this->getResponse());
@@ -109,11 +109,7 @@ class PhantomJSDriver extends BasePhantomJSDriver {
   public function setCookie($name, $value = null) {
     $cookieHeader = sprintf("%s=%s; path=/", $name, $value);
     //TODO: handle null value as DELETING THE COOKIE
-    if (isset($this->headers["Cookie"])) {
-      $this->headers["Cookie"] = sprintf("%s %s", $this->headers["Cookie"], $cookieHeader);
-    } else {
-      $this->headers["Cookie"] = $cookieHeader;
-    }
+    $this->addCookieToHeaders($cookieHeader);
   }
 
   /**
