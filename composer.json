@@ -23,14 +23,15 @@
     "php": ">=5.3.1",
     "behat/mink": "~1.6",
     "symfony/process": "~2.1",
-    "jonnyw/php-phantomjs": "~3.1"
+    "jonnyw/php-phantomjs": "~3.1",
+    "behat/mink-extension": "~2.0@dev"
   },
   "config": {
     "bin-dir": "bin"
   },
   "autoload": {
     "psr-4": {
-      "Behat\\Mink\\": "src/"
+      "Behat\\PhantomJSExtension\\": "src/"
     }
   },
 

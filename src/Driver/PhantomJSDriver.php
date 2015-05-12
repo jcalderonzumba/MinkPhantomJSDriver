@@ -1,7 +1,8 @@
 <?php
 
-namespace Behat\Mink\Driver;
+namespace Behat\PhantomJSExtension\Driver;
 
+use Behat\Mink\Driver\CoreDriver;
 use Behat\Mink\Exception\DriverException;
 use JonnyW\PhantomJs\Client;
 use JonnyW\PhantomJs\Message\Request;
@@ -21,17 +22,21 @@ class PhantomJSDriver extends CoreDriver {
   private $response;
   /** @var   array */
   private $headers;
+  /** @var  string */
+  private $baseUrl;
 
   /**
-   * Constructor for the Mink Driver
+   * @param string $binLocation Location of the phantomjs binary
+   * @param string $loaderLocation Location of the phantomjs loader
    */
-  public function __construct() {
+  public function __construct($binLocation, $loaderLocation, $baseUrl) {
     $this->request = null;
     $this->headers = null;
     $this->response = null;
     $this->pjsClient = Client::getInstance();
-    $this->pjsClient->setPhantomJs("../bin/phantomjs");
-    $this->pjsClient->setPhantomLoader("../bin/phantomloader");
+    $this->pjsClient->setPhantomJs($binLocation);
+    $this->pjsClient->setPhantomLoader($loaderLocation);
+    $this->baseUrl = $baseUrl;
   }
 
   /**
