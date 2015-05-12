@@ -8,8 +8,7 @@
 
 require_once "../vendor/autoload.php";
 
-$pjsDriver = new \Behat\Mink\Driver\PhantomJSDriver();
+$pjsDriver = new \Behat\PhantomJSExtension\Driver\PhantomJSDriver("/Users/juan/code/scm/pjsdriver/bin/phantomjs", "/Users/juan/code/scm/pjsdriver/bin/phantomloader", "http://wwww.google.es");
 
 $pjsDriver->start();
-$pjsDriver->visit("http://www.google.es");
-echo $pjsDriver->getContent();
+$pjsDriver->visit("http://ft.devsnt.com");

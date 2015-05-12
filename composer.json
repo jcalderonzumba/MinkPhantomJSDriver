@@ -23,6 +23,7 @@
     "php": ">=5.3.1",
     "behat/mink": "~1.6",
     "symfony/process": "~2.1",
+    "symfony/dom-crawler": "~2.0",
     "jonnyw/php-phantomjs": "~3.1",
     "behat/mink-extension": "~2.0@dev"
   },

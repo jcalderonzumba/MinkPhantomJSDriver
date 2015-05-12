@@ -8,6 +8,7 @@ use Behat\Mink\Session;
 use JonnyW\PhantomJs\Client;
 use JonnyW\PhantomJs\Message\Request;
 use JonnyW\PhantomJs\Message\Response;
+use Symfony\Component\DomCrawler\Crawler;
 
 /**
  * Class PhantomJSDriver
@@ -27,19 +28,79 @@ class PhantomJSDriver extends CoreDriver {
   private $baseUrl;
   /** @var  Session */
   private $session;
+  /** @var  Crawler */
+  private $crawler;
 
   /**
    * @param string $binLocation Location of the phantomjs binary
    * @param string $loaderLocation Location of the phantomjs loader
+   * @param string $baseUrl base url for request
    */
   public function __construct($binLocation, $loaderLocation, $baseUrl) {
     $this->request = null;
     $this->headers = null;
     $this->response = null;
+    $this->crawler = null;
     $this->pjsClient = Client::getInstance();
     $this->pjsClient->setPhantomJs($binLocation);
     $this->pjsClient->setPhantomLoader($loaderLocation);
     $this->baseUrl = $baseUrl;
+  }
+
+  /**
+   * @return Crawler
+   */
+  protected function getCrawler() {
+    return $this->crawler;
+  }
+
+  /**
+   * @param Crawler $crawler
+   */
+  protected function setCrawler(Crawler $crawler) {
+    $this->crawler = $crawler;
+  }
+
+  /**
+   * @return Request
+   */
+  protected function getRequest() {
+    return $this->request;
+  }
+
+  /**
+   * @return Response
+   */
+  protected function getResponse() {
+    return $this->response;
+  }
+
+  /**
+   *  Adds the possible headers to the request
+   */
+  protected function addHeadersToRequest() {
+    //Header management
+    if ($this->headers !== null && count($this->headers) > 0) {
+      foreach ($this->headers as $headerName => $headerValues) {
+        if (is_array($headerValues)) {
+          foreach ($headerValues as $headerValue) {
+            $this->request->addHeader($headerName, $headerValue);
+          }
+        } else {
+          $this->request->addHeader($headerName, $headerValues);
+        }
+      }
+    }
+  }
+
+  /**
+   * Creates a crawler from a given content response
+   * @param Response $response
+   */
+  protected function createCrawlerFromResponse(Response $response) {
+    $crawler = new Crawler();
+    $crawler->addContent($response->getContent(), $response->getContentType());
+    $this->setCrawler($crawler);
   }
 
   /**
@@ -88,35 +149,17 @@ class PhantomJSDriver extends CoreDriver {
   }
 
   /**
-   *  Adds the possible headers to the request
-   */
-  private function addHeadersToRequest() {
-    //Header management
-    if ($this->headers !== null && count($this->headers) > 0) {
-      foreach ($this->headers as $headerName => $headerValues) {
-        if (is_array($headerValues)) {
-          foreach ($headerValues as $headerValue) {
-            $this->request->addHeader($headerName, $headerValue);
-          }
-        } else {
-          $this->request->addHeader($headerName, $headerValues);
-        }
-      }
-    }
-  }
-
-  /**
    * {@inheritdoc}
    * @param string $url
    * @throws DriverException
    */
   public function visit($url) {
     try {
-      //TODO: add the support for headers
       $this->request->setMethod("GET");
       $this->request->setUrl($url);
       $this->addHeadersToRequest();
       $this->pjsClient->send($this->request, $this->response);
+      $this->createCrawlerFromResponse($this->response);
     } catch (\Exception $e) {
       throw new DriverException("VISIT_EXCEPTION", -1, $e);
     }
@@ -192,6 +235,32 @@ class PhantomJSDriver extends CoreDriver {
   public function setBasicAuth($user, $password) {
     $value = base64_encode(sprintf("%s:%s", $user, $password));
     $this->headers["Authorization"] = sprintf("Basic $value");
+  }
+
+  /**
+   * @param $xpath
+   * @return Crawler
+   * @throws DriverException
+   */
+  protected function getFilteredCrawler($xpath) {
+    if (!count($crawler = $this->getCrawler()->filterXPath($xpath))) {
+      throw new DriverException(sprintf('There is no element matching XPath "%s"', $xpath));
+    }
+
+    return $crawler;
+  }
+
+  /**
+   * {@inheritdoc}
+   * @param string $xpath
+   * @return string
+   */
+  public function getText($xpath) {
+    $text = $this->getFilteredCrawler($xpath)->text();
+    $text = str_replace("\n", ' ', $text);
+    $text = preg_replace('/ {2,}/', ' ', $text);
+
+    return trim($text);
   }
 
 }
