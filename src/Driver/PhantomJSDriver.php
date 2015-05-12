@@ -4,6 +4,7 @@ namespace Behat\PhantomJSExtension\Driver;
 
 use Behat\Mink\Driver\CoreDriver;
 use Behat\Mink\Exception\DriverException;
+use Behat\Mink\Session;
 use JonnyW\PhantomJs\Client;
 use JonnyW\PhantomJs\Message\Request;
 use JonnyW\PhantomJs\Message\Response;
@@ -24,6 +25,8 @@ class PhantomJSDriver extends CoreDriver {
   private $headers;
   /** @var  string */
   private $baseUrl;
+  /** @var  Session */
+  private $session;
 
   /**
    * @param string $binLocation Location of the phantomjs binary
@@ -37,6 +40,14 @@ class PhantomJSDriver extends CoreDriver {
     $this->pjsClient->setPhantomJs($binLocation);
     $this->pjsClient->setPhantomLoader($loaderLocation);
     $this->baseUrl = $baseUrl;
+  }
+
+  /**
+   * {@inheritdoc}
+   * @param Session $session
+   */
+  public function setSession(Session $session) {
+    $this->session = $session;
   }
 
   /**
