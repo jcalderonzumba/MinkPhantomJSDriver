@@ -24,10 +24,36 @@ class Server {
 
   /**
    * @param $message
-   * @throws \Exception
+   * @return mixed
    */
   public function send($message) {
     //TODO: do the actual message send with a curl HTTP REQUEST
-    throw new \Exception("NOT IMPLEMENTED $message");
+    return null;
+  }
+
+  /**
+   * Stops the Server
+   * @return bool
+   */
+  public function stop() {
+    //TODO: we might need to do stuff here
+    return true;
+  }
+
+  /**
+   * Starts the server
+   * @return bool
+   */
+  public function start() {
+    //TODO: we might need to do stuff here
+    return true;
+  }
+
+  /**
+   * Restarts the server
+   */
+  public function restart() {
+    $this->stop();
+    $this->start();
   }
 }
