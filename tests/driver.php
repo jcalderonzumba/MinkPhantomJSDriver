@@ -1,14 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: juan
- * Date: 11/05/15
- * Time: 17:48
- */
+use Behat\PhantomJSExtension\Portergeist\Server;
+use Behat\PhantomJSExtension\Portergeist\Client;
 
 require_once "../vendor/autoload.php";
 
-$pjsDriver = new \Behat\PhantomJSExtension\Driver\PhantomJSDriver("/Users/juan/code/scm/pjsdriver/bin/phantomjs", "/Users/juan/code/scm/pjsdriver/bin/phantomloader", "http://wwww.google.es");
-
-$pjsDriver->start();
-$pjsDriver->visit("http://ft.devsnt.com");
+$server = new Server();
+$client = new Client($server, array("path" => "/Users/juan/code/scm/pjsdriver/bin/phantomjs"));
+var_dump($client->getCommand());
