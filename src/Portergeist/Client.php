@@ -34,12 +34,29 @@ class Client {
   /** @var  bool */
   protected $started;
 
+  /** @var Client */
+  private static $instance = null;
+
+  /**
+   * Gets the singleton instance of the class
+   * It is singleton because the phantomjs stuff should be launched ONCE
+   * @param Server $server
+   * @param array  $options
+   * @return Client
+   */
+  public static function getInstance(Server $server, $options = array()) {
+    if (null === self::$instance) {
+      self::$instance = new self($server, $options);
+    }
+    return self::$instance;
+  }
+
   /**
    * @param Server $server
    * @param array  $options
    * @throws \Exception
    */
-  public function __construct(Server $server, $options = array()) {
+  private function __construct(Server $server, $options) {
     $this->server = $server;
     if (!isset($options["path"])) {
       //TODO: something like Cliver::detect

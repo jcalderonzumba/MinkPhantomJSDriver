@@ -5,9 +5,9 @@ use Behat\PhantomJSExtension\Portergeist\Browser;
 
 require_once "../vendor/autoload.php";
 
-$server = new Server();
+$server = Server::getInstance();
 $server->start();
-$client = new Client($server, array("path" => "/Users/juan/code/scm/pjsdriver/bin/phantomjs"));
+$client = Client::getInstance($server, array("path" => "/Users/juan/code/scm/pjsdriver/bin/phantomjs"));
 $client->start();
 $browser = new Browser($server, $client);
 var_dump($browser->visit("http://www.ekhanei.com/"));
