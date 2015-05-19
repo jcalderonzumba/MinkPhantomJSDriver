@@ -2,7 +2,6 @@
 
 namespace Behat\PhantomJSExtension\Portergeist;
 
-use Behat\PhantomJSExtension\Portergeist\Exception\ClientError;
 
 /**
  * Class Client
@@ -28,6 +27,8 @@ class Client {
   protected $phantomJSOptions;
   /** @var  mixed */
   protected $phantomJSLogger;
+  /** @var  Thread */
+  protected $thread;
 
   /**
    * @param Server $server
@@ -46,6 +47,7 @@ class Client {
     $this->windowSize = (isset($options["windowSize"])) ? $options["windowSize"] : array(1024, 768);
     $this->phantomJSOptions = (isset($options["phantomJSOptions"])) ? $options["phantomJSOptions"] : array();
     $this->phantomJSScript = realpath(dirname(__FILE__) . "/Client/main.js");
+    $this->thread = null;
     //TODO: $this->$phantomJSLogger;
   }
 
@@ -55,7 +57,10 @@ class Client {
    * @return bool
    */
   public function stop() {
-    return true;
+    if ($this->getThread() !== null && $this->getThread()->getPid() !== null) {
+      $this->getThread()->close();
+      //TODO: Paranoid check to see if the process is properly closed
+    }
   }
 
   /**
@@ -63,14 +68,14 @@ class Client {
    * @return bool
    */
   public function start() {
-    return true;
+    $command = $this->getCommand();
+    $this->thread = new Thread($command);
   }
 
   /**
    * Restarts the client
    */
   public function restart() {
-    //TODO: implement the stop and start methods
     $this->stop();
     $this->start();
   }
@@ -144,6 +149,13 @@ class Client {
    */
   public function getServer() {
     return $this->server;
+  }
+
+  /**
+   * @return Thread
+   */
+  public function getThread() {
+    return $this->thread;
   }
 
 

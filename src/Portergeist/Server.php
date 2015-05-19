@@ -3,6 +3,8 @@
 
 namespace Behat\PhantomJSExtension\Portergeist;
 
+use WebSocket\Client as WSocketClient;
+
 /**
  * Class Server
  * @package Behat\PhantomJSExtension\Portergeist
@@ -20,6 +22,10 @@ class Server {
   protected $fixedPort;
   /** @var int */
   protected $timeout;
+  /** @var  Thread */
+  protected $thread;
+  /** @var  WSocketClient */
+  protected $wsClient;
 
   /**
    * @param int $fixedPort
@@ -28,16 +34,20 @@ class Server {
   public function __construct($fixedPort = null, $timeout = null) {
     $this->fixedPort = ($fixedPort === null) ? Server::DEFAULT_PORT : $fixedPort;
     $this->timeout = ($timeout === null) ? Server::BIND_TIMEOUT : $timeout;
+    $this->wsClient = null;
+    $this->thread = null;
     //TODO: add the start method here
   }
 
   /**
-   * @param $message
+   * @param string $message
    * @return mixed
    */
   public function send($message) {
-    //TODO: do the actual message send with a curl HTTP REQUEST
-    return null;
+    echo "Message to send $message\n";
+    $this->getWsClient()->send($message);
+    //We will wait for the response
+    return $this->getWsClient()->receive();
   }
 
   /**
@@ -45,16 +55,38 @@ class Server {
    * @return bool
    */
   public function stop() {
-    //TODO: we might need to do stuff here
+    if ($this->getThread() !== null && $this->getThread()->getPid() !== null) {
+      $this->getWsClient()->close();
+      $this->getThread()->close();
+      //TODO: Paranoid check to see if the process is properly closed
+    }
     return true;
   }
 
   /**
+   * Starts the embedded web socket client
+   * @throws \Exception
+   */
+  public function wsClientStart() {
+    if (1 == 2 && $this->getThread() === null) {
+      throw new \Exception("Can not start the client if the server has not started");
+    }
+
+    if ($this->getWsClient() !== null) {
+      throw  new \Exception("WebSocketClient is already started");
+    }
+
+    $this->wsClient = new WSocketClient("ws://127.0.0.1:{$this->getFixedPort()}/");
+  }
+
+  /**
    * Starts the server
+   * @throws \Exception
    * @return bool
    */
   public function start() {
-    //TODO: we might need to do stuff here
+    $command = "/Users/juan/code/scm/pjsdriver/bin/wsserver {$this->getFixedPort()}";
+    //$this->thread = new Thread($command);
     return true;
   }
 
@@ -87,5 +119,18 @@ class Server {
     return $this->timeout;
   }
 
+  /**
+   * @return Thread
+   */
+  public function getThread() {
+    return $this->thread;
+  }
+
+  /**
+   * @return WSocketClient
+   */
+  public function getWsClient() {
+    return $this->wsClient;
+  }
 
 }
