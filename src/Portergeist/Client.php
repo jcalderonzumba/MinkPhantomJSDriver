@@ -2,6 +2,7 @@
 
 namespace Behat\PhantomJSExtension\Portergeist;
 
+use WebSocket\Client as WSocketClient;
 
 /**
  * Class Client
@@ -10,6 +11,7 @@ namespace Behat\PhantomJSExtension\Portergeist;
 class Client {
   const KILL_TIMEOUT = 2;
   const PHANTOMJS_NAME = "phantomjs";
+  const MAX_READY_TRIES = 2;
 
   /** @var  string */
   protected $phantomJSScript;
@@ -29,6 +31,8 @@ class Client {
   protected $phantomJSLogger;
   /** @var  Thread */
   protected $thread;
+  /** @var  bool */
+  protected $started;
 
   /**
    * @param Server $server
@@ -37,10 +41,13 @@ class Client {
    */
   public function __construct(Server $server, $options = array()) {
     $this->server = $server;
-
     if (!isset($options["path"])) {
       //TODO: something like Cliver::detect
       throw new \Exception("You must specify where the phantomjs binary path is");
+    }
+
+    if ($this->getServer()->isStarted() !== true) {
+      throw new \Exception("Server should be started, it seems is not");
     }
 
     $this->phantomJSPath = $options["path"];
@@ -48,6 +55,7 @@ class Client {
     $this->phantomJSOptions = (isset($options["phantomJSOptions"])) ? $options["phantomJSOptions"] : array();
     $this->phantomJSScript = realpath(dirname(__FILE__) . "/Client/main.js");
     $this->thread = null;
+    $this->started = false;
     //TODO: $this->$phantomJSLogger;
   }
 
@@ -61,15 +69,56 @@ class Client {
       $this->getThread()->close();
       //TODO: Paranoid check to see if the process is properly closed
     }
+    $this->started = false;
+  }
+
+  /**
+   * As with the websocket server, we need to wait for phantomjs to be ready to accept commands
+   */
+  protected function waitForPhantomJS() {
+    //this is done to check that phantomjs is actually up and running
+    $serverName = Server::HOST;
+    $retry = 0;
+    //assume the worst, we are not ready
+    $ready = false;
+    //This can be here safely because at the moment the socket client constructor does nothing related to connections
+    $wsClient = new WSocketClient("ws://{$serverName}:{$this->getServer()->getFixedPort()}/", array("timeout" => Server::BIND_TIMEOUT));
+    while (($ready === false) && ($retry < Client::MAX_READY_TRIES)) {
+      try {
+        $wsClient->send("are_you_ready");
+        $jsonResponse = json_decode($wsClient->receive(), true);
+        if ($jsonResponse !== null) {
+          if (isset($jsonResponse["response"]) && $jsonResponse["response"] == "i_am_ready") {
+            $ready = true;
+          }
+        }
+      } catch (\Exception $error) {
+        echo sprintf("%s is not ready to accept commands, waiting\n", Client::PHANTOMJS_NAME);
+      }
+      $retry++;
+    }
+
+    try {
+      $wsClient->close();
+      $wsClient->__destruct();
+    } catch (\Exception $error) {
+      echo sprintf("Something bad happened while: %s", $error->getMessage());
+    }
+    return $ready;
   }
 
   /**
    * Starts the client
+   * @throws \Exception
    * @return bool
    */
   public function start() {
     $command = $this->getCommand();
     $this->thread = new Thread($command);
+    if ($this->waitForPhantomJS() !== true) {
+      throw new \Exception("Seems phantomjs is not taking websocket requests");
+    }
+    $this->started = true;
   }
 
   /**
@@ -158,5 +207,12 @@ class Client {
     return $this->thread;
   }
 
+  /**
+   * Checks whether the service is started or not
+   * @return bool
+   */
+  public function isStarted() {
+    return $this->started;
+  }
 
 }

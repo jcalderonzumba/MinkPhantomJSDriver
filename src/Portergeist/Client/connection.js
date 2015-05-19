@@ -17,7 +17,11 @@ Poltergeist.Connection = (function () {
   }
 
   Connection.prototype.commandReceived = function (message) {
-    return this.owner.runCommand(JSON.parse(message.data));
+    if (message.data == "are_you_ready") {
+      return this.send({response: "i_am_ready"});
+    } else {
+      return this.owner.runCommand(JSON.parse(message.data));
+    }
   };
 
   Connection.prototype.send = function (message) {

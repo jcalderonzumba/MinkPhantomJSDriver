@@ -7,7 +7,6 @@ require_once "../vendor/autoload.php";
 
 $server = new Server();
 $server->start();
-$server->wsClientStart();
 $client = new Client($server, array("path" => "/Users/juan/code/scm/pjsdriver/bin/phantomjs"));
 $client->start();
 $browser = new Browser($server, $client);

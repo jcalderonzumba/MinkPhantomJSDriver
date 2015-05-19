@@ -10,6 +10,7 @@ class Thread {
   /** @var resource */
   protected $process;
   protected $pipes;
+  /** @var string */
   protected $buffer;
   protected $output;
   protected $error;
@@ -93,6 +94,20 @@ class Thread {
     $buffer = "";
     while (($line = fgets($this->pipes[2], 1024))) {
       $buffer .= $line;
+    }
+    return $buffer;
+  }
+
+  /**
+   * Get the command output produced so far
+   * @return string
+   */
+  function listen() {
+    $buffer = $this->buffer;
+    $this->buffer = "";
+    while (($line = fgets($this->pipes[1], 1024))) {
+      $buffer .= $line;
+      $this->output .= $line;
     }
     return $buffer;
   }

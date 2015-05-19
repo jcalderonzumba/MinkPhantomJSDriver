@@ -26,6 +26,8 @@ class Server {
   protected $thread;
   /** @var  WSocketClient */
   protected $wsClient;
+  /** @var  bool */
+  protected $started;
 
   /**
    * @param int $fixedPort
@@ -36,7 +38,7 @@ class Server {
     $this->timeout = ($timeout === null) ? Server::BIND_TIMEOUT : $timeout;
     $this->wsClient = null;
     $this->thread = null;
-    //TODO: add the start method here
+    $this->started = false;
   }
 
   /**
@@ -68,15 +70,35 @@ class Server {
    * @throws \Exception
    */
   public function wsClientStart() {
-    if (1 == 2 && $this->getThread() === null) {
+    if ($this->getThread() === null) {
       throw new \Exception("Can not start the client if the server has not started");
     }
 
     if ($this->getWsClient() !== null) {
       throw  new \Exception("WebSocketClient is already started");
     }
+    $hostname = Server::HOST;
+    $this->wsClient = new WSocketClient("ws://{$hostname}:{$this->getFixedPort()}/", array("timeout" => Server::BIND_TIMEOUT));
+  }
 
-    $this->wsClient = new WSocketClient("ws://127.0.0.1:{$this->getFixedPort()}/");
+
+  /**
+   * Waits for the server to be ready
+   * @return bool
+   */
+  protected function waitForServer() {
+    $serverSocket = @fsockopen(Server::HOST, $this->getFixedPort(), $errno, $errstr, Server::BIND_TIMEOUT);
+    $startTime = time();
+    while (!is_resource($serverSocket) && ((time() - $startTime) < Server::BIND_TIMEOUT)) {
+      $serverSocket = @fsockopen(Server::HOST, $this->getFixedPort(), $errno, $errstr, Server::BIND_TIMEOUT);
+    }
+
+    if (!is_resource($serverSocket)) {
+      echo "Server is not listening for socket connections, errors: $errno, $errstr...\n";
+      return false;
+    }
+    fclose($serverSocket);
+    return true;
   }
 
   /**
@@ -85,8 +107,13 @@ class Server {
    * @return bool
    */
   public function start() {
-    $command = "/Users/juan/code/scm/pjsdriver/bin/wsserver {$this->getFixedPort()}";
-    //$this->thread = new Thread($command);
+    $command = "php /Users/juan/code/scm/pjsdriver/bin/wsserver {$this->getFixedPort()}";
+    $this->thread = new Thread($command);
+    if ($this->waitForServer() !== true) {
+      throw new \Exception("Something bad happened could not start Websocket server");
+    }
+    $this->wsClientStart();
+    $this->started = true;
     return true;
   }
 
@@ -131,6 +158,14 @@ class Server {
    */
   public function getWsClient() {
     return $this->wsClient;
+  }
+
+  /**
+   * To check if the server is up and running
+   * @return bool
+   */
+  public function isStarted() {
+    return $this->started;
   }
 
 }
