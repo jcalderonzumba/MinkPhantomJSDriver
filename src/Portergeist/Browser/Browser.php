@@ -156,6 +156,33 @@ class Browser extends BrowserWindow {
   }
 
   /**
+   * Set an attribute to the given element in the given page
+   * @param $pageId
+   * @param $elementId
+   * @param $name
+   * @param $value
+   * @return mixed
+   * @throws \Behat\PhantomJSExtension\Portergeist\Exception\BrowserError
+   * @throws \Exception
+   */
+  public function setAttribute($pageId, $elementId, $name, $value) {
+    return $this->command('set_attribute', $pageId, $elementId, $name, $value);
+  }
+
+  /**
+   * Remove an attribute for a given page and element
+   * @param $pageId
+   * @param $elementId
+   * @param $name
+   * @return mixed
+   * @throws \Behat\PhantomJSExtension\Portergeist\Exception\BrowserError
+   * @throws \Exception
+   */
+  public function removeAttribute($pageId, $elementId, $name) {
+    return $this->command('remove_attribute', $pageId, $elementId, $name);
+  }
+
+  /**
    * Returns the value of a given element in a page
    * @param $pageId
    * @param $elementId

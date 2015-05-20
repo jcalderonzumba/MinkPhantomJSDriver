@@ -176,6 +176,29 @@ Poltergeist.Browser = (function () {
     return this.sendResponse(this.node(page_id, id).getAttribute(name));
   };
 
+  /**
+   *  Allows the possibility to set an attribute on a given element
+   * @param page_id
+   * @param id
+   * @param name
+   * @param value
+   * @returns {*}
+   */
+  Browser.prototype.set_attribute = function (page_id, id, name, value) {
+    return this.sendResponse(this.node(page_id, id).setAttribute(name, value));
+  };
+
+  /**
+   *  Allows the possibility to remove an attribute on a given element
+   * @param page_id
+   * @param id
+   * @param name
+   * @returns {*}
+   */
+  Browser.prototype.remove_attribute = function (page_id, id, name) {
+    return this.sendResponse(this.node(page_id, id).removeAttribute(name));
+  };
+
   Browser.prototype.attributes = function (page_id, id, name) {
     return this.sendResponse(this.node(page_id, id).getAttributes());
   };

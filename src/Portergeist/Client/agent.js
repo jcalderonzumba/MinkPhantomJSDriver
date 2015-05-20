@@ -356,11 +356,13 @@ PoltergeistAgent.Node = (function () {
   };
 
   Node.prototype.setAttribute = function (name, value) {
-    return this.element.setAttribute(name, value);
+    this.element.setAttribute(name, value);
+    return true;
   };
 
   Node.prototype.removeAttribute = function (name) {
-    return this.element.removeAttribute(name);
+    this.element.removeAttribute(name);
+    return true;
   };
 
   Node.prototype.select = function (value) {

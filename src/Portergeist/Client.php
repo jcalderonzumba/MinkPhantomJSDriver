@@ -157,7 +157,7 @@ class Client {
   public function getCommand() {
     $command = $this->getPhantomJSPath();
     $command .= " " . implode(" ", $this->getPhantomJSOptions());
-    $command .= " " . $this->getPhantomJSScript();
+    $command .= " --ssl-protocol=any --ignore-ssl-errors=true " . $this->getPhantomJSScript();
     //Starting from this point this are the arguments for the script not for the binary itself
     $command .= " " . $this->getServer()->getFixedPort();
     $command .= " " . implode(" ", $this->getWindowSize());
