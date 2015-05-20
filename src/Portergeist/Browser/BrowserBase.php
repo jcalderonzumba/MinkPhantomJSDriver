@@ -69,7 +69,7 @@ class BrowserBase {
         throw new \Exception("Could not decode the phantomjs server response");
       }
     } catch (\Exception $e) {
-      $this->restart();
+      //$this->restart();
       throw $e;
     }
     if (isset($jsonResponse['error'])) {

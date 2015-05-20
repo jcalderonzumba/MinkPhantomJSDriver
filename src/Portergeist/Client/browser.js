@@ -114,6 +114,14 @@ Poltergeist.Browser = (function () {
     return this.sendResponse(this.currentPage.currentUrl());
   };
 
+  /**
+   *  Returns the current page window name
+   * @returns {*}
+   */
+  Browser.prototype.window_name = function () {
+    return this.sendResponse(this.currentPage.windowName());
+  };
+
   Browser.prototype.status_code = function () {
     return this.sendResponse(this.currentPage.statusCode);
   };
@@ -143,6 +151,17 @@ Poltergeist.Browser = (function () {
 
   Browser.prototype.all_text = function (page_id, id) {
     return this.sendResponse(this.node(page_id, id).allText());
+  };
+
+  /**
+   * Returns the inner or outer html of a given id
+   * @param page_id
+   * @param id
+   * @param type
+   * @returns Object
+   */
+  Browser.prototype.all_html = function (page_id, id, type) {
+    return this.sendResponse(this.node(page_id, id).allHTML(type));
   };
 
   Browser.prototype.visible_text = function (page_id, id) {
@@ -556,6 +575,16 @@ Poltergeist.Browser = (function () {
     } else {
       return this.sendResponse(false);
     }
+  };
+
+  //Adding possibility to reload the page
+  Browser.prototype.reload = function () {
+    var self = this;
+    this.currentPage.state = 'loading';
+    this.currentPage.reload();
+    return this.currentPage.waitState('default', function () {
+      return self.sendResponse(true);
+    });
   };
 
   Browser.prototype.go_forward = function () {

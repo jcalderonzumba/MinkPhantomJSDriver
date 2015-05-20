@@ -1,12 +1,12 @@
 var PoltergeistAgent;
 
-PoltergeistAgent = (function() {
+PoltergeistAgent = (function () {
   function PoltergeistAgent() {
     this.elements = [];
     this.nodes = {};
   }
 
-  PoltergeistAgent.prototype.externalCall = function(name, args) {
+  PoltergeistAgent.prototype.externalCall = function (name, args) {
     var error;
     try {
       return {
@@ -23,10 +23,10 @@ PoltergeistAgent = (function() {
     }
   };
 
-  PoltergeistAgent.stringify = function(object) {
+  PoltergeistAgent.stringify = function (object) {
     var error;
     try {
-      return JSON.stringify(object, function(key, value) {
+      return JSON.stringify(object, function (key, value) {
         if (Array.isArray(this[key])) {
           return this[key];
         } else {
@@ -43,11 +43,11 @@ PoltergeistAgent = (function() {
     }
   };
 
-  PoltergeistAgent.prototype.currentUrl = function() {
+  PoltergeistAgent.prototype.currentUrl = function () {
     return encodeURI(decodeURI(window.location.href));
   };
 
-  PoltergeistAgent.prototype.find = function(method, selector, within) {
+  PoltergeistAgent.prototype.find = function (method, selector, within) {
     var el, error, i, results, xpath, _i, _len, _results;
     if (within == null) {
       within = document;
@@ -55,7 +55,7 @@ PoltergeistAgent = (function() {
     try {
       if (method === "xpath") {
         xpath = document.evaluate(selector, within, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-        results = (function() {
+        results = (function () {
           var _i, _ref, _results;
           _results = [];
           for (i = _i = 0, _ref = xpath.snapshotLength; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
@@ -82,24 +82,24 @@ PoltergeistAgent = (function() {
     }
   };
 
-  PoltergeistAgent.prototype.register = function(element) {
+  PoltergeistAgent.prototype.register = function (element) {
     this.elements.push(element);
     return this.elements.length - 1;
   };
 
-  PoltergeistAgent.prototype.documentSize = function() {
+  PoltergeistAgent.prototype.documentSize = function () {
     return {
       height: document.documentElement.scrollHeight || document.documentElement.clientHeight,
       width: document.documentElement.scrollWidth || document.documentElement.clientWidth
     };
   };
 
-  PoltergeistAgent.prototype.get = function(id) {
+  PoltergeistAgent.prototype.get = function (id) {
     var _base;
     return (_base = this.nodes)[id] || (_base[id] = new PoltergeistAgent.Node(this, this.elements[id]));
   };
 
-  PoltergeistAgent.prototype.nodeCall = function(id, name, args) {
+  PoltergeistAgent.prototype.nodeCall = function (id, name, args) {
     var node;
     node = this.get(id);
     if (node.isObsolete()) {
@@ -108,15 +108,15 @@ PoltergeistAgent = (function() {
     return node[name].apply(node, args);
   };
 
-  PoltergeistAgent.prototype.beforeUpload = function(id) {
+  PoltergeistAgent.prototype.beforeUpload = function (id) {
     return this.get(id).setAttribute('_poltergeist_selected', '');
   };
 
-  PoltergeistAgent.prototype.afterUpload = function(id) {
+  PoltergeistAgent.prototype.afterUpload = function (id) {
     return this.get(id).removeAttribute('_poltergeist_selected');
   };
 
-  PoltergeistAgent.prototype.clearLocalStorage = function() {
+  PoltergeistAgent.prototype.clearLocalStorage = function () {
     return localStorage.clear();
   };
 
@@ -124,10 +124,11 @@ PoltergeistAgent = (function() {
 
 })();
 
-PoltergeistAgent.ObsoleteNode = (function() {
-  function ObsoleteNode() {}
+PoltergeistAgent.ObsoleteNode = (function () {
+  function ObsoleteNode() {
+  }
 
-  ObsoleteNode.prototype.toString = function() {
+  ObsoleteNode.prototype.toString = function () {
     return "PoltergeistAgent.ObsoleteNode";
   };
 
@@ -135,10 +136,11 @@ PoltergeistAgent.ObsoleteNode = (function() {
 
 })();
 
-PoltergeistAgent.InvalidSelector = (function() {
-  function InvalidSelector() {}
+PoltergeistAgent.InvalidSelector = (function () {
+  function InvalidSelector() {
+  }
 
-  InvalidSelector.prototype.toString = function() {
+  InvalidSelector.prototype.toString = function () {
     return "PoltergeistAgent.InvalidSelector";
   };
 
@@ -146,7 +148,7 @@ PoltergeistAgent.InvalidSelector = (function() {
 
 })();
 
-PoltergeistAgent.Node = (function() {
+PoltergeistAgent.Node = (function () {
   Node.EVENTS = {
     FOCUS: ['blur', 'focus', 'focusin', 'focusout'],
     MOUSE: ['click', 'dblclick', 'mousedown', 'mouseenter', 'mouseleave', 'mousemove', 'mouseover', 'mouseout', 'mouseup', 'contextmenu'],
@@ -158,11 +160,11 @@ PoltergeistAgent.Node = (function() {
     this.element = element;
   }
 
-  Node.prototype.parentId = function() {
+  Node.prototype.parentId = function () {
     return this.agent.register(this.element.parentNode);
   };
 
-  Node.prototype.parentIds = function() {
+  Node.prototype.parentIds = function () {
     var ids, parent;
     ids = [];
     parent = this.element.parentNode;
@@ -173,14 +175,14 @@ PoltergeistAgent.Node = (function() {
     return ids;
   };
 
-  Node.prototype.find = function(method, selector) {
+  Node.prototype.find = function (method, selector) {
     return this.agent.find(method, selector, this.element);
   };
 
-  Node.prototype.isObsolete = function() {
+  Node.prototype.isObsolete = function () {
     var obsolete,
       _this = this;
-    obsolete = function(element) {
+    obsolete = function (element) {
       if (element.parentNode != null) {
         if (element.parentNode === document) {
           return false;
@@ -194,21 +196,21 @@ PoltergeistAgent.Node = (function() {
     return obsolete(this.element);
   };
 
-  Node.prototype.changed = function() {
+  Node.prototype.changed = function () {
     var event;
     event = document.createEvent('HTMLEvents');
     event.initEvent('change', true, false);
     return this.element.dispatchEvent(event);
   };
 
-  Node.prototype.input = function() {
+  Node.prototype.input = function () {
     var event;
     event = document.createEvent('HTMLEvents');
     event.initEvent('input', true, false);
     return this.element.dispatchEvent(event);
   };
 
-  Node.prototype.keyupdowned = function(eventName, keyCode) {
+  Node.prototype.keyupdowned = function (eventName, keyCode) {
     var event;
     event = document.createEvent('UIEvents');
     event.initEvent(eventName, true, true);
@@ -218,7 +220,7 @@ PoltergeistAgent.Node = (function() {
     return this.element.dispatchEvent(event);
   };
 
-  Node.prototype.keypressed = function(altKey, ctrlKey, shiftKey, metaKey, keyCode, charCode) {
+  Node.prototype.keypressed = function (altKey, ctrlKey, shiftKey, metaKey, keyCode, charCode) {
     var event;
     event = document.createEvent('UIEvents');
     event.initEvent('keypress', true, true);
@@ -233,15 +235,37 @@ PoltergeistAgent.Node = (function() {
     return this.element.dispatchEvent(event);
   };
 
-  Node.prototype.insideBody = function() {
+  Node.prototype.insideBody = function () {
     return this.element === document.body || document.evaluate('ancestor::body', this.element, null, XPathResult.BOOLEAN_TYPE, null).booleanValue;
   };
 
-  Node.prototype.allText = function() {
+  Node.prototype.allText = function () {
     return this.element.textContent;
   };
 
-  Node.prototype.visibleText = function() {
+  /**
+   * Returns the inner html our outer
+   * @returns {string}
+   */
+  Node.prototype.allHTML = function (type) {
+    var returnType = type || 'inner';
+    if (returnType === "inner") {
+      return this.element.innerHTML;
+    }
+    if (returnType === "outer") {
+      if (this.element.outerHTML) {
+        return this.element.outerHTML;
+      } else {
+        // polyfill:
+        var wrapper = document.createElement('div');
+        wrapper.appendChild(this.element.cloneNode(true));
+        return wrapper.innerHTML;
+      }
+    }
+    return '';
+  };
+
+  Node.prototype.visibleText = function () {
     if (this.isVisible()) {
       if (this.element.nodeName === "TEXTAREA") {
         return this.element.textContent;
@@ -251,7 +275,7 @@ PoltergeistAgent.Node = (function() {
     }
   };
 
-  Node.prototype.deleteText = function() {
+  Node.prototype.deleteText = function () {
     var range;
     range = document.createRange();
     range.selectNodeContents(this.element);
@@ -260,7 +284,7 @@ PoltergeistAgent.Node = (function() {
     return window.getSelection().deleteFromDocument();
   };
 
-  Node.prototype.getAttributes = function() {
+  Node.prototype.getAttributes = function () {
     var attr, attrs, i, _i, _len, _ref;
     attrs = {};
     _ref = this.element.attributes;
@@ -271,7 +295,7 @@ PoltergeistAgent.Node = (function() {
     return attrs;
   };
 
-  Node.prototype.getAttribute = function(name) {
+  Node.prototype.getAttribute = function (name) {
     if (name === 'checked' || name === 'selected') {
       return this.element[name];
     } else {
@@ -279,11 +303,11 @@ PoltergeistAgent.Node = (function() {
     }
   };
 
-  Node.prototype.scrollIntoView = function() {
+  Node.prototype.scrollIntoView = function () {
     return this.element.scrollIntoViewIfNeeded();
   };
 
-  Node.prototype.value = function() {
+  Node.prototype.value = function () {
     var option, _i, _len, _ref, _results;
     if (this.element.tagName === 'SELECT' && this.element.multiple) {
       _ref = this.element.children;
@@ -300,7 +324,7 @@ PoltergeistAgent.Node = (function() {
     }
   };
 
-  Node.prototype.set = function(value) {
+  Node.prototype.set = function (value) {
     var char, keyCode, _i, _len;
     if (this.element.readOnly) {
       return;
@@ -327,19 +351,19 @@ PoltergeistAgent.Node = (function() {
     return this.trigger('blur');
   };
 
-  Node.prototype.isMultiple = function() {
+  Node.prototype.isMultiple = function () {
     return this.element.multiple;
   };
 
-  Node.prototype.setAttribute = function(name, value) {
+  Node.prototype.setAttribute = function (name, value) {
     return this.element.setAttribute(name, value);
   };
 
-  Node.prototype.removeAttribute = function(name) {
+  Node.prototype.removeAttribute = function (name) {
     return this.element.removeAttribute(name);
   };
 
-  Node.prototype.select = function(value) {
+  Node.prototype.select = function (value) {
     if (value === false && !this.element.parentNode.multiple) {
       return false;
     } else {
@@ -349,11 +373,11 @@ PoltergeistAgent.Node = (function() {
     }
   };
 
-  Node.prototype.tagName = function() {
+  Node.prototype.tagName = function () {
     return this.element.tagName;
   };
 
-  Node.prototype.isVisible = function(element) {
+  Node.prototype.isVisible = function (element) {
     if (!element) {
       element = this.element;
     }
@@ -366,11 +390,11 @@ PoltergeistAgent.Node = (function() {
     }
   };
 
-  Node.prototype.isDisabled = function() {
+  Node.prototype.isDisabled = function () {
     return this.element.disabled || this.element.tagName === 'OPTION' && this.element.parentNode.disabled;
   };
 
-  Node.prototype.containsSelection = function() {
+  Node.prototype.containsSelection = function () {
     var selectedNode;
     selectedNode = document.getSelection().focusNode;
     if (!selectedNode) {
@@ -382,7 +406,7 @@ PoltergeistAgent.Node = (function() {
     return this.element.contains(selectedNode);
   };
 
-  Node.prototype.frameOffset = function() {
+  Node.prototype.frameOffset = function () {
     var offset, rect, style, win;
     win = window;
     offset = {
@@ -399,7 +423,7 @@ PoltergeistAgent.Node = (function() {
     return offset;
   };
 
-  Node.prototype.position = function() {
+  Node.prototype.position = function () {
     var frameOffset, pos, rect;
     rect = this.element.getClientRects()[0];
     if (!rect) {
@@ -417,7 +441,7 @@ PoltergeistAgent.Node = (function() {
     return pos;
   };
 
-  Node.prototype.trigger = function(name) {
+  Node.prototype.trigger = function (name) {
     var event;
     if (Node.EVENTS.MOUSE.indexOf(name) !== -1) {
       event = document.createEvent('MouseEvent');
@@ -432,14 +456,14 @@ PoltergeistAgent.Node = (function() {
     return this.element.dispatchEvent(event);
   };
 
-  Node.prototype.obtainEvent = function(name) {
+  Node.prototype.obtainEvent = function (name) {
     var event;
     event = document.createEvent('HTMLEvents');
     event.initEvent(name, true, true);
     return event;
   };
 
-  Node.prototype.mouseEventTest = function(x, y) {
+  Node.prototype.mouseEventTest = function (x, y) {
     var el, frameOffset, origEl;
     frameOffset = this.frameOffset();
     x -= frameOffset.left;
@@ -460,7 +484,7 @@ PoltergeistAgent.Node = (function() {
     };
   };
 
-  Node.prototype.getSelector = function(el) {
+  Node.prototype.getSelector = function (el) {
     var className, selector, _i, _len, _ref;
     selector = el.tagName !== 'HTML' ? this.getSelector(el.parentNode) + ' ' : '';
     selector += el.tagName.toLowerCase();
@@ -475,7 +499,7 @@ PoltergeistAgent.Node = (function() {
     return selector;
   };
 
-  Node.prototype.characterToKeyCode = function(character) {
+  Node.prototype.characterToKeyCode = function (character) {
     var code, specialKeys;
     code = character.toUpperCase().charCodeAt(0);
     specialKeys = {
@@ -516,7 +540,7 @@ PoltergeistAgent.Node = (function() {
     return specialKeys[code] || code;
   };
 
-  Node.prototype.isDOMEqual = function(other_id) {
+  Node.prototype.isDOMEqual = function (other_id) {
     return this.element === this.agent.get(other_id).element;
   };
 
@@ -526,14 +550,14 @@ PoltergeistAgent.Node = (function() {
 
 window.__poltergeist = new PoltergeistAgent;
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   return console.log('__DOMContentLoaded');
 });
 
-window.confirm = function(message) {
+window.confirm = function (message) {
   return true;
 };
 
-window.prompt = function(message, _default) {
+window.prompt = function (message, _default) {
   return _default || null;
 };

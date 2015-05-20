@@ -72,10 +72,11 @@ class Browser extends BrowserWindow {
    */
   public function find($method, $selector) {
     $result = $this->command('find', $method, $selector);
-    $lambdaFunc = function ($data) use ($result) {
-      return array($result['page_id'], $data);
-    };
-    return array_map($lambdaFunc, $result['ids']);
+    $found["page_id"] = $result["page_id"];
+    foreach ($result["ids"] as $id) {
+      $found["ids"][] = $id;
+    }
+    return $found;
   }
 
   /**
@@ -98,6 +99,19 @@ class Browser extends BrowserWindow {
    */
   public function allText($pageId, $elementId) {
     return $this->command('all_text', $pageId, $elementId);
+  }
+
+  /**
+   * Returns the inner or outer html of the given page and element
+   * @param $pageId
+   * @param $elementId
+   * @param $type
+   * @return mixed
+   * @throws \Behat\PhantomJSExtension\Portergeist\Exception\BrowserError
+   * @throws \Exception
+   */
+  public function allHtml($pageId, $elementId, $type = "inner") {
+    return $this->command('all_html', $pageId, $elementId, $type);
   }
 
   /**

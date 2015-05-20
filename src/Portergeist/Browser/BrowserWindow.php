@@ -57,4 +57,14 @@ class BrowserWindow extends BrowserScript {
   public function withinWindow($windowName) {
     return false;
   }
+
+  /**
+   * Gets the current request window name
+   * @return string
+   * @throws \Behat\PhantomJSExtension\Portergeist\Exception\BrowserError
+   * @throws \Exception
+   */
+  public function windowName() {
+    return $this->command('window_name');
+  }
 }

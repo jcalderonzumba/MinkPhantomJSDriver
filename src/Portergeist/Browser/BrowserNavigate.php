@@ -46,4 +46,11 @@ class BrowserNavigate extends BrowserCookie {
   public function goForward() {
     return $this->command('go_forward');
   }
+
+  /**
+   * Reloads the current page we are in
+   */
+  public function reload() {
+    return $this->command('reload');
+  }
 }

@@ -63,11 +63,15 @@ class Client {
       throw new \Exception("You must specify where the phantomjs binary path is");
     }
 
+    $this->phantomJSPath = $options["path"];
+    if (file_exists($this->phantomJSPath) !== true) {
+      throw new \Exception("The binary for phantomjs does not exists");
+    }
+
     if ($this->getServer()->isStarted() !== true) {
       throw new \Exception("Server should be started, it seems is not");
     }
 
-    $this->phantomJSPath = $options["path"];
     $this->windowSize = (isset($options["windowSize"])) ? $options["windowSize"] : array(1024, 768);
     $this->phantomJSOptions = (isset($options["phantomJSOptions"])) ? $options["phantomJSOptions"] : array();
     $this->phantomJSScript = realpath(dirname(__FILE__) . "/Client/main.js");

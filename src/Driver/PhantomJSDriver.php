@@ -3,205 +3,312 @@
 namespace Behat\PhantomJSExtension\Driver;
 
 use Behat\Mink\Exception\DriverException;
-use Behat\Mink\Session;
-use JonnyW\PhantomJs\Message\Request;
+use Behat\PhantomJSExtension\Portergeist\Browser\Browser;
+use Behat\PhantomJSExtension\Portergeist\Cookie;
 
 /**
  * Class PhantomJSDriver
  * @package Behat\Mink\Driver
  */
 class PhantomJSDriver extends BasePhantomJSDriver {
+  /** @var  bool */
+  protected $started;
 
   /**
-   * {@inheritdoc}
-   * @param Session $session
-   */
-  public function setSession(Session $session) {
-    $this->session = $session;
-  }
-
-  /**
-   * {@inheritdoc}
+   * Starts a session to be used by the driver client
    */
   public function start() {
-    if ($this->getRequest() === null) {
-      $this->request = $this->getPjsClient()->getMessageFactory()->createRequest();
-      $this->response = $this->getPjsClient()->getMessageFactory()->createResponse();
-    }
+    $this->browser = new Browser($this->getServer(), $this->getClient());
+    $this->started = true;
   }
 
   /**
-   * {@inheritdoc}
+   * Tells if the session is started or not
    * @return bool
    */
   public function isStarted() {
-    return ($this->getRequest() !== null && $this->getRequest() instanceof Request);
+    return $this->started;
   }
 
   /**
-   * @{inheritdoc}
+   * Stops the session completely, clean slate for the browser
+   * @return bool
    */
   public function stop() {
-    //TODO: If we need to we should CLEAR ALL COOKIES
-    $this->request = null;
-    $this->response = null;
-    $this->headers = null;
+    //TODO: for the moment until found otherwise we will just reset, meaning GOODBYE all cookies
+    return $this->reset();
   }
 
   /**
-   * {@inheritdoc}
+   * Clears the cookies in the browser, all of them
+   * @return bool
    */
   public function reset() {
-    //TODO: probably this needs to be revisited in the whole phantomjs way of working...
-    //This is a soft reset, while stop should be a hard reset
-    $this->stop();
+    echo $this->getBrowser()->clearCookies();
+    $this->started = false;
+    return true;
   }
 
   /**
-   * {@inheritdoc}
+   * Visits a given url
    * @param string $url
-   * @throws DriverException
-   * @return boolean
    */
   public function visit($url) {
-    try {
-      $request = $this->getRequest();
-      $response = $this->getResponse();
-
-      $request->setMethod("GET");
-      $request->setUrl($url);
-
-      $this->addHeadersToRequest();
-      $this->getPjsClient()->send($request, $response);
-      $this->addCookiesFromResponse();
-
-      if ($response->isRedirect()) {
-        return $this->visit($this->getRedirectUrl());
-      }
-
-      $this->createCrawlerFromResponse($this->getResponse());
-      return true;
-    } catch (\Exception $e) {
-      throw new DriverException("VISIT_EXCEPTION", -1, $e);
-    }
+    echo $this->browser->visit($url);
   }
 
   /**
-   * {@inheritdoc}
-   * @return string
-   */
-  public function getContent() {
-    return $this->response->getContent();
-  }
-
-  /**
-   * {@inheritdoc}
-   * @return array
-   */
-  public function getResponseHeaders() {
-    return $this->response->getHeaders();
-  }
-
-  /**
-   * {@inheritdoc}
-   * @param string $name
-   * @param string $value
-   */
-  public function setCookie($name, $value = null) {
-    $cookieHeader = sprintf("%s=%s;", $name, $value);
-    //TODO: handle null value as DELETING THE COOKIE
-    $this->addCookieToHeaders($cookieHeader);
-  }
-
-  /**
-   * {@inheritdoc}
-   * @return int
-   */
-  public function getStatusCode() {
-    return $this->response->getStatus();
-  }
-
-  /**
-   * {@inheritdoc}
+   * Gets the current url if any
    * @return string
    */
   public function getCurrentUrl() {
-    if ($this->response->isRedirect()) {
-      return $this->response->getRedirectUrl();
-    }
-    return $this->response->getUrl();
+    return $this->browser->currentUrl();
+  }
+
+  /**
+   * @return string
+   */
+  public function getContent() {
+    //TODO: check if this is what we need instead of getBody
+    return $this->browser->getSource();
   }
 
   /**
    * {@inheritdoc}
-   * @throws DriverException
    */
   public function reload() {
-    $this->visit($this->getCurrentUrl());
+    echo $this->browser->reload();
   }
 
   /**
-   * {@inheritdoc}
-   * @param string $name
-   * @param string $value
+   * Goes forward if possible
    */
-  public function setRequestHeader($name, $value) {
-    $this->headers[$name] = $value;
+  public function forward() {
+    echo $this->browser->goForward();
   }
 
   /**
-   * {@inheritdoc}
+   * Goes back if possible
+   */
+  public function back() {
+    echo $this->browser->goBack();
+  }
+
+  /**
+   * Sets the basic auth user and password
    * @param string $user
    * @param string $password
    */
   public function setBasicAuth($user, $password) {
-    $value = base64_encode(sprintf("%s:%s", $user, $password));
-    $this->headers["Authorization"] = sprintf("Basic $value");
+    echo $this->browser->setHttpAuth($user, $password);
+  }
+
+
+  /**
+   * Gets the current request response headers
+   * Should be called only after a request, other calls are undefined behaviour
+   * @return array
+   */
+  public function getResponseHeaders() {
+    //TODO: Check the output form of this response and fix it to suit the driver needs
+    return $this->browser->responseHeaders();
   }
 
   /**
-   * {@inheritdoc}
-   * @param string $xpath
+   * Current request status code response
+   * @return int
+   */
+  public function getStatusCode() {
+    return $this->browser->getStatusCode();
+  }
+
+  /**
+   * Sets a cookie on the browser, if null value then delete it
+   * @param string $name
+   * @param string $value
+   */
+  public function setCookie($name, $value = null) {
+    if ($value === null) {
+      $this->browser->removeCookie($name);
+    }
+    if ($value !== null) {
+      $cookie = array("name" => $name, "value" => $value, $this->getCurrentUrl());
+      $this->browser->setCookie($cookie);
+    }
+  }
+
+  /**
+   * Gets a cookie by its name if exists, else it will return null
+   * @param string $name
    * @return string
    */
-  public function getText($xpath) {
-    $text = $this->getFilteredCrawler($xpath)->text();
-    $text = str_replace("\n", ' ', $text);
-    $text = preg_replace('/ {2,}/', ' ', $text);
-
-    return trim($text);
+  public function getCookie($name) {
+    //TODO: Check if this works as expected
+    $cookies = $this->browser->cookies();
+    foreach ($cookies as $cookie) {
+      if ($cookie instanceof Cookie && strcmp($cookie->getName(), $name) === 0) {
+        return $cookie->getValue();
+      }
+    }
   }
 
   /**
-   * {@inheritdoc}
-   * @param string $xpath
+   * The name say its all
+   * @param string $name
+   * @param string $value
+   */
+  public function setRequestHeader($name, $value) {
+    $header = array("name" => $name, "value" => $value);
+    //TODO: as a limitation of the driver it self, we will send permanent for the moment
+    echo $this->browser->addHeader($header, true);
+  }
+
+  /**
+   * Returns the current page window name
+   * @return string
+   */
+  public function getWindowName() {
+    return $this->browser->windowName();
+  }
+
+  /**
+   * Executes a script on the browser
+   * @param string $script
+   */
+  public function executeScript($script) {
+    echo $this->browser->execute($script);
+  }
+
+  /**
+   * Evaluates a script and returns the result
+   * @param string $script
    * @return mixed
    */
-  public function getHtml($xpath) {
-    // cut the tag itself (making innerHTML out of outerHTML)
-    return preg_replace('/^\<[^\>]+\>|\<[^\>]+\>$/', '', $this->getOuterHtml($xpath));
+  public function evaluateScript($script) {
+    //TODO: check how this works..
+    return $this->browser->evaluate($script);
+  }
+
+
+  /**
+   * Given xpath, will try to get ALL the text, visible and not visible from such xpath
+   * @param string $xpath
+   * @return string
+   * @throws DriverException
+   */
+  public function getText($xpath) {
+    $elements = $this->findElement($xpath, 1);
+    //allText works only with ONE element so it will be the first one
+    return $this->browser->allText($elements["page_id"], $elements["ids"][0]);
   }
 
   /**
-   * {@inheritdoc}
+   * Returns the inner html of a given xpath
+   * @param string $xpath
+   * @return string
+   * @throws DriverException
+   */
+  public function getHtml($xpath) {
+    $elements = $this->findElement($xpath, 1);
+    //allText works only with ONE element so it will be the first one
+    return $this->browser->allHtml($elements["page_id"], $elements["ids"][0], "inner");
+  }
+
+  /**
+   * Gets the outer html of a given xpath
    * @param string $xpath
    * @return string
    * @throws DriverException
    */
   public function getOuterHtml($xpath) {
-    $node = $this->getCrawlerNode($this->getFilteredCrawler($xpath));
-
-    return $node->ownerDocument->saveXML($node);
+    $elements = $this->findElement($xpath, 1);
+    //allText works only with ONE element so it will be the first one
+    return $this->browser->allHtml($elements["page_id"], $elements["ids"][0], "outer");
   }
 
+
   /**
-   * {@inheritdoc}
+   * Gets the tag name of a given xpath
    * @param string $xpath
    * @return string
    * @throws DriverException
    */
   public function getTagName($xpath) {
-    return $this->getCrawlerNode($this->getFilteredCrawler($xpath))->nodeName;
+    $elements = $this->findElement($xpath, 1);
+    return $this->browser->tagName($elements["page_id"], $elements["ids"][0]);
   }
+
+  /**
+   * Clicks if possible on an element given by xpath
+   * @param string $xpath
+   * @return mixed
+   * @throws DriverException
+   */
+  public function click($xpath) {
+    //TODO: check the output of this
+    $elements = $this->findElement($xpath, 1);
+    echo $this->browser->click($elements["page_id"], $elements["ids"][0]);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  /**
+   * Double click on element found via xpath
+   * @param string $xpath
+   * @throws DriverException
+   */
+  public function doubleClick($xpath) {
+    //TODO: check the output of this
+    $elements = $this->findElement($xpath, 1);
+    echo $this->browser->doubleClick($elements["page_id"], $elements["ids"][0]);
+  }
+
+  /**
+   * Right click on element found via xpath
+   * @param string $xpath
+   * @throws DriverException
+   */
+  public function rightClick($xpath) {
+    //TODO: check the output of this
+    $elements = $this->findElement($xpath, 1);
+    echo $this->browser->rightClick($elements["page_id"], $elements["ids"][0]);
+  }
+
+  /**
+   * Gets the attribute value of a given element and name
+   * @param string $xpath
+   * @param string $name
+   * @return string
+   * @throws DriverException
+   */
+  public function getAttribute($xpath, $name) {
+    $elements = $this->findElement($xpath, 1);
+    return $this->browser->attribute($elements["page_id"], $elements["ids"][0], $name);
+  }
+
+
+  /**
+   * Returns the value of a given xpath element
+   * @param string $xpath
+   * @return string
+   * @throws DriverException
+   */
+  public function getValue($xpath) {
+    $elements = $this->findElement($xpath, 1);
+    return $this->browser->value($elements["page_id"], $elements["ids"][0]);
+  }
+
+  /**
+   * @param string $xpath
+   * @param string $value
+   * @throws DriverException
+   */
+  public function setValue($xpath, $value) {
+    $elements = $this->findElement($xpath, 1);
+    //TODO: Check the return of this stuff to add more error control
+    echo $this->browser->set($elements["page_id"], $elements["ids"][0], $value);
+  }
+
 
 }

@@ -5,10 +5,9 @@ namespace Behat\PhantomJSExtension\Driver;
 use Behat\Mink\Driver\CoreDriver;
 use Behat\Mink\Exception\DriverException;
 use Behat\Mink\Session;
-use JonnyW\PhantomJs\Client;
-use JonnyW\PhantomJs\Message\Request;
-use JonnyW\PhantomJs\Message\Response;
-use Symfony\Component\DomCrawler\Crawler;
+use Behat\PhantomJSExtension\Portergeist\Browser\Browser;
+use Behat\PhantomJSExtension\Portergeist\Client;
+use Behat\PhantomJSExtension\Portergeist\Server;
 
 /**
  * Class BasePhantomJSDriver
@@ -16,173 +15,85 @@ use Symfony\Component\DomCrawler\Crawler;
  */
 class BasePhantomJSDriver extends CoreDriver {
 
-  /** @var Request */
-  protected $request;
-  /** @var Client */
-  protected $pjsClient;
-  /** @var  Response */
-  protected $response;
-  /** @var   array */
-  protected $headers;
   /** @var  string */
-  protected $baseUrl;
-  /** @var  Crawler */
-  protected $crawler;
+  protected $binLocation;
+  /** @var  array */
+  protected $options;
   /** @var  Session */
   protected $session;
+  /** @var  Server */
+  protected $server;
+  /** @var  Client */
+  protected $client;
+  /** @var  Browser */
+  protected $browser;
 
   /**
    * @param string $binLocation Location of the phantomjs binary
-   * @param string $loaderLocation Location of the phantomjs loader
-   * @param string $baseUrl base url for request
+   * @param array  $options the options to start the phantomjs binary
    */
-  public function __construct($binLocation, $loaderLocation, $baseUrl) {
-    $this->request = null;
-    $this->headers = null;
-    $this->response = null;
-    $this->crawler = null;
-    $this->pjsClient = Client::getInstance();
-    $this->pjsClient->setPhantomJs($binLocation);
-    $this->pjsClient->setPhantomLoader($loaderLocation);
-    $this->baseUrl = $baseUrl;
+  public function __construct($binLocation, $options = array()) {
+    $this->binLocation = $binLocation;
+    $this->options = $options;
+    //Driver creation mean we need to have server and client ready for use
+    $this->server = Server::getInstance();
+    if ($this->getServer()->isStarted() !== true) {
+      $this->server->start();
+    } else {
+      echo "Server is already started, skipping...\n";
+    }
+    $this->client = Client::getInstance($this->server, array("path" => $this->binLocation));
+    if ($this->getClient()->isStarted() !== true) {
+      $this->getClient()->start();
+    } else {
+      echo "Client is already started, skipping...\n";
+    }
+    $this->browser = null;
+  }
+
+  /**
+   * Helper to find a node element given an xpath
+   * @param string $xpath
+   * @param int    $max
+   * @returns int
+   * @throws DriverException
+   */
+  protected function findElement($xpath, $max = 1) {
+    $elements = $this->browser->find("xpath", $xpath);
+    if (!isset($elements["page_id"]) || !isset($elements["ids"]) || count($elements["ids"]) !== $max) {
+      throw new DriverException("Failed to get text with given $xpath");
+    }
+    return $elements;
+  }
+
+  /**
+   * {@inheritdoc}
+   * @param Session $session
+   */
+  public function setSession(Session $session) {
+    $this->session = $session;
+  }
+
+  /**
+   * @return Browser
+   */
+  public function getBrowser() {
+    return $this->browser;
+  }
+
+  /**
+   * @return Server
+   */
+  public function getServer() {
+    return $this->server;
   }
 
   /**
    * @return Client
    */
-  protected function getPjsClient() {
-    return $this->pjsClient;
+  public function getClient() {
+    return $this->client;
   }
 
-  /**
-   * @return Crawler
-   */
-  protected function getCrawler() {
-    return $this->crawler;
-  }
-
-  /**
-   * @param Crawler $crawler
-   */
-  protected function setCrawler(Crawler $crawler) {
-    $this->crawler = $crawler;
-  }
-
-  /**
-   * @return Request
-   */
-  protected function getRequest() {
-    return $this->request;
-  }
-
-  /**
-   * @return Response
-   */
-  protected function getResponse() {
-    return $this->response;
-  }
-
-
-  /**
-   * Returns the redirect location since response->getRedirectUrl seems not to work..
-   * @return string
-   */
-  protected function getRedirectUrl() {
-    return trim($this->response->getHeader("Location"));
-  }
-
-  /**
-   * @param $cookieHeader
-   */
-  protected function addCookieToHeaders($cookieHeader) {
-    if (isset($this->headers["Cookie"])) {
-      $this->headers["Cookie"] = sprintf("%s %s", $this->headers["Cookie"], $cookieHeader);
-    } else {
-      $this->headers["Cookie"] = $cookieHeader;
-    }
-  }
-
-  /**
-   * If we have a response that sends cookies, we will add them to the headers we have
-   */
-  protected function addCookiesFromResponse() {
-    //TODO: Overlapping cookies, we should update them not just add another
-    $cookies = $this->response->getHeader("Set-Cookie");
-    if (!empty($cookies)) {
-      $regexp = "#^(([^=]+)=([^;]+))#";
-      if (preg_match($regexp, $cookies, $match) === 1) {
-        $cookie = "{$match[1]};";
-        $this->addCookieToHeaders($cookie);
-      }
-    }
-  }
-
-  /**
-   *  Adds the possible headers to the request
-   */
-  protected function addHeadersToRequest() {
-    //Header management
-    if ($this->headers !== null && count($this->headers) > 0) {
-      foreach ($this->headers as $headerName => $headerValue) {
-        $this->request->addHeader($headerName, $headerValue);
-      }
-    }
-  }
-
-  /**
-   * Creates a crawler from a given content response
-   * @param Response $response
-   */
-  protected function createCrawlerFromResponse(Response $response) {
-    $crawler = new Crawler();
-    $crawler->addContent($response->getContent(), $response->getContentType());
-    $this->setCrawler($crawler);
-  }
-
-  /**
-   * @param $xpath
-   * @return Crawler
-   * @throws DriverException
-   */
-  protected function getFilteredCrawler($xpath) {
-    if (!count($crawler = $this->getCrawler()->filterXPath($xpath))) {
-      throw new DriverException(sprintf('There is no element matching XPath "%s"', $xpath));
-    }
-
-    return $crawler;
-  }
-
-  /**
-   * @param Crawler $crawler
-   * @return object
-   * @throws DriverException
-   */
-  protected function getCrawlerNode(Crawler $crawler) {
-    $crawler->rewind();
-    $node = $crawler->current();
-
-    if (null !== $node) {
-      return $node;
-    }
-
-    throw new DriverException('The element does not exist');
-  }
-
-  /**
-   * {@inheritdoc}
-   * @param string $xpath
-   * @param string $name
-   * @return string
-   * @throws DriverException
-   */
-  public function getAttribute($xpath, $name) {
-    $node = $this->getFilteredCrawler($xpath);
-
-    if ($this->getCrawlerNode($node)->hasAttribute($name)) {
-      return $node->attr($name);
-    }
-
-    return null;
-  }
 
 }
