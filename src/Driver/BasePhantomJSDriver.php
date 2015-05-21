@@ -61,7 +61,7 @@ class BasePhantomJSDriver extends CoreDriver {
   protected function findElement($xpath, $max = 1) {
     $elements = $this->browser->find("xpath", $xpath);
     if (!isset($elements["page_id"]) || !isset($elements["ids"]) || count($elements["ids"]) !== $max) {
-      throw new DriverException("Failed to get text with given $xpath");
+      throw new DriverException("Failed to get elements with given $xpath");
     }
     return $elements;
   }

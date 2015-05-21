@@ -27,7 +27,8 @@
     "behat/mink-extension": "~2.0@dev",
     "cboden/ratchet": "~0.3",
     "textalk/websocket": "1.0.*",
-    "jakoch/phantomjs-installer": "1.9.7"
+    "jakoch/phantomjs-installer": "1.9.7",
+    "twig/twig": "~1.0"
   },
   "config": {
     "bin-dir": "bin"

@@ -19,8 +19,8 @@ class BrowserRender extends BrowserNetwork {
       }
     }
     if (!isset($options["full"])) {
-      //if not defined then we assume false
-      $options["full"] = false;
+      //if not defined then we assume true
+      $options["full"] = true;
     }
     return $options;
   }
@@ -38,13 +38,13 @@ class BrowserRender extends BrowserNetwork {
 
   /**
    * Renders base64 a page or selection to a file given by path
-   * @param       $path
-   * @param array $options
+   * @param string $imageFormat (PNG, GIF, JPEG)
+   * @param array  $options
    * @return mixed
    */
-  public function renderBase64($path, $options = array()) {
+  public function renderBase64($imageFormat, $options = array()) {
     $fixedOptions = $this->checkRenderOptions($options);
-    return $this->command('render_base64', $path, $fixedOptions["full"], $fixedOptions["selector"]);
+    return $this->command('render_base64', $imageFormat, $fixedOptions["full"], $fixedOptions["selector"]);
   }
 
   /**

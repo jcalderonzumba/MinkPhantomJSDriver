@@ -5,38 +5,10 @@ use Behat\PhantomJSExtension\Portergeist\Browser\Browser;
 
 require_once "../vendor/autoload.php";
 
-function stuff(Browser $browser) {
-  var_dump($browser->visit("http://ft.devsnt.com/"));
-  var_dump($browser->currentUrl());
-  $elements = $browser->find("xpath", '//*[@id="index_mobile"]/table/tbody/tr[1]');
-  $text = $browser->allHtml($elements["page_id"], $elements["ids"][0], "inner");
-  print_r($elements);
-  echo $text;
-  $text = $browser->allHtml($elements["page_id"], $elements["ids"][0], "outer");
-  echo $text;
-  var_dump($browser->visit("http://ft.devsnt.com/newad"));
-  var_dump($browser->currentUrl());
-  $elements = $browser->find("xpath", '//*[@id="no_telemarketers"]');
-  print_r($elements);
-  $data = $browser->attributes($elements["page_id"], $elements["ids"][0]);
-  print_r($data);
-  print_r($browser->tagName($elements["page_id"], $elements["ids"][0]));
+Twig_Autoloader::register();
 
-  $elements = $browser->find("xpath", '//*[@id="phone_hidden"]');
-  print_r($elements);
-  $data = $browser->attributes($elements["page_id"], $elements["ids"][0]);
-  print_r($data);
-  var_dump($browser->setAttribute($elements["page_id"], $elements["ids"][0], "checked", "checked"));
-  $elements = $browser->find("xpath", '//*[@id="phone_hidden"]');
-  print_r($elements);
-  $data = $browser->attributes($elements["page_id"], $elements["ids"][0]);
-  print_r($data);
-  var_dump($browser->removeAttribute($elements["page_id"], $elements["ids"][0], "checked"));
-  $elements = $browser->find("xpath", '//*[@id="phone_hidden"]');
-  print_r($elements);
-  $data = $browser->attributes($elements["page_id"], $elements["ids"][0]);
-  print_r($data);
-}
+$twigLoader = new Twig_Loader_Filesystem("/Users/juan/code/scm/pjsdriver/src/Resources/Script");
+$twigEnv = new Twig_Environment($twigLoader, array('cache' => '/tmp/jcalderonzumba/phantomjs', 'strict_variables' => true));
 
 $server = Server::getInstance();
 $server->start();
@@ -46,62 +18,20 @@ $browser = new Browser($server, $client);
 
 var_dump($browser->visit("https://www2.ekhanei.devsnt.com/ai/form/0"));
 var_dump($browser->currentUrl());
+$xpath = '//*[@id="category_group"]';
+$value = '2030';
 
-$javascript = <<<JAVASCRIPT
-(function () {
-  function getElement(xpath) {
-    var result;
-    result = document.evaluate('//*[@id="category_group"]', document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-    if (result.snapshotLength !== 1) {
-      return null;
-    }
-    return result.snapshotItem(0);
-  }
-
-  function isSelect(element) {
-    if (element === null) {
-      return false;
-    }
-    return (element.tagName.toLowerCase() == "select");
-  }
-
-  function isRadioInput(element) {
-    if (element === null) {
-      return false;
-    }
-    return ((element.tagName.toLowerCase() == "input") && element.getAttribute("type").toLowerCase() == "radio");
-  }
-
-  function doOptionSelect(element, value) {
-    var i;
-    for (i = 0; element.options.length; i++) {
-      if (element.options[i].value == value) {
-        element.selectedIndex = i;
-        return true;
-      }
-    }
-    return false;
-  }
-
-  var element = getElement("whatever");
-  if (!isSelect(element) && !isRadioInput(element)) {
-    return false;
-  }
-
-  if (isSelect(element)) {
-    return doOptionSelect(element, "2010");
-  }
-
-  if (isRadioInput(element)) {
-    return doRadioSelect(element, "2010");
-  }
-
-  return false;
-}());
-JAVASCRIPT;
-
+$template = $twigEnv->loadTemplate("select_option.js.twig");
+$javascript = $template->render(array("xpath" => $xpath, "value" => $value));
 var_dump($browser->evaluate($javascript));
+$options = array("full" => true, "selector" => null);
+$tmpDir = sys_get_temp_dir();
+$randomName = str_replace(".", "", str_replace(" ", "", microtime(false)));
+$filePath = sprintf("%s/phantomjs_driver_screenshot_%s.png", $tmpDir, $randomName);
+echo "$filePath\n\n";
+$base64Screenshot = $browser->render("/Users/juan/Downloads/ekhanei.png", $options);
 
+var_dump($browser->find("xpath", '//*[@id="wrapper"]/div/formfdsfadsf'));
 while (true) {
   sleep(10);
   echo "waiting stuff";

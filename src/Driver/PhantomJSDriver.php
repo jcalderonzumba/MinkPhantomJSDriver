@@ -2,6 +2,7 @@
 
 namespace Behat\PhantomJSExtension\Driver;
 
+use Behat\Mink\Element\NodeElement;
 use Behat\Mink\Exception\DriverException;
 use Behat\PhantomJSExtension\Portergeist\Browser\Browser;
 use Behat\PhantomJSExtension\Portergeist\Cookie;
@@ -399,5 +400,210 @@ class PhantomJSDriver extends BasePhantomJSDriver {
    * @throws DriverException
    */
   public function selectOption($xpath, $value, $multiple = false) {
+    throw new DriverException("Not yet done until everything else easier is done");
   }
+
+  /**
+   * Drags one element to another
+   * @param string $sourceXpath
+   * @param string $destinationXpath
+   * @throws DriverException
+   */
+  public function dragTo($sourceXpath, $destinationXpath) {
+    $sourceElement = $this->findElement($sourceXpath, 1);
+    $destinationElement = $this->findElement($destinationXpath, 1);
+    echo $this->browser->drag($sourceElement["page_id"], $sourceElement["ids"][0], $destinationElement["ids"][0]);
+  }
+
+  /**
+   * Upload a file to the browser
+   * @param string $xpath
+   * @param string $path
+   * @throws DriverException
+   */
+  public function attachFile($xpath, $path) {
+    if (!file_exists($path)) {
+      throw new DriverException("Wow there the file does not exist, you can not upload it");
+    }
+
+    if (($realPath = realpath($path)) === false) {
+      throw new DriverException("Wow there the file does not exist, you can not upload it");
+    }
+
+    $element = $this->findElement($xpath, 1);
+    echo $this->browser->selectFile($element["page_id"], $element["ids"][0], $realPath);
+  }
+
+  /**
+   * Returns the binary representation of the current page we are in
+   * @throws DriverException
+   * @return string
+   */
+  public function getScreenshot() {
+    $options = array("full" => true, "selector" => null);
+    //TODO: check why in the hell render_base64 does not work properly
+    //What i'm about to do is not cool but is the way to do it until the other stuff is fixed
+    $tmpDir = sys_get_temp_dir();
+    $randomName = str_replace(".", "", str_replace(" ", "", microtime(false)));
+    $filePath = sprintf("%s/phantomjs_driver_screenshot_%s.png", $tmpDir, $randomName);
+    $this->browser->render($filePath, $options);
+    //TODO: Maybe we should just not fail and render an empty image?
+    if (!file_exists($filePath) || @filesize($filePath) === false || @filesize($filePath) <= 0) {
+      throw new DriverException("Something happened during screenshot, bad stuff");
+    }
+    //now that we know the file exists and its size is greater than 0 bytes we assume all ok so we will just return the binary thing
+    if (($binaryScreenshot = file_get_contents($filePath)) === false) {
+      throw new DriverException("Something happened during screenshot, bad stuff");
+    }
+    return $binaryScreenshot;
+  }
+
+
+  /**
+   * Submits a form given an xpath selector
+   * @param string $xpath
+   * @throws DriverException
+   */
+  public function submitForm($xpath) {
+    $element = $this->findElement($xpath, 1);
+    $tagName = $this->browser->tagName($element["page_id"], $element["ids"][0]);
+    if (strcmp(strtolower($tagName), "form") !== 0) {
+      throw new DriverException("Can not submit something that is not a form");
+    }
+    echo $this->browser->trigger($element["page_id"], $element["ids"][0], "submit");
+  }
+
+  /**
+   * Return all the window handles currently present in phantomjs
+   * @return array
+   */
+  public function getWindowNames() {
+    return $this->browser->windowHandles();
+  }
+
+  /**
+   * Switches to window by name if possible
+   * @param $name
+   */
+  public function switchToWindow($name = null) {
+    if ($name === null) {
+      //Nothing to do, we stay on the window we are in
+      return;
+    }
+    //TODO: this stuff throws error on browser.js so check it when testing
+    echo $this->browser->switchToWindow($name);
+  }
+
+  /**
+   * Puts the browser control inside the IFRAME
+   * You own the control, make sure to go back to the parent calling this method with null
+   * @param string $name
+   */
+  public function switchToIFrame($name = null) {
+    //TODO: check response of the calls
+    if ($name === null) {
+      echo $this->browser->popFrame();
+      return;
+    }
+    echo $this->browser->pushFrame($name);
+  }
+
+  /**
+   * Resizing a window with specified size
+   * @param int    $width
+   * @param int    $height
+   * @param string $name
+   * @throws DriverException
+   */
+  public function resizeWindow($width, $height, $name = null) {
+    if ($name !== null) {
+      //TODO: add this on the phantomjs stuff
+      throw new DriverException("Resizing other window than the main one is not supported yet");
+    }
+    echo $this->browser->resize($width, $height);
+  }
+
+  /**
+   * Focus on an element
+   * @param string $xpath
+   * @throws DriverException
+   */
+  public function focus($xpath) {
+    $element = $this->findElement($xpath, 1);
+    echo $this->browser->trigger($element["page_id"], $element["ids"][0], "focus");
+  }
+
+  /**
+   * Blur on element
+   * @param string $xpath
+   * @throws DriverException
+   */
+  public function blur($xpath) {
+    $element = $this->findElement($xpath, 1);
+    echo $this->browser->trigger($element["page_id"], $element["ids"][0], "blur");
+  }
+
+  /**
+   * Generates a mouseover event on the given element by xpath
+   * @param string $xpath
+   * @throws DriverException
+   */
+  public function mouseOver($xpath) {
+    $element = $this->findElement($xpath, 1);
+    echo $this->browser->trigger($element["page_id"], $element["ids"][0], "mouseover");
+  }
+
+
+  /**
+   * Waits some time or until JS condition turns true.
+   *
+   * @param integer $timeout timeout in milliseconds
+   * @param string  $condition JS condition
+   * @return boolean
+   * @throws DriverException                  When the operation cannot be done
+   */
+  public function wait($timeout, $condition) {
+    //TODO: test this implementation, if needed add wrappers
+    $start = microtime(true);
+    $end = $start + $timeout / 1000.0;
+    do {
+      $result = $this->browser->evaluate($condition);
+      usleep(100000);
+    } while (microtime(true) < $end && !$result);
+
+    return (bool)$result;
+  }
+
+  /**
+   * @param string $xpath
+   * @param string $char
+   * @param string $modifier
+   * @throws DriverException
+   */
+  public function keyPress($xpath, $char, $modifier = null) {
+    //TODO: implement the modifier support
+    if ($modifier !== null) {
+      throw new DriverException("Modifier support for keypress is not yet developed");
+    }
+    $element = $this->findElement($xpath, 1);
+    echo $this->browser->sendKeys($element["page_id"], $element["ids"][0], array($char));
+  }
+
+  /**
+   * Finds elements with specified XPath query.
+   * @param string $xpath
+   * @return NodeElement[]
+   * @throws DriverException                  When the operation cannot be done
+   */
+  public function find($xpath) {
+    $elements = $this->browser->find("xpath", $xpath);
+    $nodeElements = array();
+    foreach ($elements["ids"] as $i => $id) {
+      if (!empty($id)) {
+        $nodeElements[] = new NodeElement(sprintf('(%s)[%d]', $xpath, $i + 1), $this->session);
+      }
+    }
+    return $nodeElements;
+  }
+
 }

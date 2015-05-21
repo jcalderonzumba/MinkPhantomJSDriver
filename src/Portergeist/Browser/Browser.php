@@ -256,12 +256,25 @@ class Browser extends BrowserWindow {
   }
 
   /**
-   * @param $handle
+   * Back to the parent of the iframe if possible
    * @return mixed
+   * @throws \Behat\PhantomJSExtension\Portergeist\Exception\BrowserError
+   * @throws \Exception
    */
-  public function withinFrame($handle) {
-    //TODO: recheck this stuff as i'm not sure how it works
-    return false;
+  public function popFrame() {
+    return $this->command("pop_frame");
+  }
+
+  /**
+   * Goes into the iframe to do stuff
+   * @param string $name
+   * @param int    $timeout
+   * @return mixed
+   * @throws \Behat\PhantomJSExtension\Portergeist\Exception\BrowserError
+   * @throws \Exception
+   */
+  public function pushFrame($name, $timeout = null) {
+    return $this->command("push_frame", $name, $timeout);
   }
 
   /**
@@ -335,9 +348,9 @@ class Browser extends BrowserWindow {
 
   /**
    * TODO: not sure what this does, needs to do normalizeKeys
-   * @param $pageId
-   * @param $elementId
-   * @param $keys
+   * @param int   $pageId
+   * @param int   $elementId
+   * @param array $keys
    * @return mixed
    */
   public function sendKeys($pageId, $elementId, $keys) {
