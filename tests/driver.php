@@ -1,15 +1,38 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: juan
- * Date: 11/05/15
- * Time: 17:48
- */
+use Behat\PhantomJSExtension\Portergeist\Server;
+use Behat\PhantomJSExtension\Portergeist\Client;
+use Behat\PhantomJSExtension\Portergeist\Browser\Browser;
 
 require_once "../vendor/autoload.php";
 
-$pjsDriver = new \Behat\Mink\Driver\PhantomJSDriver();
+Twig_Autoloader::register();
 
-$pjsDriver->start();
-$pjsDriver->visit("http://www.google.es");
-echo $pjsDriver->getContent();
+$twigLoader = new Twig_Loader_Filesystem("/Users/juan/code/scm/pjsdriver/src/Resources/Script");
+$twigEnv = new Twig_Environment($twigLoader, array('cache' => '/tmp/jcalderonzumba/phantomjs', 'strict_variables' => true));
+
+$server = Server::getInstance();
+$server->start();
+$client = Client::getInstance($server, array("path" => "/Users/juan/code/scm/pjsdriver/bin/phantomjs"));
+$client->start();
+$browser = new Browser($server, $client);
+
+var_dump($browser->visit("https://www2.ekhanei.devsnt.com/ai/form/0"));
+var_dump($browser->currentUrl());
+$xpath = '//*[@id="category_group"]';
+$value = '2030';
+
+$template = $twigEnv->loadTemplate("select_option.js.twig");
+$javascript = $template->render(array("xpath" => $xpath, "value" => $value));
+var_dump($browser->evaluate($javascript));
+$options = array("full" => true, "selector" => null);
+$tmpDir = sys_get_temp_dir();
+$randomName = str_replace(".", "", str_replace(" ", "", microtime(false)));
+$filePath = sprintf("%s/phantomjs_driver_screenshot_%s.png", $tmpDir, $randomName);
+echo "$filePath\n\n";
+$base64Screenshot = $browser->render("/Users/juan/Downloads/ekhanei.png", $options);
+
+var_dump($browser->find("xpath", '//*[@id="wrapper"]/div/formfdsfadsf'));
+while (true) {
+  sleep(10);
+  echo "waiting stuff";
+}

@@ -23,14 +23,22 @@
     "php": ">=5.3.1",
     "behat/mink": "~1.6",
     "symfony/process": "~2.1",
-    "jonnyw/php-phantomjs": "~3.1"
+    "symfony/dom-crawler": "~2.0",
+    "behat/mink-extension": "~2.0@dev",
+    "cboden/ratchet": "~0.3",
+    "textalk/websocket": "1.0.*",
+    "jakoch/phantomjs-installer": "1.9.7",
+    "twig/twig": "~1.0"
   },
   "config": {
     "bin-dir": "bin"
   },
+  "bin": [
+    "bin/wsserver"
+  ],
   "autoload": {
     "psr-4": {
-      "Behat\\Mink\\Driver\\": "src/"
+      "Behat\\PhantomJSExtension\\": "src/"
     }
   },
 
