@@ -156,8 +156,8 @@ class Client {
    */
   public function getCommand() {
     $command = $this->getPhantomJSPath();
-    $command .= " " . implode(" ", $this->getPhantomJSOptions());
-    $command .= " --ssl-protocol=any --ignore-ssl-errors=true " . $this->getPhantomJSScript();
+    $command .= " " . $this->getPhantomJSOptions();
+    $command .= " " . $this->getPhantomJSScript();
     //Starting from this point this are the arguments for the script not for the binary itself
     $command .= " " . $this->getServer()->getFixedPort();
     $command .= " " . implode(" ", $this->getWindowSize());
@@ -179,11 +179,24 @@ class Client {
   }
 
   /**
+   * Returns the phantomjs options in a single line to be used in command line mode
    * @return array
    */
   public function getPhantomJSOptions() {
-    //TODO: crete proper options for phantomjs
-    return $this->phantomJSOptions;
+    //TODO: add control so options can only be the ones that phantomjs supports else throw Exception
+    //Setting up default things
+    if (!isset($this->phantomJSOptions["ssl-protocol"])) {
+      $this->phantomJSOptions["ssl-protocol"] = "any";
+    }
+    if (!isset($this->phantomJSOptions["ignore-ssl-errors"])) {
+      $this->phantomJSOptions["ignore-ssl-errors"] = "true";
+    }
+
+    $strOption = "";
+    foreach ($this->phantomJSOptions as $option => $value) {
+      $strOption .= sprintf(" --%s=%s", $option, $value);
+    }
+    return $strOption;
   }
 
   /**
