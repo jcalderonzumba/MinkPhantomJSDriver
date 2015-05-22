@@ -28,36 +28,46 @@ class Server {
   protected $wsClient;
   /** @var  bool */
   protected $started;
+  /** @var  string */
+  protected $serverPath;
 
   /** @var Server */
   private static $instance = null;
 
   /**
    * Singleton pattern because a server is a server you can only create it ONCE
-   * @param int $fixedPort
-   * @param int $timeout
+   * @param string $serverPath
+   * @param int    $fixedPort
+   * @param int    $timeout
+   * @throws \Exception
    * @return Server
    */
-  public static function getInstance($fixedPort = null, $timeout = null) {
+  public static function getInstance($serverPath, $fixedPort = null, $timeout = null) {
+    if (!file_exists($serverPath)) {
+      throw new \Exception("Server startup script does not exists");
+    }
     if (null === self::$instance) {
-      self::$instance = new self($fixedPort, $timeout);
+      self::$instance = new self($serverPath, $fixedPort, $timeout);
     }
     return self::$instance;
   }
 
   /**
-   * @param int $fixedPort
-   * @param int $timeout
+   * @param string $serverPath
+   * @param int    $fixedPort
+   * @param int    $timeout
    */
-  private function __construct($fixedPort = null, $timeout = null) {
+  private function __construct($serverPath, $fixedPort = null, $timeout = null) {
     $this->fixedPort = ($fixedPort === null) ? Server::DEFAULT_PORT : $fixedPort;
     $this->timeout = ($timeout === null) ? Server::BIND_TIMEOUT : $timeout;
+    $this->serverPath = $serverPath;
     $this->wsClient = null;
     $this->thread = null;
     $this->started = false;
   }
 
   /**
+   * Sends a message to the WebSocket server for those clients listening
    * @param string $message
    * @return mixed
    */
@@ -123,7 +133,7 @@ class Server {
    * @return bool
    */
   public function start() {
-    $command = "php /Users/juan/code/scm/pjsdriver/bin/wsserver {$this->getFixedPort()}";
+    $command = "php {$this->getServerPath()} {$this->getFixedPort()}";
     $this->thread = new Thread($command);
     if ($this->waitForServer() !== true) {
       throw new \Exception("Something bad happened could not start Websocket server");
@@ -184,4 +194,10 @@ class Server {
     return $this->started;
   }
 
+  /**
+   * @return string
+   */
+  public function getServerPath() {
+    return $this->serverPath;
+  }
 }
