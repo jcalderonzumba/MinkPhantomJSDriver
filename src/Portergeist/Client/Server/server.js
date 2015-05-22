@@ -1,8 +1,9 @@
 Poltergeist.Server = (function () {
 
-  function Server(port) {
+  function Server(owner, port) {
     this.server = require('webserver').create();
     this.port = port;
+    this.owner = owner;
     this.webServer = null;
   }
 
@@ -61,7 +62,7 @@ Poltergeist.Server = (function () {
       return this.sendError(response, 400, "JSON data invalid error: " + parseError.message);
     }
 
-    return this.send(response, commandData);
+    return this.owner.serverRunCommand(commandData, response);
   };
 
   return Server;

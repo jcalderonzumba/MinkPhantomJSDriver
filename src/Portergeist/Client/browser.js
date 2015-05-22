@@ -51,28 +51,11 @@ Poltergeist.Browser = (function () {
     })[0];
   };
 
-  Browser.prototype.runCommand = function (name, args) {
-    this.currentPage.state = 'default';
-    return this[name].apply(this, args);
-  };
-
   Browser.prototype.debug = function (message) {
     if (this._debug) {
       return console.log("poltergeist [" + (new Date().getTime()) + "] " + message);
     }
   };
-
-  Browser.prototype.sendResponse = function (response) {
-    var errors;
-    errors = this.currentPage.errors;
-    this.currentPage.clearErrors();
-    if (errors.length > 0 && this.js_errors) {
-      return this.owner.sendError(new Poltergeist.JavascriptError(errors));
-    } else {
-      return this.owner.sendResponse(response);
-    }
-  };
-
 
   Browser.prototype.node = function (page_id, id) {
     if (this.currentPage.id === page_id) {
@@ -494,7 +477,6 @@ Poltergeist.Browser = (function () {
     return this.serverSendResponse(true, serverResponse);
   };
 
-
   /**
    * If inside a frame then we will go back to the parent
    * Not defined behaviour if you pop and are not inside an iframe
@@ -504,7 +486,6 @@ Poltergeist.Browser = (function () {
   Browser.prototype.pop_frame = function (serverResponse) {
     return this.serverSendResponse(this.currentPage.popFrame(), serverResponse);
   };
-
 
   /**
    * Gets the window handle id by a given window name
@@ -561,7 +542,6 @@ Poltergeist.Browser = (function () {
       throw new Poltergeist.NoSuchWindowError;
     }
   };
-
 
   /**
    * Opens a new window where we can do stuff
@@ -663,7 +643,6 @@ Poltergeist.Browser = (function () {
   Browser.prototype.hover = function (serverResponse, page_id, id) {
     return this.mouse_event(serverResponse, page_id, id, 'mousemove');
   };
-
 
   /**
    * Triggers a mouse click event on the given coordinates
@@ -1108,10 +1087,10 @@ Poltergeist.Browser = (function () {
     var commandName = command.name;
     var commandArgs = command.args;
     this.currentPage.state = 'default';
-
+    var commandData = [serverResponse].concat(commandArgs);
     if (typeof this[commandName] === "function") {
       //TODO: check this stuff i'm not quite sure about it
-      return this[commandName].apply(this, [serverResponse, commandArgs]);
+      return this[commandName].apply(this, commandData);
     } else {
       //We can not run such command
       throw new Poltergeist.Error();

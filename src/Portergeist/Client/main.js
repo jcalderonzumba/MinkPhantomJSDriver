@@ -22,7 +22,6 @@ phantom.injectJs("" + phantom.libraryPath + "/Server/server.js");
 
 phantom.injectJs("" + phantom.libraryPath + "/web_page.js");
 phantom.injectJs("" + phantom.libraryPath + "/node.js");
-phantom.injectJs("" + phantom.libraryPath + "/connection.js");
 phantom.injectJs("" + phantom.libraryPath + "/browser.js");
 
 system = require('system');

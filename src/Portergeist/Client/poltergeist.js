@@ -1,15 +1,14 @@
 Poltergeist = (function () {
   function Poltergeist(port, width, height) {
-    var that;
+    var self;
     this.browser = new Poltergeist.Browser(this, width, height);
-    this.connection = new Poltergeist.Connection(this, port);
 
-    this.commandServer = new Poltergeist.Server(6085);
+    this.commandServer = new Poltergeist.Server(this, port);
     this.commandServer.start();
 
-    that = this;
+    self = this;
     phantom.onError = function (message, stack) {
-      return that.onError(message, stack);
+      return self.onError(message, stack);
     };
     this.running = false;
   }
@@ -24,7 +23,7 @@ Poltergeist = (function () {
    * @return {boolean}
    */
   Poltergeist.prototype.serverRunCommand = function (command, serverResponse) {
-    var error, commandResponse;
+    var error;
     this.running = true;
     try {
       return this.browser.serverRunCommand(command, serverResponse);
@@ -67,45 +66,7 @@ Poltergeist = (function () {
   //SERVER COMMAND RUNNING END
 
 
-  Poltergeist.prototype.runCommand = function (command) {
-    var error;
-    this.running = true;
-    try {
-      return this.browser.runCommand(command.name, command.args);
-    } catch (_error) {
-      error = _error;
-      if (error instanceof Poltergeist.Error) {
-        return this.sendError(error);
-      } else {
-        return this.sendError(new Poltergeist.BrowserError(error.toString(), error.stack));
-      }
-    }
-  };
-
-  Poltergeist.prototype.sendResponse = function (response) {
-    return this.send({
-      response: response
-    });
-  };
-
-  Poltergeist.prototype.sendError = function (error) {
-    return this.send({
-      error: {
-        name: error.name || 'Generic',
-        args: error.args && error.args() || [error.toString()]
-      }
-    });
-  };
-
-  Poltergeist.prototype.send = function (data) {
-    if (this.running) {
-      this.connection.send(data);
-      return this.running = false;
-    }
-  };
-
   return Poltergeist;
-
 })();
 
 window.Poltergeist = Poltergeist;
