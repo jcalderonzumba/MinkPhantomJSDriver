@@ -55,7 +55,7 @@ Poltergeist.Server = (function () {
     if (request.method !== "POST") {
       return this.sendError(response, 405, "Only POST method is allowed in the service");
     }
-
+    console.log(JSON.stringify(request, null, 4));
     try {
       commandData = JSON.parse(request.post);
     } catch (parseError) {

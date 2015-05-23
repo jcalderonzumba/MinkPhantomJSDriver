@@ -2,9 +2,6 @@
 
 namespace Behat\PhantomJSExtension\Portergeist\Browser;
 
-use Behat\PhantomJSExtension\Portergeist\Client;
-use Behat\PhantomJSExtension\Portergeist\Server;
-
 /**
  * Class Browser
  * @package Behat\PhantomJSExtension\Portergeist
@@ -12,15 +9,14 @@ use Behat\PhantomJSExtension\Portergeist\Server;
 class Browser extends BrowserWindow {
 
   /**
-   * @param Server $server
-   * @param Client $client
+   * @param string $phantomJSHost
    * @param mixed  $logger
    */
-  public function __construct(Server $server, Client $client, $logger = null) {
-    $this->server = $server;
-    $this->client = $client;
+  public function __construct($phantomJSHost, $logger = null) {
+    $this->phantomJSHost = $phantomJSHost;
     $this->logger = $logger;
     $this->debug = false;
+    $this->createApiClient();
   }
 
   /**
