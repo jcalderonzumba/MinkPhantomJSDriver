@@ -9,17 +9,9 @@ Twig_Autoloader::register();
 
 $twigLoader = new Twig_Loader_Filesystem("/Users/juan/code/scm/pjsdriver/src/Resources/Script");
 $twigEnv = new Twig_Environment($twigLoader, array('cache' => '/tmp/jcalderonzumba/phantomjs', 'strict_variables' => true));
+$browser = new Browser("http://127.0.0.1:8510/");
 
-$server = Server::getInstance("/Users/juan/code/scm/pjsdriver/bin/wsserver");
-$server->start();
-$client = Client::getInstance($server, array("path" => "/Users/juan/code/scm/pjsdriver/bin/phantomjs"));
-$client->start();
-$browser = new Browser($server, $client);
-while (true) {
-  sleep(10);
-  echo "waiting stuff";
-}
-
+var_dump($browser->currentUrl());
 var_dump($browser->visit("https://www2.ekhanei.com/ai/form/0"));
 var_dump($browser->currentUrl());
 $xpath = '//*[@id="category_group"]';
