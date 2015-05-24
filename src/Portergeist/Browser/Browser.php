@@ -8,6 +8,7 @@ namespace Behat\PhantomJSExtension\Portergeist\Browser;
  */
 class Browser extends BrowserBase {
 
+  use BrowserAuthenticationTrait;
   use BrowserConfigurationTrait;
   use BrowserCookieTrait;
   use BrowserFileTrait;
