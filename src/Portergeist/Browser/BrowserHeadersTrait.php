@@ -3,10 +3,10 @@
 namespace Behat\PhantomJSExtension\Portergeist\Browser;
 
 /**
- * Class BrowserHeaders
+ * Trait BrowserHeadersTrait
  * @package Behat\PhantomJSExtension\Portergeist\Browser
  */
-class BrowserHeaders extends BrowserNavigate {
+trait BrowserHeadersTrait {
   /**
    * Returns the headers of the current page
    * @return mixed

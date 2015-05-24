@@ -20,8 +20,20 @@ class BrowserBase {
   /** @var  Client */
   protected $apiClient;
 
+  /**
+   *  Creates an http client to consume the phantomjs API
+   */
   protected function createApiClient() {
     $this->apiClient = new Client(array("base_url" => $this->getPhantomJSHost()));
+  }
+
+  /**
+   * TODO: not sure how to do the normalizeKeys stuff fix when needed
+   * @param $keys
+   * @return mixed
+   */
+  protected function normalizeKeys($keys) {
+    return $keys;
   }
 
   /**
@@ -49,7 +61,7 @@ class BrowserBase {
    * Restarts the browser
    */
   public function restart() {
-    //TODO: check who can work properly if needed
+    //TODO: Do we really need to do this?, we are just a client
   }
 
   /**
@@ -71,6 +83,7 @@ class BrowserBase {
       throw $e;
     }
     if (isset($jsonResponse['error'])) {
+      //TODO: check that this actually works
       throw $this->getErrorClass($jsonResponse);
     }
     return $jsonResponse['response'];

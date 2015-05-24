@@ -3,10 +3,10 @@
 namespace Behat\PhantomJSExtension\Portergeist\Browser;
 
 /**
- * Class BrowserNetwork
+ * Trait BrowserNetworkTrait
  * @package Behat\PhantomJSExtension\Portergeist\Browser
  */
-class BrowserNetwork extends BrowserAuthentication {
+trait BrowserNetworkTrait{
   /**
    * TODO: yet to do the Request, Response objects that original poltergeist does
    * @return mixed

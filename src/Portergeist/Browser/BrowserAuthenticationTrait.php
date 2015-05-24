@@ -3,10 +3,10 @@
 namespace Behat\PhantomJSExtension\Portergeist\Browser;
 
 /**
- * Class BrowserAuthentication
+ * Trait BrowserAuthenticationTrait
  * @package Behat\PhantomJSExtension\Portergeist\Browser
  */
-class BrowserAuthentication extends BrowserHeaders {
+trait BrowserAuthenticationTrait {
   /**
    * Sets basic HTTP authentication
    * @param $user

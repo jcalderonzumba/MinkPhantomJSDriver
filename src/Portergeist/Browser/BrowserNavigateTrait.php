@@ -5,10 +5,10 @@ namespace Behat\PhantomJSExtension\Portergeist\Browser;
 use Behat\PhantomJSExtension\Portergeist\Exception\BrowserError;
 
 /**
- * Class BrowserNavigate
+ * Trait BrowserNavigateTrait
  * @package Behat\PhantomJSExtension\Portergeist\Browser
  */
-class BrowserNavigate extends BrowserCookie {
+trait BrowserNavigateTrait {
 
   /**
    * Send a visit command to the browser
