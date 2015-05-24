@@ -28,7 +28,8 @@
   },
   "require-dev": {
     "symfony/process": "~2.0",
-    "phpunit/phpunit": "~4.6"
+    "phpunit/phpunit": "~4.6",
+    "silex/silex": "~1.2"
   },
   "config": {
     "bin-dir": "bin"
