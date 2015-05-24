@@ -23,4 +23,24 @@ $app->get("/testCookiesAreNotEmpty/", function (Request $request) {
   return $testResponse;
 });
 
+$app->get("/basic-auth-required/", function (Request $request) {
+  $response = new Response();
+  if (!isset($_SERVER["PHP_AUTH_USER"]) || !isset($_SERVER["PHP_AUTH_PW"])) {
+    $response->headers->set("WWW-Authenticate", 'Basic realm="TEST_REALM"');
+    $response->setStatusCode(401);
+    $response->setContent("NOT_AUTHORIZED");
+    return $response;
+  }
+
+  if ($_SERVER["PHP_AUTH_USER"] != "test" || $_SERVER["PHP_AUTH_PW"] != "test") {
+    $response->setStatusCode(401);
+    $response->setContent("NOT_AUTHORIZED");
+    return $response;
+  }
+  $htmlContents = file_get_contents(sprintf("%s/static/auth_ok.html", __DIR__));
+  $response->setContent($htmlContents);
+  $response->setStatusCode(200);
+  return $response;
+});
+
 $app->run();
