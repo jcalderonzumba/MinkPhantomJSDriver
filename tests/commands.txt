@@ -6,13 +6,13 @@ all_text
 attribute
 attributes
 body
-clear_cookies
+clear_cookies           ---> TESTED
 clear_network_traffic
 click
 click_coordinates
 close_window
-cookies
-cookies_enabled
+cookies                 ---> TESTED
+cookies_enabled         ---> TESTED
 current_url             ---> TESTED
 delete_text
 disabled
@@ -24,8 +24,8 @@ execute
 find
 find_within
 get_headers
-go_back           ----> TESTED
-go_forward        ----> TESTED
+go_back                 ----> TESTED
+go_forward              ----> TESTED
 hover
 mouse_event
 network_traffic
@@ -33,9 +33,9 @@ open_new_window
 parents
 pop_frame
 push_frame
-reload              --->TESTED
+reload                  --->  TESTED
 remove_attribute
-remove_cookie
+remove_cookie           --->  TESTED
 render
 render_base64
 reset
@@ -50,7 +50,7 @@ serverRunCommand
 serverSendResponse
 set
 set_attribute
-set_cookie
+set_cookie              --->  TESTED
 set_debug
 set_headers
 set_http_auth
@@ -66,7 +66,7 @@ trigger
 value
 visible
 visible_text
-visit                 ---> TESTED
+visit                   ---> TESTED
 window_handle
 window_handles
 window_name

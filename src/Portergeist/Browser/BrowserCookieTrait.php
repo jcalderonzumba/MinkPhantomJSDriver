@@ -28,6 +28,7 @@ trait BrowserCookieTrait {
    * @return mixed
    */
   public function setCookie($cookie) {
+    //TODO: add error control when the cookie array is not valid
     if (isset($cookie["expires"])) {
       $cookie["expires"] = intval($cookie["expires"]) * 1000;
     }
