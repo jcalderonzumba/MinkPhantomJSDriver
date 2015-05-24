@@ -1023,14 +1023,14 @@ Poltergeist.Browser = (function () {
    */
   Browser.prototype.go_back = function (serverResponse) {
     var self = this;
-    if (this.currentPage.canGoBack) {
+    if (this.currentPage.canGoBack()) {
       this.currentPage.state = 'loading';
       this.currentPage.goBack();
       return this.currentPage.waitState('default', function () {
         return self.serverSendResponse(true, serverResponse);
       });
     } else {
-      return self.serverSendResponse(false, serverResponse);
+      return this.serverSendResponse(false, serverResponse);
     }
   };
 
@@ -1056,7 +1056,7 @@ Poltergeist.Browser = (function () {
    */
   Browser.prototype.go_forward = function (serverResponse) {
     var self = this;
-    if (this.currentPage.canGoForward) {
+    if (this.currentPage.canGoForward()) {
       this.currentPage.state = 'loading';
       this.currentPage.goForward();
       return this.currentPage.waitState('default', function () {

@@ -26,6 +26,10 @@
     "twig/twig": "~1.0",
     "guzzlehttp/guzzle": "~5.0"
   },
+  "require-dev": {
+    "symfony/process": "~2.0",
+    "phpunit/phpunit": "~4.6"
+  },
   "config": {
     "bin-dir": "bin"
   },
@@ -34,10 +38,9 @@
       "Behat\\PhantomJSExtension\\": "src/"
     }
   },
-
   "autoload-dev": {
     "psr-4": {
-      "Behat\\Mink\\Tests\\Driver\\": "tests"
+      "Behat\\PhantomJSExtension\\Tests\\": "tests/"
     }
   },
   "extra": {
