@@ -18,9 +18,13 @@ Poltergeist.Browser = (function () {
   }
 
   Browser.prototype.resetPage = function () {
-    var _ref,
-      _this = this;
-    _ref = [0, []], this._counter = _ref[0], this.pages = _ref[1];
+    var _ref;
+    var self = this;
+
+    _ref = [0, []];
+    this._counter = _ref[0];
+    this.pages = _ref[1];
+
     if (this.page != null) {
       if (!this.page.closed) {
         if (this.page.currentUrl() !== 'about:blank') {
@@ -40,8 +44,8 @@ Poltergeist.Browser = (function () {
     return this.page.onPageCreated = function (newPage) {
       var page;
       page = new Poltergeist.WebPage(newPage);
-      page.handle = "" + (_this._counter++);
-      return _this.pages.push(page);
+      page.handle = "" + (self._counter++);
+      return self.pages.push(page);
     };
   };
 

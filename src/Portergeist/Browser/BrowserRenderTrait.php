@@ -3,10 +3,10 @@
 namespace Behat\PhantomJSExtension\Portergeist\Browser;
 
 /**
- * Class BrowserRender
+ * Trait BrowserRenderTrait
  * @package Behat\PhantomJSExtension\Portergeist\Browser
  */
-class BrowserRender extends BrowserNetwork {
+trait BrowserRenderTrait {
   /**
    * Check and fix render options
    * @param $options

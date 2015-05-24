@@ -5,10 +5,10 @@ namespace Behat\PhantomJSExtension\Portergeist\Browser;
 use Behat\PhantomJSExtension\Portergeist\Cookie;
 
 /**
- * Class BrowserCookie
+ * Trait BrowserCookieTrait
  * @package Behat\PhantomJSExtension\Portergeist\Browser
  */
-class BrowserCookie extends BrowserBase {
+trait BrowserCookieTrait {
   /**
    * Gets the cookies on the browser
    * @return array

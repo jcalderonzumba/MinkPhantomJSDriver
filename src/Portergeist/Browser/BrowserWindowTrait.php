@@ -3,12 +3,12 @@
 namespace Behat\PhantomJSExtension\Portergeist\Browser;
 
 /**
- * Class BrowserWindow
+ * Class BrowserWindowTrait
  * @package Behat\PhantomJSExtension\Portergeist\Browser
  */
-class BrowserWindow extends BrowserScript {
+trait BrowserWindowTrait {
   /**
-   * TODO: Don't know yet what this command does
+   * Returns the current window handle name in the browser
    * @return mixed
    */
   public function windowHandle() {
@@ -16,8 +16,8 @@ class BrowserWindow extends BrowserScript {
   }
 
   /**
-   * TODO: Don't know yet what this command does
-   * @return mixed
+   * Returns all the window handles present in the browser
+   * @return array
    */
   public function windowHandles() {
     return $this->command('window_handles');
@@ -50,15 +50,6 @@ class BrowserWindow extends BrowserScript {
   }
 
   /**
-   * TODO: Not sure how to use this stuff
-   * @param $windowName
-   * @return bool
-   */
-  public function withinWindow($windowName) {
-    return false;
-  }
-
-  /**
    * Gets the current request window name
    * @return string
    * @throws \Behat\PhantomJSExtension\Portergeist\Exception\BrowserError
@@ -67,4 +58,14 @@ class BrowserWindow extends BrowserScript {
   public function windowName() {
     return $this->command('window_name');
   }
+
+  /**
+   * Zoom factor for a web page
+   * @param $zoomFactor
+   * @return mixed
+   */
+  public function setZoomFactor($zoomFactor) {
+    return $this->command('set_zoom_factor', $zoomFactor);
+  }
+
 }

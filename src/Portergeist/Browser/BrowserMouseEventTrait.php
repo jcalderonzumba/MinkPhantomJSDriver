@@ -3,10 +3,10 @@
 namespace Behat\PhantomJSExtension\Portergeist\Browser;
 
 /**
- * Class BrowserMouseEvent
+ * Trait BrowserMouseEventTrait
  * @package Behat\PhantomJSExtension\Portergeist\Browser
  */
-class BrowserMouseEvent extends BrowserRender {
+trait BrowserMouseEventTrait {
   /**
    * Click on a given page and element
    * @param $pageId

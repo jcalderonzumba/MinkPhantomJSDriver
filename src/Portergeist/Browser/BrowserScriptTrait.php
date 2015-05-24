@@ -3,10 +3,10 @@
 namespace Behat\PhantomJSExtension\Portergeist\Browser;
 
 /**
- * Class BrowserScript
+ * Trait BrowserScriptTrait
  * @package Behat\PhantomJSExtension\Portergeist\Browser
  */
-class BrowserScript extends BrowserMouseEvent {
+trait BrowserScriptTrait {
   /**
    * Evaluates a script on the browser
    * @param $script
@@ -23,15 +23,6 @@ class BrowserScript extends BrowserMouseEvent {
    */
   public function execute($script) {
     return $this->command('execute', $script);
-  }
-
-  /**
-   * Set whether to fail or not on javascript errors found on the page
-   * @param bool $enabled
-   * @return bool
-   */
-  public function jsErrors($enabled = true) {
-    return $this->command('set_js_errors', $enabled);
   }
 
   /**
