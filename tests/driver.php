@@ -1,9 +1,17 @@
 <?php
-use Behat\PhantomJSExtension\Portergeist\Server;
-use Behat\PhantomJSExtension\Portergeist\Client;
 use Behat\PhantomJSExtension\Portergeist\Browser\Browser;
+use Behat\PhantomJSExtension\Tests\Server\LocalWebServer;
 
 require_once "../vendor/autoload.php";
+
+$server = LocalWebServer::getInstance();
+
+while (true) {
+  sleep(10);
+  echo "waiting stuff";
+}
+
+
 
 Twig_Autoloader::register();
 
