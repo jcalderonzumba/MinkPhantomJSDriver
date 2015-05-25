@@ -36,8 +36,8 @@ push_frame
 reload                  --->  TESTED
 remove_attribute
 remove_cookie           --->  TESTED
-render
-render_base64
+render                  --->  TESTED
+render_base64           --->  TESTED
 reset
 resize
 response_headers
@@ -53,7 +53,7 @@ set_attribute
 set_cookie              --->  TESTED
 set_debug
 set_headers
-set_http_auth
+set_http_auth           --->  TESTED
 set_js_errors
 set_paper_size
 set_zoom_factor

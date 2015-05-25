@@ -13,14 +13,21 @@ trait BrowserRenderTrait {
    * @return mixed
    */
   protected function checkRenderOptions($options) {
-    if (isset($options["full"]) && $options["full"] === true) {
-      if (isset($options["selector"])) {
+    //Default is full and no selection
+    if (count($options) === 0) {
+      $options["full"] = true;
+      $options["selector"] = null;
+    }
+
+    if (isset($options["full"]) && isset($options["selector"])) {
+      if ($options["full"]) {
+        //Whatever it is, full is more powerful than selection
         $options["selector"] = null;
       }
-    }
-    if (!isset($options["full"])) {
-      //if not defined then we assume true
-      $options["full"] = true;
+    } else {
+      if (!isset($options["full"]) && isset($options["selector"])) {
+        $options["full"] = false;
+      }
     }
     return $options;
   }
