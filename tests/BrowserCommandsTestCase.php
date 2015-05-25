@@ -9,16 +9,19 @@ use Behat\PhantomJSExtension\Portergeist\Browser\Browser;
  * @package Behat\PhantomJSExtension\Tests
  */
 class BrowserCommandsTestCase extends \PHPUnit_Framework_TestCase {
+
+  const LOCAL_SERVER_HOSTNAME = "127.0.0.1";
+  const LOCAL_SERVER_PORT = 6789;
+
   /** @var  Browser */
   protected $browser;
-
   /** @var  string */
   protected $testPageBaseUrl;
 
   protected function setUp() {
     $this->browser = new Browser("http://127.0.0.1:8510/");
     $this->browser->reset();
-    $this->testPageBaseUrl = "http://127.0.0.1:6789";
+    $this->testPageBaseUrl = sprintf("http://%s:%d", BrowserCommandsTestCase::LOCAL_SERVER_HOSTNAME, BrowserCommandsTestCase::LOCAL_SERVER_PORT);
   }
 
   /**
