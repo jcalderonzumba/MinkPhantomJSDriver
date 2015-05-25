@@ -8,7 +8,7 @@ namespace Behat\PhantomJSExtension\Portergeist\Browser;
  */
 trait BrowserHeadersTrait {
   /**
-   * Returns the headers of the current page
+   * Returns the headers of the current page that will be used the next request
    * @return mixed
    */
   public function getHeaders() {
@@ -16,7 +16,7 @@ trait BrowserHeadersTrait {
   }
 
   /**
-   * Given an array of headers, set such headers on the current page state
+   * Given an array of headers, set such headers for the requests, removing all others
    * @param array $headers
    * @return mixed
    */
@@ -25,7 +25,7 @@ trait BrowserHeadersTrait {
   }
 
   /**
-   * Adds headers to current page overriding the existing ones
+   * Adds headers to current page overriding the existing ones for the next requests
    * @param $headers
    * @return mixed
    */
@@ -39,7 +39,7 @@ trait BrowserHeadersTrait {
    * @param $permanent
    * @return mixed
    */
-  public function addHeader($header, $permanent) {
+  public function addHeader($header, $permanent = false) {
     return $this->command('add_header', $header, $permanent);
   }
 
