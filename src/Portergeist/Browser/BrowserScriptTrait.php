@@ -28,11 +28,14 @@ trait BrowserScriptTrait {
   /**
    * Add desired extensions to phantomjs
    * @param $extensions
+   * @return bool
    */
   public function extensions($extensions) {
+    //TODO: add error control for when extensions do not exist physically
     foreach ($extensions as $extensionName) {
       $this->command('add_extension', $extensionName);
     }
+    return true;
   }
 
 }

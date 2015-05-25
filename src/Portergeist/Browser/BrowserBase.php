@@ -4,6 +4,7 @@ namespace Behat\PhantomJSExtension\Portergeist\Browser;
 
 use Behat\PhantomJSExtension\Portergeist\Exception\BrowserError;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Message\Response;
 
 /**
@@ -71,6 +72,7 @@ class BrowserBase {
    * @return mixed
    */
   public function command() {
+    $jsonResponse = "";
     try {
       $args = func_get_args();
       $commandName = $args[0];
@@ -79,11 +81,12 @@ class BrowserBase {
       /** @var $commandResponse  Response */
       $commandResponse = $this->getApiClient()->post("/api", array("body" => $messageToSend));
       $jsonResponse = $commandResponse->json(array("object" => false));
+    } catch (ServerException $e) {
+      $jsonResponse = json_decode($e->getResponse()->getBody()->getContents(), true);
     } catch (\Exception $e) {
       throw $e;
     }
     if (isset($jsonResponse['error'])) {
-      //TODO: check that this actually works
       throw $this->getErrorClass($jsonResponse);
     }
     return $jsonResponse['response'];
@@ -95,11 +98,11 @@ class BrowserBase {
    */
   protected function getErrorClass($error) {
     $errorClassMap = array(
-      'Poltergeist.JavascriptError'   => "JavascriptError",
-      'Poltergeist.FrameNotFound'     => "FrameNotFound",
-      'Poltergeist.InvalidSelector'   => "InvalidSelector",
-      'Poltergeist.StatusFailError'   => "StatusFailError",
-      'Poltergeist.NoSuchWindowError' => "NoSuchWindowError"
+      'Poltergeist.JavascriptError'   => "Behat\\PhantomJSExtension\\Portergeist\\Exception\\JavascriptError",
+      'Poltergeist.FrameNotFound'     => "Behat\\PhantomJSExtension\\Portergeist\\Exception\\FrameNotFound",
+      'Poltergeist.InvalidSelector'   => "Behat\\PhantomJSExtension\\Portergeist\\Exception\\InvalidSelector",
+      'Poltergeist.StatusFailError'   => "Behat\\PhantomJSExtension\\Portergeist\\Exception\\StatusFailError",
+      'Poltergeist.NoSuchWindowError' => "Behat\\PhantomJSExtension\\Portergeist\\Exception\\NoSuchWindowError"
     );
 
     if (isset($error['error']['name']) && isset($errorClassMap[$error["error"]["name"]])) {
