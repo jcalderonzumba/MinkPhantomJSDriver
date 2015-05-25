@@ -43,4 +43,12 @@ $app->get("/basic-auth-required/", function (Request $request) {
   return $response;
 });
 
+$app->get("/check-request-headers/", function (Request $request) {
+  $response = new Response();
+  $response->headers->set("Content-Type", "text/plain");
+  $response->setStatusCode(200);
+  $response->setContent(print_r($request->headers->all(), true));
+  return $response;
+});
+
 $app->run();

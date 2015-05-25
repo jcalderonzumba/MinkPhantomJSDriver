@@ -1,6 +1,6 @@
 add_extension
-add_header
-add_headers
+add_header              ---> TESTED
+add_headers             ---> TESTED
 all_html
 all_text
 attribute
@@ -40,7 +40,7 @@ render                  --->  TESTED
 render_base64           --->  TESTED
 reset
 resize
-response_headers
+response_headers        --->  TESTED
 right_click
 scroll_to
 select
@@ -52,7 +52,7 @@ set
 set_attribute
 set_cookie              --->  TESTED
 set_debug
-set_headers
+set_headers             --->  TESTED
 set_http_auth           --->  TESTED
 set_js_errors
 set_paper_size
