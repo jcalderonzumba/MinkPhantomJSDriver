@@ -31,7 +31,7 @@ class BrowserNavigateTest extends BrowserCommandsTestCase {
     $this->testBrowserVisit();
     //First visit still needs to be false
     $this->assertFalse($this->browser->goBack());
-    $this->visitUrl("http://www.juan.ec");
+    $this->visitUrl($this->getTestPageBaseUrl() . "/static/auth_ok.html");
     $this->assertTrue($this->browser->goBack());
     $this->assertEquals($this->getTestPageBaseUrl() . "/static/basic.html", $this->browser->currentUrl());
   }
@@ -42,10 +42,10 @@ class BrowserNavigateTest extends BrowserCommandsTestCase {
     $this->testBrowserVisit();
     //Still can not go forward
     $this->assertFalse($this->browser->goForward());
-    $this->visitUrl("http://www.juan.ec/");
+    $this->visitUrl($this->getTestPageBaseUrl() . "/static/auth_ok.html");
     //Now we can go back and forward
     $this->assertTrue($this->browser->goBack());
     $this->assertTrue($this->browser->goForward());
-    $this->assertEquals("http://www.juan.ec/", $this->browser->currentUrl());
+    $this->assertEquals($this->getTestPageBaseUrl() . "/static/auth_ok.html", $this->browser->currentUrl());
   }
 }
