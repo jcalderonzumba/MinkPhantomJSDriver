@@ -72,7 +72,6 @@ class BrowserBase {
    * @return mixed
    */
   public function command() {
-    $jsonResponse = "";
     try {
       $args = func_get_args();
       $commandName = $args[0];

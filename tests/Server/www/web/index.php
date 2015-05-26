@@ -5,6 +5,7 @@ use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Cookie;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 $filename = __DIR__ . preg_replace('#(\?.*)$#', '', $_SERVER['REQUEST_URI']);
 if (php_sapi_name() === 'cli-server' && is_file($filename)) {
@@ -56,7 +57,17 @@ $app->post("/check-post-request/", function (Request $request) {
   $response = new Response();
   $response->headers->set("Content-Type", "application/json");
   $response->setStatusCode(200);
-  $jsonResponse = json_encode($request->request->all());
+  $jsonResponse["post"] = $request->request->all();
+  $jsonResponse["get"] = $request->query->all();
+  if (count($request->files->all()) !== 0) {
+    /** @var $file \Symfony\Component\HttpFoundation\File\UploadedFile */
+    foreach ($request->files->all() as $file) {
+      if ($file instanceof UploadedFile) {
+        $jsonResponse["files"][$file->getClientOriginalName()] = array("file_name" => $file->getClientOriginalName(), "is_valid" => $file->isValid(), "mime_type" => $file->getMimeType());
+      }
+    }
+  }
+  $jsonResponse = json_encode($jsonResponse);
   $response->setContent($jsonResponse);
   return $response;
 });
