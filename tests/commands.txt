@@ -44,7 +44,7 @@ response_headers        --->  TESTED
 right_click
 scroll_to
 select
-select_file
+select_file             --->  TESTED
 send_keys
 serverRunCommand
 serverSendResponse
