@@ -10,7 +10,7 @@ clear_cookies           ---> TESTED
 clear_network_traffic
 click
 click_coordinates
-close_window
+close_window            ---> TESTED
 cookies                 ---> TESTED
 cookies_enabled         ---> TESTED
 current_url             ---> TESTED
@@ -29,7 +29,7 @@ go_forward              ----> TESTED
 hover
 mouse_event
 network_traffic
-open_new_window
+open_new_window         ----> TESTED
 parents
 pop_frame
 push_frame
@@ -59,7 +59,7 @@ set_paper_size
 set_zoom_factor
 source
 status_code
-switch_to_window
+switch_to_window        --->  TESTED
 tag_name
 title
 trigger
@@ -67,6 +67,6 @@ value
 visible
 visible_text
 visit                   ---> TESTED
-window_handle
-window_handles
-window_name
+window_handle           ---> TESTED
+window_handles          ---> TESTED
+window_name             ---> TESTED

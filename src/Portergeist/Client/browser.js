@@ -553,8 +553,7 @@ Poltergeist.Browser = (function () {
    * @return {*}
    */
   Browser.prototype.open_new_window = function (serverResponse) {
-    this.execute('window.open()');
-    return this.serverSendResponse(true, serverResponse);
+    return this.execute(serverResponse, 'window.open()');
   };
 
   /**
