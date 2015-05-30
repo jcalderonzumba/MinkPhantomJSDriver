@@ -2,18 +2,30 @@
 
 namespace Behat\PhantomJSExtension\Portergeist\Browser;
 
+use Behat\PhantomJSExtension\Portergeist\NetworkTraffic\Request;
+
 /**
  * Trait BrowserNetworkTrait
  * @package Behat\PhantomJSExtension\Portergeist\Browser
  */
-trait BrowserNetworkTrait{
+trait BrowserNetworkTrait {
   /**
-   * TODO: yet to do the Request, Response objects that original poltergeist does
-   * @return mixed
+   * Get all the network traffic that the page have created
+   * @return array
    */
   public function networkTraffic() {
     $networkTraffic = $this->command('network_traffic');
-    return $networkTraffic;
+    $requestTraffic = array();
+
+    if (count($networkTraffic) === 0) {
+      return null;
+    }
+
+    foreach ($networkTraffic as $traffic) {
+      $requestTraffic[] = new Request($traffic["request"], $traffic["responseParts"]);
+    }
+
+    return $requestTraffic;
   }
 
   /**
@@ -23,4 +35,5 @@ trait BrowserNetworkTrait{
   public function clearNetworkTraffic() {
     return $this->command('clear_network_traffic');
   }
+
 }

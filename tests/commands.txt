@@ -7,7 +7,7 @@ attribute
 attributes
 body                    ---> TESTED
 clear_cookies           ---> TESTED
-clear_network_traffic
+clear_network_traffic   ---> TESTED
 click
 click_coordinates
 close_window            ---> TESTED
@@ -28,7 +28,7 @@ go_back                 ----> TESTED
 go_forward              ----> TESTED
 hover
 mouse_event
-network_traffic
+network_traffic         ----> TESTED
 open_new_window         ----> TESTED
 parents
 pop_frame

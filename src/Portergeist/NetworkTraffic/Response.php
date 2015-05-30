@@ -6,6 +6,7 @@ namespace Behat\PhantomJSExtension\Portergeist\NetworkTraffic;
  * @package Behat\PhantomJSExtension\Portergeist\NetworkTraffic
  */
 class Response {
+  /** @var  array */
   protected $data;
 
   /**
@@ -44,7 +45,6 @@ class Response {
    * @return array
    */
   public function getHeaders() {
-    //TODO: Check if the data is actually an array, else make it array and see implications
     return $this->data['headers'];
   }
 
@@ -86,9 +86,11 @@ class Response {
    * @return \DateTime
    */
   public function getTime() {
-    if (isset($this->data['date'])) {
-      $responseTime = new \DateTime();
-      $responseTime->setTimestamp(strtotime($this->data['date']));
+    if (isset($this->data['time'])) {
+      $requestTime = new \DateTime();
+      //TODO: fix the microseconds to miliseconds
+      $requestTime->createFromFormat("Y-m-dTH:i:s.uZ", $this->data["time"]);
+      return $requestTime;
     }
     return null;
   }
