@@ -5,7 +5,7 @@ all_html
 all_text
 attribute
 attributes
-body
+body                    ---> TESTED
 clear_cookies           ---> TESTED
 clear_network_traffic
 click
@@ -38,7 +38,7 @@ remove_attribute
 remove_cookie           --->  TESTED
 render                  --->  TESTED
 render_base64           --->  TESTED
-reset
+reset                   --->  TESTED
 resize
 response_headers        --->  TESTED
 right_click
@@ -57,11 +57,11 @@ set_http_auth           --->  TESTED
 set_js_errors
 set_paper_size
 set_zoom_factor
-source
-status_code
+source                  --->  TESTED
+status_code             --->  TESTED
 switch_to_window        --->  TESTED
 tag_name
-title
+title                   --->  TESTED
 trigger
 value
 visible
