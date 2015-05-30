@@ -1,8 +1,6 @@
 <?php
 
-namespace Behat\PhantomJSExtension\Tests\Server;
-
-use Behat\PhantomJSExtension\Tests\BrowserCommandsTestCase;
+namespace Behat\PhantomJSExtension\Tests;
 
 /**
  * Class BrowserAuthenticationTest
@@ -16,7 +14,7 @@ class BrowserAuthenticationTest extends BrowserCommandsTestCase {
     $this->assertContains("NOT_AUTHORIZED", $this->browser->getBody());
   }
 
-  public function testAuthenticationSuccess(){
+  public function testAuthenticationSuccess() {
     $this->browser->setHttpAuth("test", "test");
     $this->visitUrl($this->getTestPageBaseUrl() . "/basic-auth-required/");
     $this->assertEquals(200, $this->browser->getStatusCode());

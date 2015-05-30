@@ -209,6 +209,9 @@ Poltergeist.Browser = (function () {
    * @return {*}
    */
   Browser.prototype.status_code = function (serverResponse) {
+    if (this.currentPage.statusCode === undefined || this.currentPage.statusCode === null) {
+      return this.owner.serverSendError(new Poltergeist.StatusFailError("status_code_error"), serverResponse);
+    }
     return this.serverSendResponse(this.currentPage.statusCode, serverResponse);
   };
 
