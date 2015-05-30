@@ -7,8 +7,11 @@ namespace Behat\PhantomJSExtension\Portergeist\NetworkTraffic;
  * @package Behat\PhantomJSExtension\Portergeist\NetworkTraffic
  */
 class Request {
+  /** @var array */
   protected $data;
+  /** @var array */
   protected $responseParts;
+
 
   /**
    * @param array $data
@@ -16,7 +19,23 @@ class Request {
    */
   public function __construct($data, $responseParts = null) {
     $this->data = $data;
-    $this->responseParts = $responseParts;
+    $this->responseParts = $this->createResponseParts($responseParts);
+  }
+
+  /**
+   * Creates an array of Response objects from a given response array
+   * @param $responseParts
+   * @return array
+   */
+  protected function createResponseParts($responseParts) {
+    if ($responseParts === null) {
+      return array();
+    }
+    $responses = array();
+    foreach ($responseParts as $responsePart) {
+      $responses[] = new Response($responsePart);
+    }
+    return $responses;
   }
 
   /**
@@ -64,9 +83,11 @@ class Request {
    * @return \DateTime
    */
   public function getTime() {
-    if (isset($this->data['date'])) {
+    if (isset($this->data['time'])) {
       $requestTime = new \DateTime();
-      $requestTime->setTimestamp(strtotime($this->data['date']));
+      //TODO: fix the microseconds to miliseconds
+      $requestTime->createFromFormat("Y-m-dTH:i:s.uZ", $this->data["time"]);
+      return $requestTime;
     }
     return null;
   }
