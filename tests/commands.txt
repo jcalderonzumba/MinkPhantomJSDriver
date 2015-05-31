@@ -21,9 +21,9 @@ drag
 equals
 evaluate
 execute
-find
-find_within
-get_headers
+find                    ----> TESTED
+find_within             ----> TESTED
+get_headers             ----> TESTED
 go_back                 ----> TESTED
 go_forward              ----> TESTED
 hover

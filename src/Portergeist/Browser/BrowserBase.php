@@ -101,7 +101,8 @@ class BrowserBase {
       'Poltergeist.FrameNotFound'     => "Behat\\PhantomJSExtension\\Portergeist\\Exception\\FrameNotFound",
       'Poltergeist.InvalidSelector'   => "Behat\\PhantomJSExtension\\Portergeist\\Exception\\InvalidSelector",
       'Poltergeist.StatusFailError'   => "Behat\\PhantomJSExtension\\Portergeist\\Exception\\StatusFailError",
-      'Poltergeist.NoSuchWindowError' => "Behat\\PhantomJSExtension\\Portergeist\\Exception\\NoSuchWindowError"
+      'Poltergeist.NoSuchWindowError' => "Behat\\PhantomJSExtension\\Portergeist\\Exception\\NoSuchWindowError",
+      'Poltergeist.ObsoleteNode'      => "Behat\\PhantomJSExtension\\Portergeist\\Exception\\ObsoleteNode"
     );
     if (isset($error['error']['name']) && isset($errorClassMap[$error["error"]["name"]])) {
       return new $errorClassMap[$error["error"]["name"]]($error);
