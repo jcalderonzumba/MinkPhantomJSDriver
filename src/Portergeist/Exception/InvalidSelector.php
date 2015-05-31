@@ -12,7 +12,7 @@ class InvalidSelector extends ClientError {
    * @return string
    */
   public function getMethod() {
-    return $this->response["args"][0];
+    return $this->response["error"]["args"][0];
   }
 
   /**
@@ -20,7 +20,7 @@ class InvalidSelector extends ClientError {
    * @return string
    */
   public function getSelector() {
-    return $this->response["args"][1];
+    return $this->response["error"]["args"][1];
   }
 
   /**

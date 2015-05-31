@@ -6,7 +6,7 @@ namespace Behat\PhantomJSExtension\Portergeist\Exception;
  * Class ObsoleteNode
  * @package Behat\PhantomJSExtension\Portergeist\Exception
  */
-class ObsoleteNode extends NodeError {
+class ObsoleteNode extends ClientError {
 
   /**
    * @return string
