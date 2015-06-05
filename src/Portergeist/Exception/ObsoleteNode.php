@@ -9,6 +9,14 @@ namespace Behat\PhantomJSExtension\Portergeist\Exception;
 class ObsoleteNode extends ClientError {
 
   /**
+   * @param array $response
+   */
+  public function __construct($response) {
+    parent::__construct($response);
+    $this->message = $this->message();
+  }
+
+  /**
    * @return string
    */
   public function message() {

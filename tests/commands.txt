@@ -1,8 +1,8 @@
 add_extension
 add_header              ---> TESTED
 add_headers             ---> TESTED
-all_html
-all_text
+all_html                ---> TESTED
+all_text                ---> TESTED
 attribute
 attributes
 body                    ---> TESTED
@@ -46,8 +46,8 @@ scroll_to
 select
 select_file             --->  TESTED
 send_keys
-serverRunCommand
-serverSendResponse
+serverRunCommand        --->  TESTED
+serverSendResponse      --->  TESTED
 set
 set_attribute
 set_cookie              --->  TESTED
@@ -65,7 +65,7 @@ title                   --->  TESTED
 trigger
 value
 visible
-visible_text
+visible_text            ---> TESTED
 visit                   ---> TESTED
 window_handle           ---> TESTED
 window_handles          ---> TESTED
