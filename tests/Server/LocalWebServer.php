@@ -35,6 +35,7 @@ class LocalWebServer {
         sleep(1);
       }
     }
+    echo "Local server ready to start testing...\n";
   }
 
   /**

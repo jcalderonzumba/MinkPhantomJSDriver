@@ -3,8 +3,8 @@ add_header              ---> TESTED
 add_headers             ---> TESTED
 all_html                ---> TESTED
 all_text                ---> TESTED
-attribute
-attributes
+attribute               ---> TESTED
+attributes              ---> TESTED
 body                    ---> TESTED
 clear_cookies           ---> TESTED
 clear_network_traffic   ---> TESTED
@@ -34,7 +34,7 @@ parents
 pop_frame
 push_frame
 reload                  --->  TESTED
-remove_attribute
+remove_attribute        --->  TESTED
 remove_cookie           --->  TESTED
 render                  --->  TESTED
 render_base64           --->  TESTED
@@ -49,7 +49,7 @@ send_keys
 serverRunCommand        --->  TESTED
 serverSendResponse      --->  TESTED
 set
-set_attribute
+set_attribute           --->  TESTED
 set_cookie              --->  TESTED
 set_debug
 set_headers             --->  TESTED
