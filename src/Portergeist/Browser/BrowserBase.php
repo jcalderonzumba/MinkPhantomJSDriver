@@ -3,7 +3,9 @@
 namespace Behat\PhantomJSExtension\Portergeist\Browser;
 
 use Behat\PhantomJSExtension\Portergeist\Exception\BrowserError;
+use Behat\PhantomJSExtension\Portergeist\Exception\DeadClient;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Message\Response;
 
@@ -82,12 +84,16 @@ class BrowserBase {
       $jsonResponse = $commandResponse->json(array("object" => false));
     } catch (ServerException $e) {
       $jsonResponse = json_decode($e->getResponse()->getBody()->getContents(), true);
+    } catch (ConnectException $e) {
+      throw new DeadClient($e->getMessage(), $e->getCode(), $e);
     } catch (\Exception $e) {
       throw $e;
     }
+
     if (isset($jsonResponse['error'])) {
       throw $this->getErrorClass($jsonResponse);
     }
+
     return $jsonResponse['response'];
   }
 
