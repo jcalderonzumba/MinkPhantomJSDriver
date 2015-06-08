@@ -10,11 +10,19 @@ namespace Behat\PhantomJSExtension\Portergeist\Exception;
 class BrowserError extends ClientError {
 
   /**
+   * @param array $response
+   */
+  public function __construct($response) {
+    parent::__construct($response);
+    $this->message = $this->message();
+  }
+
+  /**
    * Gets the name of the browser error
    * @return string
    */
   public function getName() {
-    return $this->response["name"];
+    return $this->response["error"]["name"];
   }
 
   /**
@@ -22,7 +30,7 @@ class BrowserError extends ClientError {
    */
   public function javascriptError() {
     //TODO: this need to be check, i don't know yet what comes in response
-    return new JSErrorItem($this->response["args"][0], $this->response["args"][1]);
+    return new JSErrorItem($this->response["error"]["args"][0], $this->response["error"]["args"][1]);
   }
 
   /**
@@ -31,7 +39,6 @@ class BrowserError extends ClientError {
    * @return string
    */
   public function message() {
-    return "There was an error inside the PhantomJS portion of Portergeist.
-            This is probably a bug, so please report it\n\n" . $this->javascriptError();
+    return "There was an error inside the PhantomJS portion of Portergeist.\nThis is probably a bug, so please report it:\n" . $this->javascriptError();
   }
 }

@@ -1,6 +1,7 @@
 <?php
 namespace Behat\PhantomJSExtension\Tests;
 
+use Behat\PhantomJSExtension\Portergeist\Exception\BrowserError;
 use Behat\PhantomJSExtension\Portergeist\Exception\InvalidSelector;
 
 /**
@@ -48,5 +49,42 @@ class BrowserPageFindTest extends BrowserCommandsTestCase {
     $this->browser->find("css", "#form_1014473");
     $withinElement = $this->browser->findWithin(1, 0, "css", "div");
     $this->assertCount(4, $withinElement);
+  }
+
+  public function testGetParents() {
+    $this->visitUrl($this->getTestPageBaseUrl() . "/test/standard_form/form.html");
+    $this->browser->find("xpath", '//*[@id="form_1014473"]');
+    $this->assertArraySubset(array(1, 2, 3), $this->browser->getParents(1, 0));
+  }
+
+  public function testTagName() {
+    $this->visitUrl($this->getTestPageBaseUrl() . "/test/standard_form/form.html");
+    $this->browser->find("xpath", '//*[@id="form_1014473"]');
+    $this->assertEquals("form", $this->browser->tagName(1, 0));
+  }
+
+  public function testEquals() {
+    $this->visitUrl($this->getTestPageBaseUrl() . "/test/standard_form/form.html");
+    try {
+      $this->browser->equals(1, 0, 1);
+    } catch (BrowserError $e) {
+    }
+    //TODO: equals method seems to be broken or i do not know how to use it
+  }
+
+  public function testIsVisible() {
+    $this->visitUrl($this->getTestPageBaseUrl() . "/static/basic.html");
+    $this->browser->find("xpath", '//*[@id="break"]');
+    $this->assertTrue($this->browser->isVisible(1, 0));
+    $this->browser->find("xpath", '/html/body/p[1]');
+    $this->assertFalse($this->browser->isVisible(1, 1));
+  }
+
+  public function testIsDisabled(){
+    $this->visitUrl($this->getTestPageBaseUrl() . "/static/basic.html");
+    $this->browser->find("xpath", '//*[@id="disabled_check"]');
+    $this->browser->find("xpath", '//*[@id="enabled_check"]');
+    $this->assertTrue($this->browser->isDisabled(1, 0));
+    $this->assertFalse($this->browser->isDisabled(1, 1));
   }
 }

@@ -62,13 +62,7 @@ class Browser extends BrowserBase {
    * @return bool
    */
   public function isVisible($pageId, $elementId) {
-    $response = $this->command('visible', $pageId, $elementId);
-    //TODO: Check whether we get ALWAYS a boolean, otherwise do transformations when needed
-    if (is_bool($response)) {
-      return $response;
-    }
-    //TODO: Until check is done we consider everything to be visible
-    return true;
+    return $this->command('visible', $pageId, $elementId);
   }
 
   /**
@@ -77,13 +71,7 @@ class Browser extends BrowserBase {
    * @return bool
    */
   public function isDisabled($pageId, $elementId) {
-    $response = $this->command('disabled', $pageId, $elementId);
-    //TODO: Check whether we get ALWAYS a boolean, otherwise do transformations when needed
-    if (is_bool($response)) {
-      return $response;
-    }
-    //TODO: Until check is done we consider everything NOT to be disabled
-    return false;
+    return $this->command('disabled', $pageId, $elementId);
   }
 
   /**
