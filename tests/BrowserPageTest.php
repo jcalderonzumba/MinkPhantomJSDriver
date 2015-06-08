@@ -32,11 +32,15 @@ class BrowserPageTest extends BrowserCommandsTestCase {
     $expectedDom = new \DOMDocument();
     $expectedDom->loadHTMLFile($htmlFile);
     $expectedDom->preserveWhiteSpace = false;
+    $expectedDom->formatOutput = true;
+
     $this->visitUrl($this->getTestPageBaseUrl() . "/static/basic.html");
     $pageDom = new \DOMDocument();
     $pageDom->loadHTML($this->browser->getBody());
     $pageDom->preserveWhiteSpace = false;
-    $this->assertXmlStringEqualsXmlString($expectedDom->saveHTML(), $pageDom->saveHTML());
+    $pageDom->formatOutput = true;
+
+    $this->assertXmlStringEqualsXmlString($pageDom->saveXML(), $expectedDom->saveXML());
   }
 
   public function testGetSourceNoPage() {
@@ -44,8 +48,19 @@ class BrowserPageTest extends BrowserCommandsTestCase {
   }
 
   public function testGetSourcePage() {
+    $htmlFile = sprintf("%s/Server/www/web/static/basic.html", realpath(__DIR__));
+    $expectedDom = new \DOMDocument();
+    $expectedDom->loadHTMLFile($htmlFile);
+    $expectedDom->preserveWhiteSpace = false;
+    $expectedDom->formatOutput = true;
+
     $this->visitUrl($this->getTestPageBaseUrl() . "/static/basic.html");
-    $this->assertXmlStringEqualsXmlFile(sprintf("%s/Server/www/web/static/basic.html", realpath(__DIR__)), $this->browser->getSource());
+    $pageDom = new \DOMDocument();
+    $pageDom->loadHTML($this->browser->getSource());
+    $pageDom->preserveWhiteSpace = false;
+    $pageDom->formatOutput = true;
+
+    $this->assertXmlStringEqualsXmlString($pageDom->saveXML(), $expectedDom->saveXML());
   }
 
   public function testGetTitle() {

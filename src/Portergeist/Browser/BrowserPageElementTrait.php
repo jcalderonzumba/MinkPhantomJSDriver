@@ -155,4 +155,14 @@ trait BrowserPageElementTrait {
   public function removeAttribute($pageId, $elementId, $name) {
     return $this->command('remove_attribute', $pageId, $elementId, $name);
   }
+
+  /**
+   * Checks if an element is visible or not
+   * @param $pageId
+   * @param $elementId
+   * @return boolean
+   */
+  public function isVisible($pageId, $elementId){
+    return $this->command("visible", $pageId, $elementId);
+  }
 }

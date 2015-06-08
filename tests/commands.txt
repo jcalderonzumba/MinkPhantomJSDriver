@@ -15,12 +15,12 @@ cookies                 ---> TESTED
 cookies_enabled         ---> TESTED
 current_url             ---> TESTED
 delete_text
-disabled
+disabled                ---> TESTED
 double_click
 drag
 equals
-evaluate
-execute
+evaluate                ----> TESTED
+execute                 ----> TESTED
 find                    ----> TESTED
 find_within             ----> TESTED
 get_headers             ----> TESTED
@@ -30,7 +30,7 @@ hover
 mouse_event
 network_traffic         ----> TESTED
 open_new_window         ----> TESTED
-parents
+parents                 ----> TESTED
 pop_frame
 push_frame
 reload                  --->  TESTED
@@ -60,11 +60,11 @@ set_zoom_factor
 source                  --->  TESTED
 status_code             --->  TESTED
 switch_to_window        --->  TESTED
-tag_name
+tag_name                --->  TESTED
 title                   --->  TESTED
-trigger
+trigger                 --->  TESTED
 value
-visible
+visible                 ---> TESTED
 visible_text            ---> TESTED
 visit                   ---> TESTED
 window_handle           ---> TESTED
