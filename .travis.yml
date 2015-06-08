@@ -10,9 +10,9 @@ cache:
     - $HOME/.composer/cache
 
 before_script:
+  - phantomjs --ssl-protocol=any --ignore-ssl-errors=true src/Portergeist/Client/main.js 8510 1024 768 2>&1 >> /dev/null &
   - composer self-update
   - composer install --no-interaction
-  - phantomjs --ssl-protocol=any --ignore-ssl-errors=true src/Portergeist/Client/main.js 8510 1024 768 2>&1 >> /dev/null &
 
 script:
   - bin/phpunit
