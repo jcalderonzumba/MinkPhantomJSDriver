@@ -47,9 +47,10 @@ $app->get("/basic-auth-required/", function (Request $request) {
 //Route used for header related test
 $app->get("/check-request-headers/", function (Request $request) {
   $response = new Response();
-  $response->headers->set("Content-Type", "text/plain");
+  $response->headers->set("Content-Type", "application/json");
   $response->setStatusCode(200);
-  $response->setContent(print_r($request->headers->all(), true));
+  $jsonResponse = json_encode($request->headers->all());
+  $response->setContent($jsonResponse);
   return $response;
 });
 

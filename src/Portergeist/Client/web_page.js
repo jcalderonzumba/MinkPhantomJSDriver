@@ -202,8 +202,22 @@ Poltergeist.WebPage = (function () {
   };
 
   WebPage.prototype.setHttpAuth = function (user, password) {
-    this["native"]().settings.userName = user;
-    return this["native"]().settings.password = password;
+    var allHeaders = this.getCustomHeaders();
+
+    if (user == false || password == false) {
+      if (allHeaders.hasOwnProperty("Authorization")) {
+        delete allHeaders["Authorization"];
+      }
+      this.setCustomHeaders(allHeaders);
+      return true;
+    }
+
+    var userName = user || "";
+    var userPassword = password || "";
+
+    allHeaders["Authorization"] = "Basic " + btoa(userName + ":" + userPassword);
+    this.setCustomHeaders(allHeaders);
+    return true;
   };
 
   WebPage.prototype.networkTraffic = function () {
@@ -403,6 +417,11 @@ Poltergeist.WebPage = (function () {
     } else {
       return potential_string;
     }
+  };
+
+  WebPage.prototype.executeScript = function (script) {
+    console.log(script);
+    return this["native"]().evaluateJavaScript(script);
   };
 
   WebPage.prototype.execute = function () {

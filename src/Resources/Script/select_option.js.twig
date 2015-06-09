@@ -1,78 +1,136 @@
 {% autoescape false %}
-(function (xpath, value) {
-function getElement(xpath) {
-var result;
-result = document.evaluate(xpath, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-if (result.snapshotLength !== 1) {
-return null;
-}
-return result.snapshotItem(0);
-}
+(function (xpath, value, multiple) {
 
-function isSelect(element) {
-if (element === null) {
-return false;
-}
-return (element.tagName.toLowerCase() == "select");
-}
+  function clickOnElement(element) {
+    // create a mouse click event
+    var event = document.createEvent('MouseEvents');
+    event.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
 
-function isRadioInput(element) {
-if (element === null) {
-return false;
-}
-return ((element.tagName.toLowerCase() == "input") && element.getAttribute("type").toLowerCase() == "radio");
-}
+    // send click to element
+    element.dispatchEvent(event);
 
-function doOptionSelect(element, value) {
-var i;
-for (i = 0; element.options.length; i++) {
-if (element.options[i].value == value) {
-element.selectedIndex = i;
-return true;
-}
-}
-return false;
-}
+    //After dispatching the event let's wait for 2 seconds at least...
+    return setTimeout(function () {
+    }, 2);
+  }
 
-function doRadioSelect(element, value) {
-if (element.value == value) {
-element.setAttribute("checked", "checked");
-return true;
-}
+  function deselectAllRadioOptions(element){
+    var formElements = element.form.elements;
+    for (i = 0; i < formElements.length; i++) {
+      radioElement = formElements[i];
+      if (radioElement.tagName.toLowerCase() == 'input' && radioElement.type.toLowerCase() == 'radio') {
+        radioElement.checked = false;
+      }
+    }
+  }
 
-var formElements = element.form.elements,
-name = element.getAttribute('name'), nodeElement;
+  function selectRadioValue(element, value) {
+    if (element.value === value) {
+      deselectAllRadioOptions(element);
+      clickOnElement(element);
+      element.checked = true;
+      dispatchChange(element);
+      return true;
+    }
 
-if (!name) {
-return false;
-}
+    var formElements = element.form.elements;
+    var name = element.getAttribute("name");
+    var radioElement, i;
 
-for (var i = 0; i < formElements.length; i++) {
-nodeElement = formElements[i];
-if (element.tagName.toLowerCase() == 'input' && element.type.toLowerCase() == 'radio' && nodeElement.name === name) {
-if (value === nodeElement.value) {
-nodeElement.setAttribute("checked", "checked");
-return false;
-}
-}
-}
+    if (!name) {
+      return null;
+    }
 
-return false;
-}
+    for (i = 0; i < formElements.length; i++) {
+      radioElement = formElements[i];
+      if (radioElement.tagName.toLowerCase() == 'input' && radioElement.type.toLowerCase() == 'radio' && radioElement.name == name) {
+        if (value === radioElement.value) {
+          deselectAllRadioOptions(element);
+          clickOnElement(radioElement);
+          radioElement.checked = true;
+          dispatchChange(radioElement);
+          return true;
+        }
+      }
+    }
 
-var element = getElement(xpath);
-if (!isSelect(element) && !isRadioInput(element)) {
-return false;
-}
+    return null;
+  }
 
-if (isSelect(element)) {
-return doOptionSelect(element, value);
-}
+  function xpathStringLiteral(s) {
+    if (s.indexOf('"') === -1)
+      return '"' + s + '"';
+    if (s.indexOf("'") === -1)
+      return "'" + s + "'";
+    return 'concat("' + s.replace(/"/g, '",\'"\',"') + '")';
+  }
 
-if (isRadioInput(element)) {
-return doRadioSelect(element, value);
-}
+  function deselectAllOptions(element) {
+    var i, l = element.options.length;
+    for (i = 0; i < l; i++) {
+      element.options[i].selected = false;
+    }
+  }
 
-return false;
-}('{{ xpath }}', '{{ value }}'));
+  function dispatchChange(element){
+    var tagName =element.tagName.toLowerCase();
+    var elementType = element.getAttribute("type");
+    if (tagName != "option" || (tagName == "input" && elementType == "radio")){
+      return true;
+    }
+    var event;
+    event = document.createEvent('HTMLEvents');
+    event.initEvent('change', true, false);
+    element.dispatchEvent(event);
+    return true;
+  }
+
+  function selectOptionOnElement(element, option, multiple) {
+    var polterAgent = window.__poltergeist;
+    var escapedOption = xpathStringLiteral(option);
+    // The value of an option is the normalized version of its text when it has no value attribute
+    var optionQuery = ".//option[@value = " + escapedOption + " or (not(@value) and normalize-space(.) = " + escapedOption + ")]";
+    var ids = polterAgent.find("xpath", optionQuery, element);
+    var polterNode = polterAgent.get(ids[0]);
+    var optionElement = polterNode.element;
+
+    if (multiple || !element.multiple) {
+      if (!optionElement.selected) {
+        clickOnElement(optionElement);
+        optionElement.selected = true;
+      }
+      return dispatchChange(optionElement);
+    }
+
+    deselectAllOptions(element);
+    clickOnElement(optionElement);
+    optionElement.selected = true;
+    return dispatchChange(optionElement);
+  }
+
+  function doLogic(xpath, value, multiple) {
+    var polterAgent = window.__poltergeist;
+    var ids = polterAgent.find("xpath", xpath, document);
+    var polterNode = polterAgent.get(ids[0]);
+    var domElement = polterNode.element;
+
+    if (domElement.tagName.toLowerCase() == "input" && domElement.getAttribute("type").toLowerCase() == "radio") {
+      return selectRadioValue(domElement, value);
+    }
+
+    if (domElement.tagName.toLowerCase() == "select") {
+      var boolMultiple = null;
+      if (multiple == "1" || multiple == 1) {
+        boolMultiple = true;
+      } else if (multiple == "0" || multiple == 0) {
+        boolMultiple = false;
+      }
+      return selectOptionOnElement(domElement, value, boolMultiple);
+    }
+
+    return null;
+  }
+
+  return doLogic(xpath, value, multiple);
+}(atob('{{ xpath }}'), '{{ value }}', '{{multiple}}'));
 {% endautoescape %}

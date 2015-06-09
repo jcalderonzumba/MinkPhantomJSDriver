@@ -755,6 +755,34 @@ Poltergeist.Browser = (function () {
   };
 
   /**
+   * Sends a native phantomjs key event to element
+   * @param serverResponse
+   * @param page_id
+   * @param id
+   * @param keyEvent
+   * @param key
+   * @param modifier
+   */
+  Browser.prototype.key_event = function (serverResponse, page_id, id, keyEvent, key, modifier) {
+    var target;
+    var keyEventModifierMap = {
+      'none': 0x0,
+      'shift': 0x02000000,
+      'ctrl': 0x04000000,
+      'alt': 0x08000000,
+      'meta': 0x10000000
+    };
+    var keyEventModifier = keyEventModifierMap[modifier];
+
+    target = this.node(page_id, id);
+    if (!target.containsSelection()) {
+      target.mouseEvent('click');
+    }
+    target.page.sendEvent(keyEvent, key, null, null, keyEventModifier);
+    return this.serverSendResponse(true, serverResponse);
+  };
+
+  /**
    *  Sends the rendered page in a base64 encoding
    * @param serverResponse
    * @param format
@@ -834,6 +862,19 @@ Poltergeist.Browser = (function () {
       height: height
     });
     return this.serverSendResponse(true, serverResponse);
+  };
+
+  /**
+   * Gets the browser viewport size
+   * Because PhantomJS is headless (nothing is shown)
+   * viewportSize effectively simulates the size of the window like in a traditional browser.
+   * @param serverResponse
+   * @param handle
+   * @return {*}
+   */
+  Browser.prototype.window_size = function (serverResponse, handle) {
+    //TODO: add support for window handles
+    return this.serverSendResponse(this.currentPage.viewportSize(), serverResponse);
   };
 
   /**
@@ -953,6 +994,7 @@ Poltergeist.Browser = (function () {
    */
   Browser.prototype.remove_cookie = function (serverResponse, name) {
     this.currentPage.deleteCookie(name);
+    phantom.deleteCookie(name);
     return this.serverSendResponse(true, serverResponse);
   };
 

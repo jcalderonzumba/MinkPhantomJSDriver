@@ -21,7 +21,8 @@ trait CookieTrait {
     }
     //TODO: set the cookie with domain, not with url, meaning www.aaa.com or .aaa.com
     if ($value !== null) {
-      $cookie = array("name" => $name, "value" => $value, $this->getCurrentUrl());
+      $urlData = parse_url($this->getCurrentUrl());
+      $cookie = array("name" => $name, "value" => $value, "domain" => $urlData["host"]);
       $this->browser->setCookie($cookie);
     }
   }

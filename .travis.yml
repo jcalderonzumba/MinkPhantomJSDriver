@@ -16,6 +16,7 @@ before_script:
 
 script:
   - bin/phpunit --configuration unit_tests.xml
+  - bin/phpunit --configuration integration_tests.xml
 
 after_script:
   - ps axo pid,command | grep phantomjs | grep -v grep | awk '{print $1}' | xargs -I {} kill {}

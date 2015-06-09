@@ -43,6 +43,7 @@ trait SessionTrait {
    */
   public function reset() {
     $this->getBrowser()->clearCookies();
+    $this->getBrowser()->reset();
     $this->started = false;
     return true;
   }
