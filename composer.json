@@ -41,7 +41,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Behat\\PhantomJSExtension\\Tests\\": "tests/"
+      "Behat\\PhantomJSExtension\\Tests\\": "tests/unit"
     }
   },
   "extra": {
