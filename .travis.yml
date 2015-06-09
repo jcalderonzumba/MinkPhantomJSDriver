@@ -15,7 +15,8 @@ before_script:
   - composer install --no-interaction
 
 script:
-  - bin/phpunit --configuration unit_tests.xml
+  - bin/run-tests.sh
 
 after_script:
   - ps axo pid,command | grep phantomjs | grep -v grep | awk '{print $1}' | xargs -I {} kill {}
+  - ps axo pid,command | grep php | grep -v grep | awk '{print $1}' | xargs -I {} kill {}

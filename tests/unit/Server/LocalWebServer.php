@@ -15,11 +15,43 @@ class LocalWebServer {
 
   /**
    * Private constructor for an local web server instance
+   * @param $serverOptions
+   * @param $workingDir
    */
-  private function __construct() {
-    $this->process = new Process("php -S 127.0.0.1:6789 -t www/web/ www/web/index.php", __DIR__);
+  private function __construct($serverOptions, $workingDir) {
+    echo "Creating local server with $serverOptions and working dir $workingDir\n";
+    $this->waitForServerToStop();
+    $this->process = new Process("php -S 127.0.0.1:6789 $serverOptions", $workingDir);
     $this->process->start();
     $this->waitForServerStart();
+  }
+
+  /**
+   * When collecting make the stuff die
+   */
+  public function __destruct() {
+    echo "Stopping the local server...\n";
+    $this->process->stop();
+  }
+
+  /**
+   * If the server is up wait for it to stop
+   */
+  protected function waitForServerToStop() {
+    echo "Waiting for local server to die...\n";
+    $serverUp = true;
+    while ($serverUp) {
+      $sock = @fsockopen("127.0.0.1", 6789, $errno, $errstr, 5);
+      if (is_resource($sock)) {
+        fclose($sock);
+        $serverUp = true;
+        echo "Server still listening to connections waiting..\n";
+        sleep(1);
+      } else {
+        echo "Server is not listening connection $errno $errstr, getting out..\n";
+        $serverUp = false;
+      }
+    }
   }
 
   protected function waitForServerStart() {
@@ -40,11 +72,13 @@ class LocalWebServer {
 
   /**
    * Creates or returns the local server instance
+   * @param        $serverOptions
+   * @param string $workingDir
    * @return LocalWebServer
    */
-  public static function getInstance() {
+  public static function getInstance($serverOptions, $workingDir = __DIR__) {
     if (null === self::$instance) {
-      self::$instance = new self();
+      self::$instance = new self($serverOptions, $workingDir);
     }
     return self::$instance;
   }

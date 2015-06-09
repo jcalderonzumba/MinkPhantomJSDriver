@@ -34,6 +34,9 @@
   "config": {
     "bin-dir": "bin"
   },
+  "bin": [
+    "run-tests.sh"
+  ],
   "autoload": {
     "psr-4": {
       "Behat\\PhantomJSExtension\\": "src/"
@@ -41,7 +44,8 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Behat\\PhantomJSExtension\\Tests\\": "tests/unit"
+      "Behat\\PhantomJSExtension\\Tests\\": "tests/unit",
+      "Behat\\Mink\\Tests\\Driver\\": "tests/integration"
     }
   },
   "extra": {

@@ -32,7 +32,8 @@ trait HeadersTrait {
    * @param string $value
    */
   public function setRequestHeader($name, $value) {
-    $header = array("name" => $name, "value" => $value);
+    $header = array();
+    $header[$name] = $value;
     //TODO: as a limitation of the driver it self, we will send permanent for the moment
     $this->browser->addHeader($header, true);
   }

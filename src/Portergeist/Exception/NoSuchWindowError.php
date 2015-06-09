@@ -13,11 +13,5 @@ namespace Behat\PhantomJSExtension\Portergeist\Exception;
  * Class NoSuchWindowError
  * @package Behat\PhantomJSExtension\Portergeist\Exception
  */
-class NoSuchWindowError extends \Exception {
-  /**
-   * @param string $message
-   */
-  public function __construct($message) {
-    parent::__construct($message);
-  }
+class NoSuchWindowError extends ClientError {
 }

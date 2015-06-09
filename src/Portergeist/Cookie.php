@@ -36,7 +36,7 @@ class Cookie {
    * @return string
    */
   public function getValue() {
-    return $this->attributes['value'];
+    return urldecode($this->attributes['value']);
   }
 
   /**

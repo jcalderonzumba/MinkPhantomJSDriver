@@ -162,7 +162,21 @@ trait BrowserPageElementTrait {
    * @param $elementId
    * @return boolean
    */
-  public function isVisible($pageId, $elementId){
+  public function isVisible($pageId, $elementId) {
     return $this->command("visible", $pageId, $elementId);
   }
+
+  /**
+   * Sends the order to execute a key event on a given element
+   * @param $pageId
+   * @param $elementId
+   * @param $keyEvent
+   * @param $key
+   * @param $modifier
+   * @return mixed
+   */
+  public function keyEvent($pageId, $elementId, $keyEvent, $key, $modifier) {
+    return $this->command("key_event", $pageId, $elementId, $keyEvent, $key, $modifier);
+  }
+
 }

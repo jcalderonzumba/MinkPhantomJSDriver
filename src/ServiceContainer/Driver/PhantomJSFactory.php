@@ -39,8 +39,7 @@ class PhantomJSFactory implements DriverFactory {
    */
   public function configure(ArrayNodeDefinition $builder) {
     $children = $builder->children();
-    $children->scalarNode('phantom_bin')->defaultValue('bin/phantomjs')->end();
-    $children->scalarNode('phantom_loader')->defaultValue('bin/phantomloader')->end();
+    $children->scalarNode('phantom_server')->isRequired()->end();
   }
 
   /**
@@ -57,7 +56,7 @@ class PhantomJSFactory implements DriverFactory {
       );
     }
     return new Definition('Behat\PhantomJSExtension\Driver\PhantomJSDriver',
-      array($config["phantom_bin"], $config["phantom_loader"], '%mink.base_url')
+      array($config["phantom_server"])
     );
   }
 }
