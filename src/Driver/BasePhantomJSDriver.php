@@ -6,8 +6,6 @@ use Behat\Mink\Driver\CoreDriver;
 use Behat\Mink\Exception\DriverException;
 use Behat\Mink\Session;
 use Behat\PhantomJSExtension\Portergeist\Browser\Browser;
-use Behat\PhantomJSExtension\Portergeist\Client;
-use Behat\PhantomJSExtension\Portergeist\Server;
 
 /**
  * Class BasePhantomJSDriver
@@ -21,10 +19,6 @@ class BasePhantomJSDriver extends CoreDriver {
   protected $options;
   /** @var  Session */
   protected $session;
-  /** @var  Server */
-  protected $server;
-  /** @var  Client */
-  protected $client;
   /** @var  Browser */
   protected $browser;
 
@@ -35,20 +29,8 @@ class BasePhantomJSDriver extends CoreDriver {
   public function __construct($binLocation, $options = array()) {
     $this->binLocation = $binLocation;
     $this->options = $options;
-    //Driver creation mean we need to have server and client ready for use
-    $this->server = Server::getInstance();
-    if ($this->getServer()->isStarted() !== true) {
-      $this->server->start();
-    } else {
-      echo "Server is already started, skipping...\n";
-    }
-    $this->client = Client::getInstance($this->server, array("path" => $this->binLocation));
-    if ($this->getClient()->isStarted() !== true) {
-      $this->getClient()->start();
-    } else {
-      echo "Client is already started, skipping...\n";
-    }
-    $this->browser = null;
+    //TODO: add here the browser hostname:port
+    $this->browser = new Browser("TODO_ADD_STUFF");
   }
 
   /**
@@ -80,20 +62,5 @@ class BasePhantomJSDriver extends CoreDriver {
   public function getBrowser() {
     return $this->browser;
   }
-
-  /**
-   * @return Server
-   */
-  public function getServer() {
-    return $this->server;
-  }
-
-  /**
-   * @return Client
-   */
-  public function getClient() {
-    return $this->client;
-  }
-
 
 }
