@@ -1,10 +1,29 @@
 #!/bin/sh
 set -e
+
+start_browser_api(){
+  phantomjs --ssl-protocol=any --ignore-ssl-errors=true src/Portergeist/Client/main.js 8510 1024 768 2>&1 >> /dev/null &
+  sleep 2
+}
+
+stop_services(){
+  ps axo pid,command | grep phantomjs | grep -v grep | awk '{print $1}' | xargs -I {} kill {}
+  ps axo pid,command | grep php | grep -v grep | awk '{print $1}' | xargs -I {} kill {}
+  sleep 2
+}
+
+star_local_browser(){
+  CURRENT_DIR=$(pwd)
+  cd ${CURRENT_DIR}/vendor/behat/mink/driver-testsuite/web-fixtures
+  php -S 127.0.0.1:6789 2>&1 >> /dev/null &
+  sleep 2
+}
+
+start_browser_api
 CURRENT_DIR=$(pwd)
 ${CURRENT_DIR}/bin/phpunit --configuration unit_tests.xml
-cd ${CURRENT_DIR}/vendor/behat/mink/driver-testsuite/web-fixtures
-ps axo pid,command | grep php | grep -v grep | awk '{print $1}' | xargs -I {} kill {}
-php -S 127.0.0.1:6789 2>&1 >> /dev/null &
+stop_services
+start_browser_api
+star_local_browser
 cd ${CURRENT_DIR}
-ls -lah
 ${CURRENT_DIR}/bin/phpunit --configuration integration_tests.xml
