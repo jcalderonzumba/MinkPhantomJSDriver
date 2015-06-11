@@ -12,6 +12,7 @@ cache:
 before_script:
   - composer self-update
   - composer install --no-interaction
+  - mkdir -p /tmp/jcalderonzumba/phantomjs
 
 script:
   - bin/run-tests.sh
