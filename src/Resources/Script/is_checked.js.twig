@@ -1,4 +1,4 @@
-{% autoescape false %}
+{% autoescape 'js' %}
 (function (xpath) {
   function getElement(xpath, within) {
     var result;
@@ -27,5 +27,5 @@
   }
 
   return node.checked;
-}(atob('{{ xpath }}')));
+}('{{ xpath }}'));
 {% endautoescape %}

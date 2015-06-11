@@ -1,4 +1,4 @@
-{% autoescape false %}
+{% autoescape 'js' %}
 (function (xpath) {
   function getElement(xpath) {
     var polterAgent = window.__poltergeist;
@@ -12,5 +12,5 @@
     return null;
   }
   return node.selected;
-}(atob('{{xpath}}')));
+}('{{xpath}}'));
 {% endautoescape %}

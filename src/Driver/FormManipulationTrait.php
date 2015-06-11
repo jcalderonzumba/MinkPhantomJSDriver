@@ -35,7 +35,7 @@ trait FormManipulationTrait {
       $value = $this->boolToString($value);
     }
 
-    $javascript = $this->javascriptTemplateRender("set_value.js.twig", array("xpath" => base64_encode($xpath), "value" => json_encode($value)));
+    $javascript = $this->javascriptTemplateRender("set_value.js.twig", array("xpath" => $xpath, "value" => json_encode($value)));
     $this->browser->evaluate($javascript);
   }
 
@@ -95,7 +95,7 @@ trait FormManipulationTrait {
       $multiple = $this->boolToString($multiple);
     }
 
-    $javascript = $this->javascriptTemplateRender("select_option.js.twig", array("xpath" => base64_encode($xpath), "value" => $value, "multiple" => $multiple));
+    $javascript = $this->javascriptTemplateRender("select_option.js.twig", array("xpath" => $xpath, "value" => $value, "multiple" => $multiple));
     $this->browser->evaluate($javascript);
   }
 
@@ -148,7 +148,7 @@ trait FormManipulationTrait {
    */
   public function isChecked($xpath) {
     $this->findElement($xpath, 1);
-    $javascript = $this->javascriptTemplateRender("is_checked.js.twig", array("xpath" => base64_encode($xpath)));
+    $javascript = $this->javascriptTemplateRender("is_checked.js.twig", array("xpath" => $xpath));
     $checked = $this->browser->evaluate($javascript);
 
     if ($checked === null) {
@@ -166,7 +166,7 @@ trait FormManipulationTrait {
    */
   public function isSelected($xpath) {
     $elements = $this->findElement($xpath, 1);
-    $javascript = $this->javascriptTemplateRender("is_selected.js.twig", array("xpath" => base64_encode($xpath)));
+    $javascript = $this->javascriptTemplateRender("is_selected.js.twig", array("xpath" => $xpath));
     $tagName = $this->browser->tagName($elements["page_id"], $elements["ids"][0]);
     if (strcmp(strtolower($tagName), "option") !== 0) {
       throw new DriverException("Can not assert on element that is not an option");
