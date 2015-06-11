@@ -9,6 +9,37 @@ use Behat\Mink\Exception\DriverException;
  * @package Behat\PhantomJSExtension\Driver
  */
 trait FormManipulationTrait {
+
+
+  /**
+   * Returns the value of a given xpath element
+   * @param string $xpath
+   * @return string
+   * @throws DriverException
+   */
+  public function getValue($xpath) {
+    $this->findElement($xpath, 1);
+    $javascript = $this->javascriptTemplateRender("get_value.js.twig", array("xpath" => $xpath));
+    return $this->browser->evaluate($javascript);
+  }
+
+  /**
+   * @param string $xpath
+   * @param string $value
+   * @throws DriverException
+   */
+  public function setValue($xpath, $value) {
+    $this->findElement($xpath, 1);
+    //This stuff is BECAUSE the way the driver works for setting values when being checkboxes, radios, etc.
+    if (is_bool($value)) {
+      $value = $this->boolToString($value);
+    }
+
+    $javascript = $this->javascriptTemplateRender("set_value.js.twig", array("xpath" => base64_encode($xpath), "value" => json_encode($value)));
+    $this->browser->evaluate($javascript);
+  }
+
+
   /**
    * Submits a form given an xpath selector
    * @param string $xpath
@@ -24,6 +55,18 @@ trait FormManipulationTrait {
   }
 
   /**
+   * Helper method needed for twig and javascript stuff
+   * @param $boolValue
+   * @return string
+   */
+  protected function boolToString($boolValue) {
+    if ($boolValue === true) {
+      return "1";
+    }
+    return "0";
+  }
+
+  /**
    * Selects an option
    * @param string $xpath
    * @param string $value
@@ -31,7 +74,48 @@ trait FormManipulationTrait {
    * @throws DriverException
    */
   public function selectOption($xpath, $value, $multiple = false) {
-    throw new DriverException("Not yet done until everything else easier is done $xpath $value $multiple");
+    $element = $this->findElement($xpath, 1);
+    $tagName = strtolower($this->browser->tagName($element["page_id"], $element["ids"][0]));
+    $attributes = $this->browser->attributes($element["page_id"], $element["ids"][0]);
+
+    if (!in_array($tagName, array("input", "select"))) {
+      throw new DriverException(sprintf('Impossible to select an option on the element with XPath "%s" as it is not a select or radio input', $xpath));
+    }
+
+    if ($tagName === "input" && $attributes["type"] != "radio") {
+      throw new DriverException(sprintf('Impossible to select an option on the element with XPath "%s" as it is not a select or radio input', $xpath));
+    }
+
+    //Boolean stuff handling
+    if (is_bool($value)) {
+      $value = $this->boolToString($value);
+    }
+
+    if (is_bool($multiple)) {
+      $multiple = $this->boolToString($multiple);
+    }
+
+    $javascript = $this->javascriptTemplateRender("select_option.js.twig", array("xpath" => base64_encode($xpath), "value" => $value, "multiple" => $multiple));
+    $this->browser->evaluate($javascript);
+  }
+
+  /**
+   * Check control over an input element of radio or checkbox type
+   * @param $xpath
+   * @return bool
+   * @throws DriverException
+   */
+  protected function inputCheckableControl($xpath) {
+    $element = $this->findElement($xpath, 1);
+    $tagName = strtolower($this->browser->tagName($element["page_id"], $element["ids"][0]));
+    $attributes = $this->browser->attributes($element["page_id"], $element["ids"][0]);
+    if ($tagName != "input") {
+      throw new DriverException("Can not check when the element is not of the input type");
+    }
+    if (!in_array($attributes["type"], array("checkbox", "radio"))) {
+      throw new DriverException("Can not check when the element is not checkbox or radio");
+    }
+    return true;
   }
 
   /**
@@ -40,12 +124,9 @@ trait FormManipulationTrait {
    * @throws DriverException
    */
   public function check($xpath) {
-    if ($this->isChecked($xpath) === true) {
-      return;
-    }
-    //only when the element is not checked we do stuff
-    $elements = $this->findElement($xpath, 1);
-    $this->browser->setAttribute($elements["page_id"], $elements["ids"][0], "checked", "checked");
+    $this->inputCheckableControl($xpath);
+    $javascript = $this->javascriptTemplateRender("check_element.js.twig", array("xpath" => $xpath, "check" => "true"));
+    $this->browser->evaluate($javascript);
   }
 
   /**
@@ -54,12 +135,9 @@ trait FormManipulationTrait {
    * @throws DriverException
    */
   public function uncheck($xpath) {
-    if ($this->isChecked($xpath) !== true) {
-      return;
-    }
-    //only when the element is not checked we do stuff
-    $elements = $this->findElement($xpath, 1);
-    $this->browser->removeAttribute($elements["page_id"], $elements["ids"][0], "checked");
+    $this->inputCheckableControl($xpath);
+    $javascript = $this->javascriptTemplateRender("check_element.js.twig", array("xpath" => $xpath, "check" => "false"));
+    $this->browser->evaluate($javascript);
   }
 
   /**
@@ -69,16 +147,15 @@ trait FormManipulationTrait {
    * @throws DriverException
    */
   public function isChecked($xpath) {
-    $elements = $this->findElement($xpath, 1);
-    $data = $this->browser->attributes($elements["page_id"], $elements["ids"][0]);
-    if ($data["type"] !== "checkbox" && $data["type"] !== "radio") {
+    $this->findElement($xpath, 1);
+    $javascript = $this->javascriptTemplateRender("is_checked.js.twig", array("xpath" => base64_encode($xpath)));
+    $checked = $this->browser->evaluate($javascript);
+
+    if ($checked === null) {
       throw new DriverException("Can not check when the element is not checkbox or radio");
     }
-    if (!isset($data["checked"])) {
-      return false;
-    }
 
-    return (strcmp($data["checked"], "checked") === 0);
+    return $checked;
   }
 
   /**
@@ -89,16 +166,12 @@ trait FormManipulationTrait {
    */
   public function isSelected($xpath) {
     $elements = $this->findElement($xpath, 1);
+    $javascript = $this->javascriptTemplateRender("is_selected.js.twig", array("xpath" => base64_encode($xpath)));
     $tagName = $this->browser->tagName($elements["page_id"], $elements["ids"][0]);
     if (strcmp(strtolower($tagName), "option") !== 0) {
       throw new DriverException("Can not assert on element that is not an option");
     }
 
-    $data = $this->browser->attributes($elements["page_id"], $elements["ids"][0]);
-    if (!isset($data["selected"])) {
-      return false;
-    }
-
-    return (strcmp($data["selected"], "selected") === 0);
+    return $this->browser->evaluate($javascript);
   }
 }

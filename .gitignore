@@ -1,4 +1,6 @@
 .idea/*
 vendor/*
-bin/*
+bin/behat
+bin/phantomjs
+bin/phpunit
 composer.lock

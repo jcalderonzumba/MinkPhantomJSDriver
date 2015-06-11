@@ -1,6 +1,7 @@
 <?php
 
 namespace Behat\PhantomJSExtension\Driver;
+
 use Behat\Mink\Exception\DriverException;
 
 /**
@@ -27,14 +28,22 @@ trait WindowTrait {
   /**
    * Switches to window by name if possible
    * @param $name
+   * @throws DriverException
    */
   public function switchToWindow($name = null) {
+    $handles = $this->browser->windowHandles();
     if ($name === null) {
-      //Nothing to do, we stay on the window we are in
-      return;
+      //null means back to the main window
+      return $this->browser->switchToWindow($handles[0]);
     }
-    //TODO: this stuff throws error on browser.js so check it when testing
-    $this->browser->switchToWindow($name);
+
+    $windowHandle = $this->browser->windowHandle($name);
+    if (!empty($windowHandle)) {
+      $this->browser->switchToWindow($windowHandle);
+    } else {
+      throw new DriverException("Could not find window handle by a given window name: $name");
+    }
+
   }
 
   /**

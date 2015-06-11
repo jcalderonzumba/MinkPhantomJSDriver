@@ -9,10 +9,11 @@ namespace Behat\PhantomJSExtension\Portergeist\Browser;
 trait BrowserWindowTrait {
   /**
    * Returns the current window handle name in the browser
+   * @param string $name
    * @return mixed
    */
-  public function windowHandle() {
-    return $this->command('window_handle');
+  public function windowHandle($name = null) {
+    return $this->command('window_handle', $name);
   }
 
   /**
@@ -25,11 +26,11 @@ trait BrowserWindowTrait {
 
   /**
    * Change the browser focus to another window
-   * @param $windowName
+   * @param $windowHandleName
    * @return mixed
    */
-  public function switchToWindow($windowName) {
-    return $this->command('switch_to_window', $windowName);
+  public function switchToWindow($windowHandleName) {
+    return $this->command('switch_to_window', $windowHandleName);
   }
 
   /**
@@ -41,12 +42,12 @@ trait BrowserWindowTrait {
   }
 
   /**
-   * Closes a window on the browser by a given name
-   * @param $windowName
+   * Closes a window on the browser by a given handler name
+   * @param $windowHandleName
    * @return mixed
    */
-  public function closeWindow($windowName) {
-    return $this->command('close_window', $windowName);
+  public function closeWindow($windowHandleName) {
+    return $this->command('close_window', $windowHandleName);
   }
 
   /**
@@ -66,6 +67,15 @@ trait BrowserWindowTrait {
    */
   public function setZoomFactor($zoomFactor) {
     return $this->command('set_zoom_factor', $zoomFactor);
+  }
+
+  /**
+   * Gets the window size
+   * @param $windowHandleName
+   * @return mixed
+   */
+  public function windowSize($windowHandleName) {
+    return $this->command('window_size', $windowHandleName);
   }
 
 }

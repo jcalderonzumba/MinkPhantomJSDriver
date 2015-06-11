@@ -57,28 +57,6 @@ class PhantomJSDriver extends BasePhantomJSDriver {
   }
 
   /**
-   * Returns the value of a given xpath element
-   * @param string $xpath
-   * @return string
-   * @throws DriverException
-   */
-  public function getValue($xpath) {
-    $elements = $this->findElement($xpath, 1);
-    return $this->browser->value($elements["page_id"], $elements["ids"][0]);
-  }
-
-  /**
-   * @param string $xpath
-   * @param string $value
-   * @throws DriverException
-   */
-  public function setValue($xpath, $value) {
-    $elements = $this->findElement($xpath, 1);
-    //TODO: Check the return of this stuff to add more error control
-    echo $this->browser->set($elements["page_id"], $elements["ids"][0], $value);
-  }
-
-  /**
    * Check if element given by xpath is visible or not
    * @param string $xpath
    * @return bool
@@ -99,7 +77,7 @@ class PhantomJSDriver extends BasePhantomJSDriver {
   public function dragTo($sourceXpath, $destinationXpath) {
     $sourceElement = $this->findElement($sourceXpath, 1);
     $destinationElement = $this->findElement($destinationXpath, 1);
-    echo $this->browser->drag($sourceElement["page_id"], $sourceElement["ids"][0], $destinationElement["ids"][0]);
+    $this->browser->drag($sourceElement["page_id"], $sourceElement["ids"][0], $destinationElement["ids"][0]);
   }
 
   /**
@@ -118,7 +96,17 @@ class PhantomJSDriver extends BasePhantomJSDriver {
     }
 
     $element = $this->findElement($xpath, 1);
-    echo $this->browser->selectFile($element["page_id"], $element["ids"][0], $realPath);
+    $tagName = $this->getTagName($xpath);
+    if ($tagName != "input") {
+      throw new DriverException("The element is not an input element, you can not attach a file to it");
+    }
+
+    $attributes = $this->getBrowser()->attributes($element["page_id"], $element["ids"][0]);
+    if (!isset($attributes["type"]) || $attributes["type"] != "file") {
+      throw new DriverException("The element is not an input file type element, you can not attach a file to it");
+    }
+
+    $this->browser->selectFile($element["page_id"], $element["ids"][0], $realPath);
   }
 
   /**
@@ -127,12 +115,13 @@ class PhantomJSDriver extends BasePhantomJSDriver {
    * @return string
    */
   public function getScreenshot() {
+    //TODO: Make the screenshot configurable for PNG, JPEG, etc.
     $options = array("full" => true, "selector" => null);
     //TODO: check why in the hell render_base64 does not work properly
     //What i'm about to do is not cool but is the way to do it until the other stuff is fixed
     $tmpDir = sys_get_temp_dir();
     $randomName = str_replace(".", "", str_replace(" ", "", microtime(false)));
-    $filePath = sprintf("%s/phantomjs_driver_screenshot_%s.png", $tmpDir, $randomName);
+    $filePath = sprintf("%s/phantomjs_driver_screenshot_%s.jpg", $tmpDir, $randomName);
     $this->browser->render($filePath, $options);
     //TODO: Maybe we should just not fail and render an empty image?
     if (!file_exists($filePath) || @filesize($filePath) === false || @filesize($filePath) <= 0) {
@@ -155,7 +144,7 @@ class PhantomJSDriver extends BasePhantomJSDriver {
     if ($name === null) {
       $this->browser->popFrame();
       return;
-    }else {
+    } else {
       $this->browser->pushFrame($name);
     }
   }
@@ -167,7 +156,7 @@ class PhantomJSDriver extends BasePhantomJSDriver {
    */
   public function focus($xpath) {
     $element = $this->findElement($xpath, 1);
-    echo $this->browser->trigger($element["page_id"], $element["ids"][0], "focus");
+    $this->browser->trigger($element["page_id"], $element["ids"][0], "focus");
   }
 
   /**
@@ -177,7 +166,7 @@ class PhantomJSDriver extends BasePhantomJSDriver {
    */
   public function blur($xpath) {
     $element = $this->findElement($xpath, 1);
-    echo $this->browser->trigger($element["page_id"], $element["ids"][0], "blur");
+    $this->browser->trigger($element["page_id"], $element["ids"][0], "blur");
   }
 
   /**
@@ -188,11 +177,13 @@ class PhantomJSDriver extends BasePhantomJSDriver {
    */
   public function find($xpath) {
     $elements = $this->browser->find("xpath", $xpath);
-    $nodeElements = array();
+
+    if (!isset($elements["ids"])) {
+      return null;
+    }
+
     foreach ($elements["ids"] as $i => $id) {
-      if (!empty($id)) {
-        $nodeElements[] = new NodeElement(sprintf('(%s)[%d]', $xpath, $i + 1), $this->session);
-      }
+      $nodeElements[] = new NodeElement(sprintf('(%s)[%d]', $xpath, $i + 1), $this->session);
     }
     return $nodeElements;
   }
