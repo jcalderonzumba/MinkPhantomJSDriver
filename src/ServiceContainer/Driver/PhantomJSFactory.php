@@ -40,6 +40,7 @@ class PhantomJSFactory implements DriverFactory {
   public function configure(ArrayNodeDefinition $builder) {
     $children = $builder->children();
     $children->scalarNode('phantom_server')->isRequired()->end();
+    $children->scalarNode('template_cache')->defaultNull()->end();
   }
 
   /**
@@ -56,7 +57,7 @@ class PhantomJSFactory implements DriverFactory {
       );
     }
     return new Definition('Behat\PhantomJSExtension\Driver\PhantomJSDriver',
-      array($config["phantom_server"])
+      array($config["phantom_server"], $config["template_cache"])
     );
   }
 }
