@@ -63,7 +63,6 @@ class PhantomJSDriver extends BasePhantomJSDriver {
    * @throws DriverException
    */
   public function isVisible($xpath) {
-    //TODO: check the response of this
     $elements = $this->findElement($xpath, 1);
     return $this->browser->isVisible($elements["page_id"], $elements["ids"][0]);
   }

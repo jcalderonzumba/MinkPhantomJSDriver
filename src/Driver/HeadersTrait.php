@@ -14,7 +14,6 @@ trait HeadersTrait {
    * @return array
    */
   public function getResponseHeaders() {
-    //TODO: Check the output form of this response and fix it to suit the driver needs
     return $this->browser->responseHeaders();
   }
 

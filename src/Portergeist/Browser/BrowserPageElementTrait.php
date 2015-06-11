@@ -104,7 +104,6 @@ trait BrowserPageElementTrait {
    * @return bool
    */
   public function equals($pageId, $firstId, $secondId) {
-    //TODO: check the actual return of the command to see if the return is boolean
     return $this->command('equals', $pageId, $firstId, $secondId);
   }
 
