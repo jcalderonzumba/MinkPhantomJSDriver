@@ -209,5 +209,5 @@
   //for the moment everything else also to textArea stuff
   return textAreaSetValue(xpath, value);
 
-}(atob('{{xpath}}'), JSON.parse('{{ value }}')));
+}('{{xpath}}', JSON.parse('{{ value }}')));
 {% endautoescape %}

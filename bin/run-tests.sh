@@ -8,7 +8,7 @@ start_browser_api(){
 
 stop_services(){
   ps axo pid,command | grep phantomjs | grep -v grep | awk '{print $1}' | xargs -I {} kill {}
-  ps axo pid,command | grep php | grep -v grep | awk '{print $1}' | xargs -I {} kill {}
+  ps axo pid,command | grep php | grep -v grep | grep -v phpstorm | awk '{print $1}' | xargs -I {} kill {}
   sleep 2
 }
 
@@ -19,6 +19,7 @@ star_local_browser(){
   sleep 2
 }
 
+stop_services
 start_browser_api
 CURRENT_DIR=$(pwd)
 ${CURRENT_DIR}/bin/phpunit --configuration unit_tests.xml

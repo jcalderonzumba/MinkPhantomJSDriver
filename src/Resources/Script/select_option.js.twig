@@ -1,4 +1,4 @@
-{% autoescape false %}
+{% autoescape 'js' %}
 (function (xpath, value, multiple) {
 
   function clickOnElement(element) {
@@ -132,5 +132,5 @@
   }
 
   return doLogic(xpath, value, multiple);
-}(atob('{{ xpath }}'), '{{ value }}', '{{multiple}}'));
+}('{{ xpath }}', '{{ value }}', '{{multiple}}'));
 {% endautoescape %}
