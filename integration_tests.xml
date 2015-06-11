@@ -27,6 +27,7 @@
         <server name="WEB_FIXTURES_HOST" value="http://127.0.0.1:6789"/>
         <!-- where driver will connect to -->
         <server name="DRIVER_URL" value="http://127.0.0.1:8510/"/>
+        <server name="TEMPLATE_CACHE_DIR" value="/tmp/jcalderonzumba/phantomjs"/>
     </php>
 
     <filter>

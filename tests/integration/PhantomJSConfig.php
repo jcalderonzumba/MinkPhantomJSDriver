@@ -36,9 +36,14 @@ class PhantomJSConfig extends AbstractConfig {
    */
   public function createDriver() {
     $phantomJSHost = $_SERVER["DRIVER_URL"];
-    return new PhantomJSDriver($phantomJSHost);
+    return new PhantomJSDriver($phantomJSHost, $_SERVER["TEMPLATE_CACHE_DIR"]);
   }
 
+  /**
+   * @param string $testCase
+   * @param string $test
+   * @return string
+   */
   public function skipMessage($testCase, $test) {
     echo "Running $testCase $test\n";
 

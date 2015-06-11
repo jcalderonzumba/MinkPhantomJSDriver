@@ -26,14 +26,36 @@ class BasePhantomJSDriver extends CoreDriver {
 
   /**
    * Instantiates the driver
-   * @param $phantomHost      browser "api" oriented host
+   * @param string $phantomHost browser "api" oriented host
+   * @param string $templateCache where we are going to store the templates cache
    */
-  public function __construct($phantomHost) {
+  public function __construct($phantomHost, $templateCache = null) {
     \Twig_Autoloader::register();
     $this->phantomHost = $phantomHost;
     $this->browser = new Browser($phantomHost);
     $this->templateLoader = new \Twig_Loader_Filesystem(realpath(__DIR__ . '/../Resources/Script'));
-    $this->templateEnv = new \Twig_Environment($this->templateLoader, array('cache' => '/tmp/jcalderonzumba/phantomjs', 'strict_variables' => true));
+    $this->templateEnv = new \Twig_Environment($this->templateLoader, array('cache' => $this->templateCacheSetup($templateCache), 'strict_variables' => true));
+  }
+
+  /**
+   * Sets up the cache template location for the scripts we are going to create with the driver
+   * @param $templateCache
+   * @return string
+   * @throws DriverException
+   */
+  protected function templateCacheSetup($templateCache) {
+    $cacheDir = $templateCache;
+    if ($templateCache === null) {
+      $cacheDir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . "jcalderonzumba" . DIRECTORY_SEPARATOR . "phantomjs";
+      if (!file_exists($cacheDir)) {
+        mkdir($cacheDir, 0777, true);
+      }
+    }
+
+    if (!file_exists($cacheDir)) {
+      throw new DriverException("Template cache $cacheDir directory does not exist");
+    }
+    return $cacheDir;
   }
 
   /**
