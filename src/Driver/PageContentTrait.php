@@ -1,6 +1,7 @@
 <?php
 
 namespace Behat\PhantomJSExtension\Driver;
+
 use Behat\Mink\Exception\DriverException;
 
 /**
@@ -13,7 +14,7 @@ trait PageContentTrait {
    * @return string
    */
   public function getContent() {
-    return $this->browser->getSource();
+    return $this->browser->getBody();
   }
 
   /**
@@ -24,8 +25,10 @@ trait PageContentTrait {
    */
   public function getText($xpath) {
     $elements = $this->findElement($xpath, 1);
-    //allText works only with ONE element so it will be the first one
-    return $this->browser->allText($elements["page_id"], $elements["ids"][0]);
+    //allText works only with ONE element so it will be the first one and also returns new lines that we will remove
+    $text = trim(str_replace("\n", " ", $this->browser->allText($elements["page_id"], $elements["ids"][0])));
+    $text = preg_replace('/\s\s+/', ' ', $text);
+    return $text;
   }
 
   /**

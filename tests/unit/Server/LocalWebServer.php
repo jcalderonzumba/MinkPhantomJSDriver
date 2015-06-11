@@ -15,9 +15,11 @@ class LocalWebServer {
 
   /**
    * Private constructor for an local web server instance
+   * @param $serverOptions
+   * @param $workingDir
    */
-  private function __construct() {
-    $this->process = new Process("php -S 127.0.0.1:6789 -t www/web/ www/web/index.php", __DIR__);
+  private function __construct($serverOptions, $workingDir) {
+    $this->process = new Process("php -S 127.0.0.1:6789 $serverOptions", $workingDir);
     $this->process->start();
     $this->waitForServerStart();
   }
@@ -40,11 +42,13 @@ class LocalWebServer {
 
   /**
    * Creates or returns the local server instance
+   * @param        $serverOptions
+   * @param string $workingDir
    * @return LocalWebServer
    */
-  public static function getInstance() {
+  public static function getInstance($serverOptions, $workingDir = __DIR__) {
     if (null === self::$instance) {
-      self::$instance = new self();
+      self::$instance = new self($serverOptions, $workingDir);
     }
     return self::$instance;
   }

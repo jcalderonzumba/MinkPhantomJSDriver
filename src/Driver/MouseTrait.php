@@ -17,7 +17,7 @@ trait MouseTrait {
    */
   public function mouseOver($xpath) {
     $element = $this->findElement($xpath, 1);
-    $this->browser->trigger($element["page_id"], $element["ids"][0], "mouseover");
+    $this->browser->hover($element["page_id"], $element["ids"][0]);
   }
 
   /**

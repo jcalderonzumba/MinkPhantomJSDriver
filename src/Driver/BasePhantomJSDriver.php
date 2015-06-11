@@ -13,24 +13,27 @@ use Behat\PhantomJSExtension\Portergeist\Browser\Browser;
  */
 class BasePhantomJSDriver extends CoreDriver {
 
-  /** @var  string */
-  protected $binLocation;
-  /** @var  array */
-  protected $options;
   /** @var  Session */
   protected $session;
   /** @var  Browser */
   protected $browser;
+  /** @var  string */
+  protected $phantomHost;
+  /** @var  \Twig_Loader_Filesystem */
+  protected $templateLoader;
+  /** @var  \Twig_Environment */
+  protected $templateEnv;
 
   /**
-   * @param string $binLocation Location of the phantomjs binary
-   * @param array  $options the options to start the phantomjs binary
+   * Instantiates the driver
+   * @param $phantomHost      browser "api" oriented host
    */
-  public function __construct($binLocation, $options = array()) {
-    $this->binLocation = $binLocation;
-    $this->options = $options;
-    //TODO: add here the browser hostname:port
-    $this->browser = new Browser("TODO_ADD_STUFF");
+  public function __construct($phantomHost) {
+    \Twig_Autoloader::register();
+    $this->phantomHost = $phantomHost;
+    $this->browser = new Browser($phantomHost);
+    $this->templateLoader = new \Twig_Loader_Filesystem(realpath(__DIR__ . '/../Resources/Script'));
+    $this->templateEnv = new \Twig_Environment($this->templateLoader, array('cache' => '/tmp/jcalderonzumba/phantomjs', 'strict_variables' => true));
   }
 
   /**
@@ -61,6 +64,25 @@ class BasePhantomJSDriver extends CoreDriver {
    */
   public function getBrowser() {
     return $this->browser;
+  }
+
+  /**
+   * @return \Twig_Environment
+   */
+  public function getTemplateEnv() {
+    return $this->templateEnv;
+  }
+
+  /**
+   * Returns a javascript script via twig template engine
+   * @param $templateName
+   * @param $viewData
+   * @return string
+   */
+  public function javascriptTemplateRender($templateName, $viewData) {
+    /** @var $templateEngine \Twig_Environment */
+    $templateEngine = $this->getTemplateEnv();
+    return $templateEngine->render($templateName, $viewData);
   }
 
 }

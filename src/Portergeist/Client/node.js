@@ -9,7 +9,7 @@ Poltergeist.Node = (function () {
     'select', 'tagName', 'find', 'getAttributes', 'isVisible',
     'position', 'trigger', 'parentId', 'parentIds', 'mouseEventTest',
     'scrollIntoView', 'isDOMEqual', 'isDisabled', 'deleteText',
-    'containsSelection', 'allHTML'];
+    'containsSelection', 'allHTML', 'changed'];
 
   function Node(page, id) {
     this.page = page;
