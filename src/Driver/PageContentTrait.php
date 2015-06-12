@@ -54,4 +54,18 @@ trait PageContentTrait {
     //allText works only with ONE element so it will be the first one
     return $this->browser->allHtml($elements["page_id"], $elements["ids"][0], "outer");
   }
+
+  /**
+   * Returns the binary representation of the current page we are in
+   * @throws DriverException
+   * @return string
+   */
+  public function getScreenshot() {
+    $options = array("full" => true, "selector" => null);
+    $b64ScreenShot = $this->browser->renderBase64("JPEG", $options);
+    if (($binaryScreenShot = base64_decode($b64ScreenShot, true)) === false) {
+      throw new DriverException("There was a problem while doing the screenshot of the current page");
+    }
+    return $binaryScreenShot;
+  }
 }

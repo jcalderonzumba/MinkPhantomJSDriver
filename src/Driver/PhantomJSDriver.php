@@ -109,31 +109,6 @@ class PhantomJSDriver extends BasePhantomJSDriver {
   }
 
   /**
-   * Returns the binary representation of the current page we are in
-   * @throws DriverException
-   * @return string
-   */
-  public function getScreenshot() {
-    //TODO: Make the screenshot configurable for PNG, JPEG, etc.
-    $options = array("full" => true, "selector" => null);
-    //TODO: check why in the hell render_base64 does not work properly
-    //What i'm about to do is not cool but is the way to do it until the other stuff is fixed
-    $tmpDir = sys_get_temp_dir();
-    $randomName = str_replace(".", "", str_replace(" ", "", microtime(false)));
-    $filePath = sprintf("%s/phantomjs_driver_screenshot_%s.jpg", $tmpDir, $randomName);
-    $this->browser->render($filePath, $options);
-    //TODO: Maybe we should just not fail and render an empty image?
-    if (!file_exists($filePath) || @filesize($filePath) === false || @filesize($filePath) <= 0) {
-      throw new DriverException("Something happened during screenshot, bad stuff");
-    }
-    //now that we know the file exists and its size is greater than 0 bytes we assume all ok so we will just return the binary thing
-    if (($binaryScreenshot = file_get_contents($filePath)) === false) {
-      throw new DriverException("Something happened during screenshot, bad stuff");
-    }
-    return $binaryScreenshot;
-  }
-
-  /**
    * Puts the browser control inside the IFRAME
    * You own the control, make sure to go back to the parent calling this method with null
    * @param string $name
