@@ -6,6 +6,13 @@ var __indexOf = [].indexOf || function (item) {
   };
 
 Poltergeist.Browser = (function () {
+  /**
+   * Creates the "browser" inside phantomjs
+   * @param owner
+   * @param width
+   * @param height
+   * @constructor
+   */
   function Browser(owner, width, height) {
     this.owner = owner;
     this.width = width || 1024;
@@ -17,6 +24,10 @@ Poltergeist.Browser = (function () {
     this.resetPage();
   }
 
+  /**
+   * Resets the browser to a clean slate
+   * @return {Function}
+   */
   Browser.prototype.resetPage = function () {
     var _ref;
     var self = this;
@@ -34,6 +45,7 @@ Poltergeist.Browser = (function () {
       }
       phantom.clearCookies();
     }
+
     this.page = this.currentPage = new Poltergeist.WebPage;
     this.page.setViewportSize({
       width: this.width,
@@ -41,6 +53,7 @@ Poltergeist.Browser = (function () {
     });
     this.page.handle = "" + (this._counter++);
     this.pages.push(this.page);
+
     return this.page.onPageCreated = function (newPage) {
       var page;
       page = new Poltergeist.WebPage(newPage);
@@ -49,18 +62,47 @@ Poltergeist.Browser = (function () {
     };
   };
 
+  /**
+   * Given a page handle id, tries to get it from the browser page list
+   * @param handle
+   * @return {WebPage}
+   */
   Browser.prototype.getPageByHandle = function (handle) {
-    return this.pages.filter(function (p) {
+    var filteredPages;
+
+    //TODO: perhaps we should throw a PageNotFoundByHandle or something like that..
+    if (handle === null || typeof handle == "undefined") {
+      return null;
+    }
+
+    filteredPages = this.pages.filter(function (p) {
       return !p.closed && p.handle === handle;
-    })[0];
+    });
+
+    if (filteredPages.length === 1) {
+      return filteredPages[0];
+    }
+
+    return null;
   };
 
+  /**
+   * Sends a debug message to the console
+   * @param message
+   * @return {*}
+   */
   Browser.prototype.debug = function (message) {
     if (this._debug) {
       return console.log("poltergeist [" + (new Date().getTime()) + "] " + message);
     }
   };
 
+  /**
+   * Given a page_id and id, gets if possible the node in such page
+   * @param page_id
+   * @param id
+   * @return {Poltergeist.Node}
+   */
   Browser.prototype.node = function (page_id, id) {
     if (this.currentPage.id === page_id) {
       return this.currentPage.get(id);
@@ -69,41 +111,73 @@ Poltergeist.Browser = (function () {
     }
   };
 
+  /**
+   * Returns the frameUrl related to the frame given by name
+   * @param frame_name
+   * @return {*}
+   */
   Browser.prototype.frameUrl = function (frame_name) {
     return this.currentPage.frameUrl(frame_name);
   };
 
+  /**
+   * This method defines the rectangular area of the web page to be rasterized when render is invoked.
+   * If no clipping rectangle is set, render will process the entire web page.
+   * @param full
+   * @param selector
+   * @return {*}
+   */
   Browser.prototype.set_clip_rect = function (full, selector) {
-    var dimensions, document, rect, viewport, _ref;
+    var dimensions, clipDocument, rect, clipViewport;
+
     dimensions = this.currentPage.validatedDimensions();
-    _ref = [dimensions.document, dimensions.viewport], document = _ref[0], viewport = _ref[1];
-    rect = full ? {
-      left: 0,
-      top: 0,
-      width: document.width,
-      height: document.height
-    } : selector != null ? this.currentPage.elementBounds(selector) : {
-      left: 0,
-      top: 0,
-      width: viewport.width,
-      height: viewport.height
-    };
+    clipDocument = dimensions.document;
+    clipViewport = dimensions.viewport;
+
+    if (full) {
+      rect = {
+        left: 0,
+        top: 0,
+        width: clipDocument.width,
+        height: clipDocument.height
+      };
+    } else {
+      if (selector != null) {
+        rect = this.currentPage.elementBounds(selector);
+      } else {
+        rect = {
+          left: 0,
+          top: 0,
+          width: clipViewport.width,
+          height: clipViewport.height
+        };
+      }
+    }
+
     this.currentPage.setClipRect(rect);
     return dimensions;
   };
 
+  /**
+   * Kill the browser, i.e kill phantomjs current process
+   * @return {int}
+   */
   Browser.prototype.exit = function () {
-    return phantom.exit();
+    return phantom.exit(0);
   };
 
+  /**
+   * Do nothing
+   */
   Browser.prototype.noop = function () {
   };
 
+  /**
+   * Throws a new Object error
+   */
   Browser.prototype.browser_error = function () {
     throw new Error('zomg');
   };
-
-  //Browser supported commands START
 
   /**
    *  Visits a page and load its content
@@ -407,11 +481,12 @@ Poltergeist.Browser = (function () {
    * @return {*}
    */
   Browser.prototype.select_file = function (serverResponse, page_id, id, file_path) {
-    var node;
-    node = this.node(page_id, id);
+    var node = this.node(page_id, id);
+
     this.currentPage.beforeUpload(node.id);
     this.currentPage.uploadFile('[_poltergeist_selected]', file_path);
     this.currentPage.afterUpload(node.id);
+
     return this.serverSendResponse(true, serverResponse);
   };
 
@@ -501,13 +576,30 @@ Poltergeist.Browser = (function () {
    * @return {*}
    */
   Browser.prototype.window_handle = function (serverResponse, name) {
-    var handle, page;
-    if (name == null) {
-      name = null;
+    var handle, pageByWindowName;
+
+    if (name === null || typeof name == "undefined" || name.length === 0) {
+      return this.serverSendResponse(this.currentPage.handle, serverResponse);
     }
-    handle = name ? (page = this.pages.filter(function (p) {
+
+    handle = null;
+
+    //Lets search the handle by the given window name
+    var filteredPages = this.pages.filter(function (p) {
       return !p.closed && p.windowName() === name;
-    })[0], page ? page.handle : null) : this.currentPage.handle;
+    });
+
+    //A bit of error control is always good
+    if (Array.isArray(filteredPages) && filteredPages.length >= 1) {
+      pageByWindowName = filteredPages[0];
+    } else {
+      pageByWindowName = null;
+    }
+
+    if (pageByWindowName !== null && typeof pageByWindowName != "undefined") {
+      handle = pageByWindowName.handle;
+    }
+
     return this.serverSendResponse(handle, serverResponse);
   };
 
@@ -517,12 +609,23 @@ Poltergeist.Browser = (function () {
    * @return {*}
    */
   Browser.prototype.window_handles = function (serverResponse) {
-    var handles;
-    handles = this.pages.filter(function (p) {
+    var handles, filteredPages;
+
+    filteredPages = this.pages.filter(function (p) {
       return !p.closed;
-    }).map(function (p) {
-      return p.handle;
     });
+
+    if (filteredPages.length > 0) {
+      handles = filteredPages.map(function (p) {
+        return p.handle;
+      });
+      if (handles.length === 0) {
+        handles = null;
+      }
+    } else {
+      handles = null;
+    }
+
     return this.serverSendResponse(handles, serverResponse);
   };
 
@@ -535,19 +638,20 @@ Poltergeist.Browser = (function () {
   Browser.prototype.switch_to_window = function (serverResponse, handle) {
     var page;
     var self = this;
+
     page = this.getPageByHandle(handle);
-    if (page) {
-      if (page !== this.currentPage) {
-        return page.waitState('default', function () {
-          self.currentPage = page;
-          return self.serverSendResponse(true, serverResponse);
-        });
-      } else {
-        return this.serverSendResponse(true, serverResponse);
-      }
-    } else {
+    if (page === null || typeof page == "undefined") {
       throw new Poltergeist.NoSuchWindowError;
     }
+
+    if (page !== this.currentPage) {
+      return page.waitState('default', function () {
+        self.currentPage = page;
+        return self.serverSendResponse(true, serverResponse);
+      });
+    }
+
+    return this.serverSendResponse(true, serverResponse);
   };
 
   /**
@@ -567,13 +671,16 @@ Poltergeist.Browser = (function () {
    */
   Browser.prototype.close_window = function (serverResponse, handle) {
     var page;
+
     page = this.getPageByHandle(handle);
-    if (page) {
-      page.release();
-      return this.serverSendResponse(true, serverResponse);
-    } else {
+    if (page === null || typeof  page == "undefined") {
+      //TODO: should we throw error since we actually could not find the window?
       return this.serverSendResponse(false, serverResponse);
     }
+
+    //TODO: we have to add some control here to actually asses that the release has been done
+    page.release();
+    return this.serverSendResponse(true, serverResponse);
   };
 
   /**
@@ -658,13 +765,16 @@ Poltergeist.Browser = (function () {
    * @return {*}
    */
   Browser.prototype.click_coordinates = function (serverResponse, x, y) {
+    var response;
+
     this.currentPage.sendEvent('click', x, y);
-    var response = {
+    response = {
       click: {
         x: x,
         y: y
       }
     };
+
     return this.serverSendResponse(response, serverResponse);
   };
 
@@ -764,21 +874,25 @@ Poltergeist.Browser = (function () {
    * @param modifier
    */
   Browser.prototype.key_event = function (serverResponse, page_id, id, keyEvent, key, modifier) {
+    var keyEventModifierMap;
+    var keyEventModifier;
     var target;
-    var keyEventModifierMap = {
+
+    keyEventModifierMap = {
       'none': 0x0,
       'shift': 0x02000000,
       'ctrl': 0x04000000,
       'alt': 0x08000000,
       'meta': 0x10000000
     };
-    var keyEventModifier = keyEventModifierMap[modifier];
+    keyEventModifier = keyEventModifierMap[modifier];
 
     target = this.node(page_id, id);
     if (!target.containsSelection()) {
       target.mouseEvent('click');
     }
     target.page.sendEvent(keyEvent, key, null, null, keyEventModifier);
+
     return this.serverSendResponse(true, serverResponse);
   };
 
@@ -963,7 +1077,6 @@ Poltergeist.Browser = (function () {
   };
 
   /**
-   * US19: DONE
    * Returns the cookies of the current page being browsed
    * @param serverResponse
    * @return {*}
@@ -973,7 +1086,6 @@ Poltergeist.Browser = (function () {
   };
 
   /**
-   * US19: DONE
    * Sets a cookie in the browser, the format of the cookies has to be the format it says
    * on phantomjs documentation and as such you can set it in other domains, not on the
    * current page
@@ -986,7 +1098,6 @@ Poltergeist.Browser = (function () {
   };
 
   /**
-   * US19: DONE
    * Remove a cookie set on the current page
    * @param serverResponse
    * @param name
@@ -999,7 +1110,6 @@ Poltergeist.Browser = (function () {
   };
 
   /**
-   * US19: DONE
    * Clear the cookies in the browser
    * @param serverResponse
    * @return {*}
@@ -1010,7 +1120,6 @@ Poltergeist.Browser = (function () {
   };
 
   /**
-   * US19: DONE
    * Enables / Disables the cookies on the browser
    * @param serverResponse
    * @param flag
@@ -1036,7 +1145,6 @@ Poltergeist.Browser = (function () {
   };
 
   /**
-   * US19: DONE
    * Sets the flag whether to fail on javascript errors or not.
    * @param serverResponse
    * @param value
@@ -1048,7 +1156,6 @@ Poltergeist.Browser = (function () {
   };
 
   /**
-   * US19: DONE
    * Sets the debug mode to boolean value
    * @param serverResponse
    * @param value
@@ -1060,7 +1167,6 @@ Poltergeist.Browser = (function () {
   };
 
   /**
-   * US19: DONE
    * Goes back in the history when possible
    * @param serverResponse
    * @return {*}
@@ -1079,7 +1185,6 @@ Poltergeist.Browser = (function () {
   };
 
   /**
-   * US19: DONE
    * Reloads the page if possible
    * @return {*}
    */
@@ -1093,7 +1198,6 @@ Poltergeist.Browser = (function () {
   };
 
   /**
-   * US19: DONE
    * Goes forward in the browser history if possible
    * @param serverResponse
    * @return {*}
@@ -1112,7 +1216,6 @@ Poltergeist.Browser = (function () {
   };
 
   /**
-   * US19: DONE
    *  Sets the urlBlacklist for the given urls as parameters
    * @return {boolean}
    */
@@ -1122,8 +1225,6 @@ Poltergeist.Browser = (function () {
     return this.serverSendResponse(true, serverResponse);
   };
 
-  //Browser server command START
-
   /**
    * Runs a browser command and returns the response back to the client
    * when the command has finished the execution
@@ -1132,17 +1233,21 @@ Poltergeist.Browser = (function () {
    * @return {*}
    */
   Browser.prototype.serverRunCommand = function (command, serverResponse) {
-    var commandName = command.name;
-    var commandArgs = command.args;
+    var commandData;
+    var commandArgs;
+    var commandName;
+
+    commandName = command.name;
+    commandArgs = command.args;
     this.currentPage.state = 'default';
-    var commandData = [serverResponse].concat(commandArgs);
-    if (typeof this[commandName] === "function") {
-      //TODO: check this stuff i'm not quite sure about it
-      return this[commandName].apply(this, commandData);
-    } else {
+    commandData = [serverResponse].concat(commandArgs);
+
+    if (typeof this[commandName] !== "function") {
       //We can not run such command
       throw new Poltergeist.Error();
     }
+
+    return this[commandName].apply(this, commandData);
   };
 
   /**
@@ -1161,7 +1266,6 @@ Poltergeist.Browser = (function () {
       return this.owner.serverSendResponse(response, serverResponse);
     }
   };
-  //Browser server command END
 
   return Browser;
 

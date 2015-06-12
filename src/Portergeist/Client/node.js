@@ -1,8 +1,7 @@
 var __slice = [].slice;
 
 Poltergeist.Node = (function () {
-  var name, _fn, _i, _len, _ref,
-    _this = this;
+  var name, _fn, _i, _len, _ref;
 
   Node.DELEGATES = ['allText', 'visibleText', 'getAttribute', 'value', 'set',
     'setAttribute', 'isObsolete', 'removeAttribute', 'isMultiple',
@@ -16,41 +15,63 @@ Poltergeist.Node = (function () {
     this.id = id;
   }
 
+  /**
+   * Returns the parent Node of this Node
+   * @return {Poltergeist.Node}
+   */
   Node.prototype.parent = function () {
     return new Poltergeist.Node(this.page, this.parentId());
   };
 
   _ref = Node.DELEGATES;
+
   _fn = function (name) {
     return Node.prototype[name] = function () {
-      var args;
-      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      var args = [];
+      if (arguments.length >= 1) {
+        args = __slice.call(arguments, 0)
+      }
       return this.page.nodeCall(this.id, name, args);
     };
   };
+
+  //Adding all the delegates from the agent Node to this Node
   for (_i = 0, _len = _ref.length; _i < _len; _i++) {
     name = _ref[_i];
     _fn(name);
   }
 
+  /**
+   *  Gets an x,y position tailored for mouse event actions
+   * @return {{x, y}}
+   */
   Node.prototype.mouseEventPosition = function () {
     var middle, pos, viewport;
+
     viewport = this.page.viewportSize();
     pos = this.position();
     middle = function (start, end, size) {
       return start + ((Math.min(end, size) - start) / 2);
     };
+
     return {
       x: middle(pos.left, pos.right, viewport.width),
       y: middle(pos.top, pos.bottom, viewport.height)
     };
   };
 
+  /**
+   * Executes a phantomjs native mouse event
+   * @param name
+   * @return {{x, y}}
+   */
   Node.prototype.mouseEvent = function (name) {
     var pos, test;
+
     this.scrollIntoView();
     pos = this.mouseEventPosition();
     test = this.mouseEventTest(pos.x, pos.y);
+
     if (test.status === 'success') {
       if (name === 'rightclick') {
         this.page.mouseEvent('click', pos.x, pos.y, 'right');
@@ -64,8 +85,14 @@ Poltergeist.Node = (function () {
     }
   };
 
+  /**
+   * Executes a mouse based drag from one node to another
+   * @param other
+   * @return {{x, y}}
+   */
   Node.prototype.dragTo = function (other) {
     var otherPosition, position;
+
     this.scrollIntoView();
     position = this.mouseEventPosition();
     otherPosition = other.mouseEventPosition();
@@ -73,6 +100,11 @@ Poltergeist.Node = (function () {
     return this.page.mouseEvent('mouseup', otherPosition.x, otherPosition.y);
   };
 
+  /**
+   * Checks if one node is equal to another
+   * @param other
+   * @return {boolean}
+   */
   Node.prototype.isEqual = function (other) {
     return this.page === other.page && this.isDOMEqual(other.id);
   };
