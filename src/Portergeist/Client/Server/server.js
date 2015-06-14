@@ -1,5 +1,11 @@
 Poltergeist.Server = (function () {
 
+  /**
+   * Server constructor
+   * @param owner
+   * @param port
+   * @constructor
+   */
   function Server(owner, port) {
     this.server = require('webserver').create();
     this.port = port;
@@ -7,6 +13,9 @@ Poltergeist.Server = (function () {
     this.webServer = null;
   }
 
+  /**
+   * Starts the web server
+   */
   Server.prototype.start = function () {
     var self = this;
     this.webServer = this.server.listen(this.port, function (request, response) {

@@ -1,4 +1,12 @@
 Poltergeist = (function () {
+
+  /**
+   * The MAIN class of the project
+   * @param port
+   * @param width
+   * @param height
+   * @constructor
+   */
   function Poltergeist(port, width, height) {
     var self;
     this.browser = new Poltergeist.Browser(this, width, height);
@@ -7,13 +15,13 @@ Poltergeist = (function () {
     this.commandServer.start();
 
     self = this;
+
     phantom.onError = function (message, stack) {
       return self.onError(message, stack);
     };
+
     this.running = false;
   }
-
-  //SERVER COMMAND RUNNING START
 
   /**
    * Tries to execute a command send by a client and returns the command response
@@ -31,9 +39,8 @@ Poltergeist = (function () {
       error = _error;
       if (error instanceof Poltergeist.Error) {
         return this.serverSendError(error, serverResponse);
-      } else {
-        return this.serverSendError(new Poltergeist.BrowserError(error.toString(), error.stack), serverResponse);
       }
+      return this.serverSendError(new Poltergeist.BrowserError(error.toString(), error.stack), serverResponse);
     }
   };
 
@@ -44,7 +51,8 @@ Poltergeist = (function () {
    * @return {boolean}
    */
   Poltergeist.prototype.serverSendError = function (error, serverResponse) {
-    var errorObject = {
+    var errorObject;
+    errorObject = {
       error: {
         name: error.name || 'Generic',
         args: error.args && error.args() || [error.toString()]
@@ -62,9 +70,6 @@ Poltergeist = (function () {
   Poltergeist.prototype.serverSendResponse = function (response, serverResponse) {
     return this.commandServer.send(serverResponse, {response: response});
   };
-
-  //SERVER COMMAND RUNNING END
-
 
   return Poltergeist;
 })();

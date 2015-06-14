@@ -3,6 +3,7 @@ namespace Behat\PhantomJSExtension\Tests;
 
 use Behat\PhantomJSExtension\Portergeist\Exception\BrowserError;
 use Behat\PhantomJSExtension\Portergeist\Exception\InvalidSelector;
+use Behat\PhantomJSExtension\Portergeist\Exception\ObsoleteNode;
 
 /**
  * Class BrowserPageFindTest
@@ -67,7 +68,7 @@ class BrowserPageFindTest extends BrowserCommandsTestCase {
     $this->visitUrl($this->getTestPageBaseUrl() . "/test/standard_form/form.html");
     try {
       $this->browser->equals(1, 0, 1);
-    } catch (BrowserError $e) {
+    } catch (ObsoleteNode $e) {
     }
     //TODO: equals method seems to be broken or i do not know how to use it
   }
@@ -80,7 +81,7 @@ class BrowserPageFindTest extends BrowserCommandsTestCase {
     $this->assertFalse($this->browser->isVisible(1, 1));
   }
 
-  public function testIsDisabled(){
+  public function testIsDisabled() {
     $this->visitUrl($this->getTestPageBaseUrl() . "/static/basic.html");
     $this->browser->find("xpath", '//*[@id="disabled_check"]');
     $this->browser->find("xpath", '//*[@id="enabled_check"]');
