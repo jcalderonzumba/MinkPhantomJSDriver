@@ -7,7 +7,7 @@ start_browser_api(){
   if [ -f ${LOCAL_PHANTOMJS} ]; then
     ${LOCAL_PHANTOMJS} --ssl-protocol=any --ignore-ssl-errors=true src/Portergeist/Client/main.js 8510 1024 768 2>&1 &
   else
-    phantomjs --ssl-protocol=any --ignore-ssl-errors=true src/Portergeist/Client/main.js 8510 1024 768 2>&1  &
+    phantomjs --ssl-protocol=any --ignore-ssl-errors=true src/Portergeist/Client/main.js 8510 1024 768 2>&1 >> /dev/null &
   fi
   sleep 2
 }
