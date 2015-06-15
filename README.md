@@ -13,7 +13,7 @@ This driver supports **PHP 5.4 or greater**, there is NO support for PHP 5.3
 Use [Composer](https://getcomposer.org/) to install all required PHP dependencies:
 
 ```bash
-$ composer require --dev behat/mink behat/mink-phantomjs-driver
+$ composer require --dev behat/mink jcalderonzumba/mink-phantomjs-driver
 ```
 
 How to use
