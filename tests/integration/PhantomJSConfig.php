@@ -61,9 +61,9 @@ class PhantomJSConfig extends AbstractConfig {
       return "Due to the nature of the phantomjs javascript implementation we can not use this standard tests";
     }
 
-    if ($testCase == "Behat\\Mink\\Tests\\Driver\\Js\\WindowTest" && in_array($test, array("testResizeWindow", "testWindow"))) {
-      //TODO: testWindow is giving random crashes, fix it but for the moment disable it
-      return "Due to the nature of the phantomjs javascript implementation we can not use this standard test";
+    if ($testCase == "Behat\\Mink\\Tests\\Driver\\Js\\WindowTest") {
+      //TODO: This suite is giving random phantomjs crashes, not good for the moment
+      return "This suite is giving random phantomjs crashes, not good for the moment";
     }
 
     return parent::skipMessage($testCase, $test);
