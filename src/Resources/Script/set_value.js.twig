@@ -148,7 +148,7 @@
   function inputSetValue(element, value, elementXpath) {
     var allowedTypes = ['submit', 'image', 'button', 'reset'];
     var elementType = element.type.toLowerCase();
-    var textLikeInputType = ['file', 'text', 'url', 'email', 'search', 'number', 'tel', 'range', 'date', 'month', 'week', 'time', 'datetime', 'color', 'datetime-local'];
+    var textLikeInputType = ['file', 'text', 'password', 'url', 'email', 'search', 'number', 'tel', 'range', 'date', 'month', 'week', 'time', 'datetime', 'color', 'datetime-local'];
 
     if (allowedTypes.indexOf(elementType) !== -1) {
       return null;
