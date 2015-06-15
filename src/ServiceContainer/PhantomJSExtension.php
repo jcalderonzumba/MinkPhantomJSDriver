@@ -40,8 +40,6 @@ class PhantomJSExtension implements ExtensionInterface {
    * @param ArrayNodeDefinition $builder
    */
   public function configure(ArrayNodeDefinition $builder) {
-    $children = $builder->children();
-    $children->scalarNode('phantom_server')->isRequired()->end();
   }
 
   /**
