@@ -1,5 +1,5 @@
 {
-  "name": "behat/mink-phantomjs-driver",
+  "name": "jcalderonzumba/mink-phantomjs-driver",
   "description": "PhantomJS driver for Mink framework",
   "keywords": [
     "phantomjs",
