@@ -35,7 +35,7 @@ phantomjs:
 ```
 PhantomJS browser start:
 ```bash
-phantomjs --ssl-protocol=any --ignore-ssl-errors=true vendor/behat/mink-phantomjs-driver/src/Portergeist/Client/main.js 8510 1024 768 2>&1 >> /tmp/gastonjs.log &
+phantomjs --ssl-protocol=any --ignore-ssl-errors=true vendor/jcalderonzumba/mink-phantomjs-driver/src/Portergeist/Client/main.js 8510 1024 768 2>&1 >> /tmp/gastonjs.log &
 ```
 
 FAQ
@@ -47,11 +47,11 @@ FAQ
 
 2. What features does this driver implements?
   
-  **ALL** of them defined in Mink DriverInterface but maximizeWindow, since is a headless browser it does not make sense to implement it
+  **ALL** of the features defined in Mink DriverInterface. maximizeWindow is the only one not implemented since is a headless browser it does not make sense to implement it.
 
 3. Do i need to modify my selenium based tests?
 
-  If you only use the standard behat driver defined methods then NO, you just have to change the default javascript driver.
+  If you only use the standard behat driver defined methods then NO, you just have to change your default javascript driver.
   
 
 Copyright
