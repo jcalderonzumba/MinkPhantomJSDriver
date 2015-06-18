@@ -34,9 +34,6 @@
   "config": {
     "bin-dir": "bin"
   },
-  "bin": [
-    "run-tests.sh"
-  ],
   "autoload": {
     "psr-4": {
       "Behat\\PhantomJSExtension\\": "src/"
