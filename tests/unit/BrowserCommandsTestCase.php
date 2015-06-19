@@ -1,12 +1,12 @@
 <?php
 
-namespace Behat\PhantomJSExtension\Tests;
+namespace Zumba\GastonJS\Tests;
 
-use Behat\PhantomJSExtension\Portergeist\Browser\Browser;
+use Zumba\GastonJS\Browser\Browser;
 
 /**
  * Class BrowserCommandsTestCase
- * @package Behat\PhantomJSExtension\Tests
+ * @package Zumba\GastonJS\Tests
  */
 class BrowserCommandsTestCase extends \PHPUnit_Framework_TestCase {
 

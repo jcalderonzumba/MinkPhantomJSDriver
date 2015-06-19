@@ -1,0 +1,15 @@
+default:
+  extensions:
+    Zumba\PhantomJSExtension:
+    Behat\MinkExtension:
+      base_url: http://m.ekhanei.com/
+      javascript_session: 'phantomjs'
+      phantomjs:
+        phantom_server: "http://localhost:8510/api"
+        template_cache: "/tmp/jcalderonzumba/phantomjs"
+  suites:
+    behat_integration:
+      paths:
+        - %paths.base%/tests/features
+      contexts:
+        - Behat\MinkExtension\Context\MinkContext: ~

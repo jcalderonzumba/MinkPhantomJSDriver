@@ -1,11 +1,11 @@
 <?php
 
-namespace Behat\PhantomJSExtension\Tests;
+namespace Zumba\GastonJS\Tests;
 
 
 /**
  * Class BrowserElementAttributesTest
- * @package Behat\PhantomJSExtension\Tests
+ * @package Zumba\GastonJS\Tests
  */
 class BrowserElementAttributesTest extends BrowserCommandsTestCase {
 

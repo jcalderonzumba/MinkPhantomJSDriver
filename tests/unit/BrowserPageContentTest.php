@@ -1,11 +1,12 @@
 <?php
-namespace Behat\PhantomJSExtension\Tests;
 
-use Behat\PhantomJSExtension\Portergeist\Exception\ObsoleteNode;
+namespace Zumba\GastonJS\Tests;
+
+use Zumba\GastonJS\Exception\ObsoleteNode;
 
 /**
  * Class BrowserPageContentTest
- * @package Behat\PhantomJSExtension\Tests
+ * @package Zumba\GastonJS\Tests
  */
 class BrowserPageContentTest extends BrowserCommandsTestCase {
 

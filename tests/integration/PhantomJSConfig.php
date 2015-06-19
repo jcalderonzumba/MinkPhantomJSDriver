@@ -2,7 +2,7 @@
 
 namespace Behat\Mink\Tests\Driver;
 
-use Behat\PhantomJSExtension\Driver\PhantomJSDriver;
+use Zumba\Mink\Driver\PhantomJSDriver;
 
 /**
  * Class PhantomJSConfig

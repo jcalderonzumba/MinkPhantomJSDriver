@@ -1,10 +1,10 @@
 <?php
 
-namespace Behat\PhantomJSExtension\Tests;
+namespace Zumba\GastonJS\Tests;
 
 /**
  * Class BrowserAuthenticationTest
- * @package Behat\PhantomJSExtension\Tests\Server
+ * @package Zumba\GastonJS\Tests\Server
  */
 class BrowserAuthenticationTest extends BrowserCommandsTestCase {
 
