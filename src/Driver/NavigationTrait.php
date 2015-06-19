@@ -1,10 +1,10 @@
 <?php
 
-namespace Behat\PhantomJSExtension\Driver;
+namespace Zumba\Mink\Driver;
 
 /**
  * Trait NavigationTrait
- * @package Behat\PhantomJSExtension\Driver
+ * @package Zumba\Mink\Driver
  */
 trait NavigationTrait {
   /**

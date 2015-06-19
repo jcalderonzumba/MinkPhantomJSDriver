@@ -1,12 +1,12 @@
 <?php
 
-namespace Behat\PhantomJSExtension\Driver;
+namespace Zumba\Mink\Driver;
 
-use Behat\PhantomJSExtension\Portergeist\Cookie;
+use Zumba\GastonJS\Cookie;
 
 /**
  * Trait CookieTrait
- * @package Behat\PhantomJSExtension\Driver
+ * @package Zumba\Mink\Driver
  */
 trait CookieTrait {
 

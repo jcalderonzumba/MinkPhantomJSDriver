@@ -36,12 +36,14 @@
   },
   "autoload": {
     "psr-4": {
-      "Behat\\PhantomJSExtension\\": "src/"
+      "Zumba\\PhantomJSExtension\\": "src/extension",
+      "Zumba\\GastonJS\\": "src/gastonjs",
+      "Zumba\\Mink\\Driver\\": "src/driver"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "Behat\\PhantomJSExtension\\Tests\\": "tests/unit",
+      "Zumba\\GastonJS\\Tests\\": "tests/unit",
       "Behat\\Mink\\Tests\\Driver\\": "tests/integration"
     }
   },

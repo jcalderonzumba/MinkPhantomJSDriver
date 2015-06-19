@@ -1,12 +1,12 @@
 <?php
 
-namespace Behat\PhantomJSExtension\Driver;
+namespace Zumba\Mink\Driver;
 
 use Behat\Mink\Exception\DriverException;
 
 /**
  * Class MouseTrait
- * @package Behat\PhantomJSExtension\Driver
+ * @package Zumba\Mink\Driver
  */
 trait MouseTrait {
 

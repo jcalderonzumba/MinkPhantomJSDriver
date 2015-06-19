@@ -1,10 +1,10 @@
 <?php
-namespace Behat\PhantomJSExtension\Tests;
+namespace Zumba\GastonJS\Tests;
 
 
 /**
  * Class BrowserNetworkTest
- * @package Behat\PhantomJSExtension\Tests
+ * @package Zumba\GastonJS\Tests
  */
 class BrowserNetworkTest extends BrowserCommandsTestCase {
 
@@ -13,9 +13,9 @@ class BrowserNetworkTest extends BrowserCommandsTestCase {
     $this->visitUrl($this->getTestPageBaseUrl() . "/test/standard_form/form.html");
     $traffic = $this->browser->networkTraffic();
     $this->assertCount(6, $traffic);
-    $this->assertInstanceOf("Behat\\PhantomJSExtension\\Portergeist\\NetworkTraffic\\Request", $traffic[0]);
+    $this->assertInstanceOf("Zumba\\GastonJS\\NetworkTraffic\\Request", $traffic[0]);
     $this->assertNotEmpty($traffic[0]->getResponseParts());
-    $this->assertInstanceOf("Behat\\PhantomJSExtension\\Portergeist\\NetworkTraffic\\Response", $traffic[0]->getResponseParts()[0]);
+    $this->assertInstanceOf("Zumba\\GastonJS\\NetworkTraffic\\Response", $traffic[0]->getResponseParts()[0]);
   }
 
   public function testClearNetworkTraffic(){

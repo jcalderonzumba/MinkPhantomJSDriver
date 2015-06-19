@@ -1,11 +1,9 @@
 <?php
 
-namespace Behat\PhantomJSExtension\Driver;
+namespace Zumba\Mink\Driver;
 
 use Behat\Mink\Element\NodeElement;
 use Behat\Mink\Exception\DriverException;
-use Behat\PhantomJSExtension\Portergeist\Browser\Browser;
-use Behat\PhantomJSExtension\Portergeist\Cookie;
 
 /**
  * Class PhantomJSDriver
@@ -151,12 +149,13 @@ class PhantomJSDriver extends BasePhantomJSDriver {
    */
   public function find($xpath) {
     $elements = $this->browser->find("xpath", $xpath);
+    $nodeElements = array();
 
     if (!isset($elements["ids"])) {
       return null;
     }
 
-    foreach ($elements["ids"] as $i => $id) {
+    foreach ($elements["ids"] as $i => $elementId) {
       $nodeElements[] = new NodeElement(sprintf('(%s)[%d]', $xpath, $i + 1), $this->session);
     }
     return $nodeElements;

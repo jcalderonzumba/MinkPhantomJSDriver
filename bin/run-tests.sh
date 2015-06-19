@@ -5,9 +5,9 @@ start_browser_api(){
   CURRENT_DIR=$(pwd)
   LOCAL_PHANTOMJS="${CURRENT_DIR}/bin/phantomjs"
   if [ -f ${LOCAL_PHANTOMJS} ]; then
-    ${LOCAL_PHANTOMJS} --ssl-protocol=any --ignore-ssl-errors=true src/Portergeist/Client/main.js 8510 1024 768 2>&1 &
+    ${LOCAL_PHANTOMJS} --ssl-protocol=any --ignore-ssl-errors=true src/gastonjs/Client/main.js 8510 1024 768 2>&1 &
   else
-    phantomjs --ssl-protocol=any --ignore-ssl-errors=true src/Portergeist/Client/main.js 8510 1024 768 2>&1 >> /dev/null &
+    phantomjs --ssl-protocol=any --ignore-ssl-errors=true src/gastonjs/Client/main.js 8510 1024 768 2>&1 >> /dev/null &
   fi
   sleep 2
 }
@@ -25,6 +25,7 @@ star_local_browser(){
   sleep 2
 }
 
+mkdir -p /tmp/jcalderonzumba/phantomjs
 stop_services
 start_browser_api
 CURRENT_DIR=$(pwd)

@@ -1,9 +1,9 @@
 <?php
-namespace Behat\PhantomJSExtension\Tests;
+namespace Zumba\GastonJS\Tests;
 
 /**
  * Class BrowserPageTest
- * @package Behat\PhantomJSExtension\Tests
+ * @package Zumba\GastonJS\Tests
  */
 class BrowserPageTest extends BrowserCommandsTestCase {
 
@@ -11,7 +11,7 @@ class BrowserPageTest extends BrowserCommandsTestCase {
     try {
       $this->browser->getStatusCode();
     } catch (\Exception $e) {
-      $this->assertInstanceOf("Behat\\PhantomJSExtension\\Portergeist\\Exception\\StatusFailError", $e);
+      $this->assertInstanceOf("Zumba\\GastonJS\\Exception\\StatusFailError", $e);
     }
   }
 

@@ -1,12 +1,12 @@
 <?php
-namespace Behat\PhantomJSExtension\Tests;
+namespace Zumba\GastonJS\Tests;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Message\Response;
 
 /**
  * Class BrowserScriptTest
- * @package Behat\PhantomJSExtension\Tests
+ * @package Zumba\GastonJS\Tests
  */
 class BrowserScriptTest extends BrowserCommandsTestCase {
 

@@ -1,15 +1,15 @@
 <?php
 
-namespace Behat\PhantomJSExtension\Driver;
+namespace Zumba\Mink\Driver;
 
 use Behat\Mink\Driver\CoreDriver;
 use Behat\Mink\Exception\DriverException;
 use Behat\Mink\Session;
-use Behat\PhantomJSExtension\Portergeist\Browser\Browser;
+use Zumba\GastonJS\Browser\Browser;
 
 /**
  * Class BasePhantomJSDriver
- * @package Behat\PhantomJSExtension\Driver
+ * @package Zumba\Mink\Driver
  */
 class BasePhantomJSDriver extends CoreDriver {
 
@@ -33,7 +33,7 @@ class BasePhantomJSDriver extends CoreDriver {
     \Twig_Autoloader::register();
     $this->phantomHost = $phantomHost;
     $this->browser = new Browser($phantomHost);
-    $this->templateLoader = new \Twig_Loader_Filesystem(realpath(__DIR__ . '/../Resources/Script'));
+    $this->templateLoader = new \Twig_Loader_Filesystem(realpath(__DIR__ . '/Resources/Script'));
     $this->templateEnv = new \Twig_Environment($this->templateLoader, array('cache' => $this->templateCacheSetup($templateCache), 'strict_variables' => true));
   }
 

@@ -1,13 +1,13 @@
 <?php
-namespace Behat\PhantomJSExtension\Tests;
+namespace Zumba\GastonJS\Tests;
 
-use Behat\PhantomJSExtension\Portergeist\Exception\BrowserError;
-use Behat\PhantomJSExtension\Portergeist\Exception\InvalidSelector;
-use Behat\PhantomJSExtension\Portergeist\Exception\ObsoleteNode;
+use Zumba\GastonJS\Exception\BrowserError;
+use Zumba\GastonJS\Exception\InvalidSelector;
+use Zumba\GastonJS\Exception\ObsoleteNode;
 
 /**
  * Class BrowserPageFindTest
- * @package Behat\PhantomJSExtension\Tests
+ * @package Zumba\GastonJS\Tests
  */
 class BrowserPageFindTest extends BrowserCommandsTestCase {
 
@@ -41,7 +41,7 @@ class BrowserPageFindTest extends BrowserCommandsTestCase {
     try {
       $this->browser->findWithin(1, 0, "xpath", '//*[@id="li_1"]');
     } catch (\Exception $e) {
-      $this->assertInstanceOf("Behat\\PhantomJSExtension\\Portergeist\\Exception\\ObsoleteNode", $e);
+      $this->assertInstanceOf("Zumba\\GastonJS\\Exception\\ObsoleteNode", $e);
     }
   }
 

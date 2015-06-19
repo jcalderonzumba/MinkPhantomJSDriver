@@ -1,11 +1,11 @@
 <?php
-namespace Behat\PhantomJSExtension\Tests\Server;
+namespace Zumba\GastonJS\Tests\Server;
 
 use Symfony\Component\Process\Process;
 
 /**
  * Class LocalWebServer
- * @package Behat\PhantomJSExtension\Tests\Server
+ * @package Zumba\GastonJS\Tests\Server
  */
 class LocalWebServer {
   /** @var  Process */

@@ -1,10 +1,10 @@
 <?php
 
-namespace Behat\PhantomJSExtension\Tests;
+namespace Zumba\GastonJS\Tests;
 
 /**
  * Class BrowserCookiesTest
- * @package Behat\PhantomJSExtension\Tests
+ * @package Zumba\GastonJS\Tests
  */
 class BrowserCookiesTest extends BrowserCommandsTestCase {
 
@@ -17,7 +17,7 @@ class BrowserCookiesTest extends BrowserCommandsTestCase {
     $cookies = $this->browser->cookies();
     $this->assertCount(2, $cookies);
     foreach ($cookies as $cookie) {
-      $this->assertInstanceOf('Behat\PhantomJSExtension\Portergeist\Cookie', $cookie);
+      $this->assertInstanceOf('Zumba\GastonJS\Cookie', $cookie);
     }
   }
 
