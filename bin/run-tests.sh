@@ -35,3 +35,6 @@ start_browser_api
 star_local_browser
 cd ${CURRENT_DIR}
 ${CURRENT_DIR}/bin/phpunit --configuration integration_tests.xml
+stop_services
+start_browser_api
+${CURRENT_DIR}/bin/behat

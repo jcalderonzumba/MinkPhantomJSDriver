@@ -51,12 +51,12 @@ class PhantomJSFactory implements DriverFactory {
    * @return Definition
    */
   public function buildDriver(array $config) {
-    if (!class_exists('Zumba\PhantomJSExtension\Driver\PhantomJSDriver')) {
+    if (!class_exists('Zumba\Mink\Driver\PhantomJSDriver')) {
       throw new \RuntimeException(
         'Install PhantomJSDriver in order to use phantomjs driver.'
       );
     }
-    return new Definition('Zumba\PhantomJSExtension\Driver\PhantomJSDriver',
+    return new Definition('Zumba\Mink\Driver\PhantomJSDriver',
       array($config["phantom_server"], $config["template_cache"])
     );
   }
