@@ -91,8 +91,8 @@ PoltergeistAgent = (function () {
       }
       _results = [];
       for (_i = 0, _len = results.length; _i < _len; _i++) {
-        el = results[_i];
-        _results.push(this.register(el));
+        elementForXpath = results[_i];
+        _results.push(this.register(elementForXpath));
       }
       return _results;
     } catch (_error) {
@@ -400,7 +400,7 @@ PoltergeistAgent.Node = (function () {
    * @return {string}
    */
   Node.prototype.getAttribute = function (name) {
-    if (name === 'checked' || name === 'selected') {
+    if (name === 'checked' || name === 'selected' || name === 'multiple') {
       return this.element[name];
     }
     return this.element.getAttribute(name);
@@ -519,6 +519,80 @@ PoltergeistAgent.Node = (function () {
 
     this.element.selected = value;
     this.changed();
+    return true;
+  };
+
+  /**
+   * Selects the radio button that has the defined value
+   * @param value
+   * @return {boolean}
+   */
+  Node.prototype.selectRadioValue = function (value) {
+    if (this.element.value == value) {
+      this.element.checked = true;
+      this.trigger('focus');
+      this.trigger('click');
+      this.changed();
+      return true;
+    }
+
+    var formElements = this.element.form.elements;
+    var name = this.element.getAttribute('name');
+    var element, i;
+
+    var deselectAllRadios = function (elements, radioName) {
+      var inputRadioElement;
+
+      for (i = 0; i < elements.length; i++) {
+        inputRadioElement = elements[i];
+        if (inputRadioElement.tagName.toLowerCase() == 'input' && inputRadioElement.type.toLowerCase() == 'radio' && inputRadioElement.name == radioName) {
+          inputRadioElement.checked = false;
+        }
+      }
+    };
+
+    var radioChange = function (radioElement) {
+      var radioEvent;
+      radioEvent = document.createEvent('HTMLEvents');
+      radioEvent.initEvent('change', true, false);
+      return radioElement.dispatchEvent(radioEvent);
+    };
+
+    var radioClickEvent = function (radioElement, name) {
+      var radioEvent;
+      radioEvent = document.createEvent('MouseEvent');
+      radioEvent.initMouseEvent(name, true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+      return radioElement.dispatchEvent(radioEvent);
+    };
+
+    if (!name) {
+      throw new Poltergeist.BrowserError('The radio button does not have the value "' + value + '"');
+    }
+
+    for (i = 0; i < formElements.length; i++) {
+      element = formElements[i];
+      if (element.tagName.toLowerCase() == 'input' && element.type.toLowerCase() == 'radio' && element.name === name) {
+        if (value === element.value) {
+          deselectAllRadios(formElements, name);
+          element.checked = true;
+          radioClickEvent(element, 'click');
+          radioChange(element);
+          return true;
+        }
+      }
+    }
+
+    throw new Poltergeist.BrowserError('The radio group "' + name + '" does not have an option "' + value + '"');
+  };
+
+  /**
+   *  Checks or uncheck a radio option
+   * @param value
+   * @return {boolean}
+   */
+  Node.prototype.checked = function (value) {
+    //TODO: add error control for the checked stuff
+    this.element.checked = value;
     return true;
   };
 
@@ -668,14 +742,14 @@ PoltergeistAgent.Node = (function () {
     x -= frameOffset.left;
     y -= frameOffset.top;
 
-    el = origEl = document.elementFromPoint(x, y);
-    while (el) {
-      if (el === this.element) {
+    elementForXpath = origEl = document.elementFromPoint(x, y);
+    while (elementForXpath) {
+      if (elementForXpath === this.element) {
         return {
           status: 'success'
         };
       } else {
-        el = el.parentNode;
+        elementForXpath = elementForXpath.parentNode;
       }
     }
 
@@ -693,14 +767,14 @@ PoltergeistAgent.Node = (function () {
   Node.prototype.getSelector = function (el) {
     var className, selector, i, len, classNames;
 
-    selector = el.tagName !== 'HTML' ? this.getSelector(el.parentNode) + ' ' : '';
-    selector += el.tagName.toLowerCase();
+    selector = elementForXpath.tagName !== 'HTML' ? this.getSelector(elementForXpath.parentNode) + ' ' : '';
+    selector += elementForXpath.tagName.toLowerCase();
 
-    if (el.id) {
-      selector += "#" + el.id;
+    if (elementForXpath.id) {
+      selector += "#" + elementForXpath.id;
     }
 
-    classNames = el.classList;
+    classNames = elementForXpath.classList;
     for (i = 0, len = classNames.length; i < len; i++) {
       className = classNames[i];
       selector += "." + className;
@@ -762,6 +836,47 @@ PoltergeistAgent.Node = (function () {
    */
   Node.prototype.isDOMEqual = function (other_id) {
     return this.element === this.agent.get(other_id).element;
+  };
+
+  /**
+   * The following function allows one to pass an element and an XML document to find a unique string XPath expression leading back to that element.
+   * @param element
+   * @return {string}
+   */
+  Node.prototype.getXPathForElement = function (element) {
+    var elementForXpath = element || this.element;
+    var xpath = '';
+    var pos, tempitem2;
+
+    while (elementForXpath !== document.documentElement) {
+      pos = 0;
+      tempitem2 = elementForXpath;
+      while (tempitem2) {
+        if (tempitem2.nodeType === 1 && tempitem2.nodeName === elementForXpath.nodeName) { // If it is ELEMENT_NODE of the same name
+          pos += 1;
+        }
+        tempitem2 = tempitem2.previousSibling;
+      }
+
+      xpath = "*[name()='" + elementForXpath.nodeName + "' and namespace-uri()='" + (elementForXpath.namespaceURI === null ? '' : elementForXpath.namespaceURI) + "'][" + pos + ']' + '/' + xpath;
+
+      elementForXpath = elementForXpath.parentNode;
+    }
+
+    xpath = '/*' + "[name()='" + document.documentElement.nodeName + "' and namespace-uri()='" + (elementForXpath.namespaceURI === null ? '' : elementForXpath.namespaceURI) + "']" + '/' + xpath;
+    xpath = xpath.replace(/\/$/, '');
+    return xpath;
+  };
+
+  /**
+   * Deselect all the options for this element
+   */
+  Node.prototype.deselectAllOptions = function () {
+    //TODO: error control when the node is not a select node
+    var i, l = this.element.options.length;
+    for (i = 0; i < l; i++) {
+      this.element.options[i].selected = false;
+    }
   };
 
   return Node;

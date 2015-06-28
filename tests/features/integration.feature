@@ -7,3 +7,4 @@ Feature: PhantomJS Driver behat integration
   Scenario: Basic web page visit
     Given I am on "/"
     Then the response status code should be 200
+    And I should see "Dhaka"

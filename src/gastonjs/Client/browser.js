@@ -5,6 +5,14 @@ var __indexOf = [].indexOf || function (item) {
     return -1;
   };
 
+var xpathStringLiteral = function (s) {
+  if (s.indexOf('"') === -1)
+    return '"' + s + '"';
+  if (s.indexOf("'") === -1)
+    return "'" + s + "'";
+  return 'concat("' + s.replace(/"/g, '",\'"\',"') + '")';
+};
+
 Poltergeist.Browser = (function () {
   /**
    * Creates the "browser" inside phantomjs
@@ -500,6 +508,19 @@ Poltergeist.Browser = (function () {
    */
   Browser.prototype.select = function (serverResponse, page_id, id, value) {
     return this.serverSendResponse(this.node(page_id, id).select(value), serverResponse);
+  };
+
+  /**
+   *  Selects an option with the given value
+   * @param serverResponse
+   * @param page_id
+   * @param id
+   * @param value
+   * @param multiple
+   * @return {*}
+   */
+  Browser.prototype.select_option = function (serverResponse, page_id, id, value, multiple) {
+    return this.serverSendResponse(this.node(page_id, id).select_option(value, multiple), serverResponse);
   };
 
   /**
