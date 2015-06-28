@@ -178,4 +178,16 @@ trait BrowserPageElementTrait {
     return $this->command("key_event", $pageId, $elementId, $keyEvent, $key, $modifier);
   }
 
+  /**
+   * Sends the command to select and option given a value
+   * @param      $pageId
+   * @param      $elementId
+   * @param      $value
+   * @param bool $multiple
+   * @return mixed
+   */
+  public function selectOption($pageId, $elementId, $value, $multiple = false) {
+    return $this->command("select_option", $pageId, $elementId, $value, $multiple);
+  }
+
 }

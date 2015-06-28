@@ -71,6 +71,7 @@ trait FormManipulationTrait {
    * @param string $xpath
    * @param string $value
    * @param bool   $multiple
+   * @return bool
    * @throws DriverException
    */
   public function selectOption($xpath, $value, $multiple = false) {
@@ -86,17 +87,7 @@ trait FormManipulationTrait {
       throw new DriverException(sprintf('Impossible to select an option on the element with XPath "%s" as it is not a select or radio input', $xpath));
     }
 
-    //Boolean stuff handling
-    if (is_bool($value)) {
-      $value = $this->boolToString($value);
-    }
-
-    if (is_bool($multiple)) {
-      $multiple = $this->boolToString($multiple);
-    }
-
-    $javascript = $this->javascriptTemplateRender("select_option.js.twig", array("xpath" => $xpath, "value" => $value, "multiple" => $multiple));
-    $this->browser->evaluate($javascript);
+    return $this->browser->selectOption($element["page_id"], $element["ids"][0], $value, $multiple);
   }
 
   /**

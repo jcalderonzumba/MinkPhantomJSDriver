@@ -2,13 +2,14 @@ var __slice = [].slice;
 
 Poltergeist.Node = (function () {
   var name, _fn, _i, _len, _ref;
+  var xpathStringLiteral;
 
-  Node.DELEGATES = ['allText', 'visibleText', 'getAttribute', 'value', 'set',
+  Node.DELEGATES = ['allText', 'visibleText', 'getAttribute', 'value', 'set', 'checked',
     'setAttribute', 'isObsolete', 'removeAttribute', 'isMultiple',
     'select', 'tagName', 'find', 'getAttributes', 'isVisible',
-    'position', 'trigger', 'parentId', 'parentIds', 'mouseEventTest',
-    'scrollIntoView', 'isDOMEqual', 'isDisabled', 'deleteText',
-    'containsSelection', 'allHTML', 'changed'];
+    'position', 'trigger', 'input', 'parentId', 'parentIds', 'mouseEventTest',
+    'scrollIntoView', 'isDOMEqual', 'isDisabled', 'deleteText', 'selectRadioValue',
+    'containsSelection', 'allHTML', 'changed', 'getXPathForElement', 'deselectAllOptions'];
 
   function Node(page, id) {
     this.page = page;
@@ -40,6 +41,14 @@ Poltergeist.Node = (function () {
     name = _ref[_i];
     _fn(name);
   }
+
+  xpathStringLiteral = function (s) {
+    if (s.indexOf('"') === -1)
+      return '"' + s + '"';
+    if (s.indexOf("'") === -1)
+      return "'" + s + "'";
+    return 'concat("' + s.replace(/"/g, '",\'"\',"') + '")';
+  };
 
   /**
    *  Gets an x,y position tailored for mouse event actions
@@ -107,6 +116,44 @@ Poltergeist.Node = (function () {
    */
   Node.prototype.isEqual = function (other) {
     return this.page === other.page && this.isDOMEqual(other.id);
+  };
+
+
+  /**
+   * The value to select
+   * @param value
+   * @param multiple
+   */
+  Node.prototype.select_option = function (value, multiple) {
+    var tagName = this.tagName().toLowerCase();
+
+    if (tagName === "select") {
+      var escapedOption = xpathStringLiteral(value);
+      // The value of an option is the normalized version of its text when it has no value attribute
+      var optionQuery = ".//option[@value = " + escapedOption + " or (not(@value) and normalize-space(.) = " + escapedOption + ")]";
+      var ids = this.find("xpath", optionQuery);
+      var polterNode = this.page.get(ids[0]);
+
+      if (multiple || !this.getAttribute('multiple')) {
+        if (!polterNode.getAttribute('selected')) {
+          polterNode.select(value);
+          this.trigger('click');
+          this.input();
+        }
+        return true;
+      }
+
+      this.deselectAllOptions();
+      polterNode.select(value);
+      this.trigger('click');
+      this.input();
+      return true;
+    } else if (tagName === "input" && this.getAttribute("type").toLowerCase() === "radio") {
+      return this.selectRadioValue(value);
+    }
+
+    throw new Poltergeist.BrowserError("The element is not a select or radio input");
+
   };
 
   return Node;

@@ -26,11 +26,9 @@ trait PageContentTrait {
   public function getText($xpath) {
     $elements = $this->findElement($xpath, 1);
     //allText works only with ONE element so it will be the first one and also returns new lines that we will remove
-    //$text = trim(str_replace(array("\r", "\r\n", "\n"), ' ', $this->browser->allText($elements["page_id"], $elements["ids"][0])));
-
     $text = $this->browser->allText($elements["page_id"], $elements["ids"][0]);
-    $text = preg_replace('/\s\s+/', ' ', $text);
     $text = trim(str_replace(array("\r", "\r\n", "\n"), ' ', $text));
+    $text = preg_replace('/ {2,}/', ' ', $text);
     return $text;
   }
 
