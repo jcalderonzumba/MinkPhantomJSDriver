@@ -71,7 +71,7 @@ PoltergeistAgent = (function () {
    * @return {Array}
    */
   PoltergeistAgent.prototype.find = function (method, selector, within) {
-    var el, error, i, results, xpath, _i, _len, _results;
+    var elementForXpath, error, i, results, xpath, _i, _len, _results;
     if (within == null) {
       within = document;
     }
@@ -354,7 +354,7 @@ PoltergeistAgent.Node = (function () {
    * @return {string}
    */
   Node.prototype.visibleText = function () {
-    if (!this.isVisible()) {
+    if (!this.isVisible(null)) {
       return null;
     }
 
@@ -610,14 +610,12 @@ PoltergeistAgent.Node = (function () {
    * @return {boolean}
    */
   Node.prototype.isVisible = function (element) {
-    if (!element) {
-      element = this.element;
-    }
+    var nodeElement = element || this.element;
 
-    if (window.getComputedStyle(element).display === 'none') {
+    if (window.getComputedStyle(nodeElement).display === 'none') {
       return false;
-    } else if (element.parentElement) {
-      return this.isVisible(element.parentElement);
+    } else if (nodeElement.parentElement) {
+      return this.isVisible(nodeElement.parentElement);
     } else {
       return true;
     }
@@ -736,7 +734,7 @@ PoltergeistAgent.Node = (function () {
    * @return {*}
    */
   Node.prototype.mouseEventTest = function (x, y) {
-    var el, frameOffset, origEl;
+    var elementForXpath, frameOffset, origEl;
 
     frameOffset = this.frameOffset();
     x -= frameOffset.left;
@@ -761,10 +759,10 @@ PoltergeistAgent.Node = (function () {
 
   /**
    * Returns the node selector in CSS style (NO xpath)
-   * @param el
+   * @param elementForXpath
    * @return {string}
    */
-  Node.prototype.getSelector = function (el) {
+  Node.prototype.getSelector = function (elementForXpath) {
     var className, selector, i, len, classNames;
 
     selector = elementForXpath.tagName !== 'HTML' ? this.getSelector(elementForXpath.parentNode) + ' ' : '';
