@@ -1240,9 +1240,8 @@ Poltergeist.Browser = (function () {
    *  Sets the urlBlacklist for the given urls as parameters
    * @return {boolean}
    */
-  Browser.prototype.set_url_blacklist = function () {
-    var serverResponse = arguments.shift();
-    this.currentPage.urlBlacklist = Array.prototype.slice.call(arguments);
+  Browser.prototype.set_url_blacklist = function (serverResponse, blackList) {
+    this.currentPage.urlBlacklist = Array.prototype.slice.call(blackList);
     return this.serverSendResponse(true, serverResponse);
   };
 
