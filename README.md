@@ -35,7 +35,7 @@ phantomjs:
 ```
 PhantomJS browser start:
 ```bash
-phantomjs --ssl-protocol=any --ignore-ssl-errors=true vendor/jcalderonzumba/mink-phantomjs-driver/src/gastonjs/Client/main.js 8510 1024 768 2>&1 >> /tmp/gastonjs.log &
+phantomjs --ssl-protocol=any --ignore-ssl-errors=true vendor/jcalderonzumba/gastonjs/src/Client/main.js 8510 1024 768 2>&1 >> /tmp/gastonjs.log &
 ```
 
 FAQ

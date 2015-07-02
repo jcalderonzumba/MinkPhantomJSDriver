@@ -5,7 +5,7 @@ default:
       base_url: http://m.ekhanei.com/
       javascript_session: 'phantomjs'
       phantomjs:
-        phantom_server: "http://localhost:8510/api"
+        phantom_server: "http://127.0.0.1:8510/api"
         template_cache: "/tmp/jcalderonzumba/phantomjs"
   suites:
     behat_integration:
