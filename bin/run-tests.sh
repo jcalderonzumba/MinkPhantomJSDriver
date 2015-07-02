@@ -5,9 +5,9 @@ start_browser_api(){
   CURRENT_DIR=$(pwd)
   LOCAL_PHANTOMJS="${CURRENT_DIR}/bin/phantomjs"
   if [ -f ${LOCAL_PHANTOMJS} ]; then
-    ${LOCAL_PHANTOMJS} --ssl-protocol=any --ignore-ssl-errors=true src/gastonjs/Client/main.js 8510 1024 768 2>&1 &
+    ${LOCAL_PHANTOMJS} --ssl-protocol=any --ignore-ssl-errors=true vendor/jcalderonzumba/gastonjs/src/Client/main.js 8510 1024 768 2>&1 &
   else
-    phantomjs --ssl-protocol=any --ignore-ssl-errors=true src/gastonjs/Client/main.js 8510 1024 768 2>&1 >> /dev/null &
+    phantomjs --ssl-protocol=any --ignore-ssl-errors=true vendor/jcalderonzumba/gastonjs/src/Client/main.js 8510 1024 768 2>&1 >> /dev/null &
   fi
   sleep 2
 }
@@ -26,10 +26,6 @@ star_local_browser(){
 }
 
 mkdir -p /tmp/jcalderonzumba/phantomjs
-stop_services
-start_browser_api
-CURRENT_DIR=$(pwd)
-${CURRENT_DIR}/bin/phpunit --configuration unit_tests.xml
 stop_services
 start_browser_api
 star_local_browser
