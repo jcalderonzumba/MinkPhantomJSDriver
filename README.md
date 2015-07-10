@@ -1,6 +1,7 @@
 Mink PhantomJS Driver
 ===========================
 [![Build Status](https://travis-ci.org/jcalderonzumba/MinkPhantomJSDriver.svg?branch=master)](https://travis-ci.org/jcalderonzumba/MinkPhantomJSDriver)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/jcalderonzumba/MinkPhantomJSDriver/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/jcalderonzumba/MinkPhantomJSDriver/?branch=master)
 [![Latest Stable Version](https://poser.pugx.org/jcalderonzumba/mink-phantomjs-driver/v/stable)](https://packagist.org/packages/jcalderonzumba/mink-phantomjs-driver)
 [![Total Downloads](https://poser.pugx.org/jcalderonzumba/mink-phantomjs-driver/downloads)](https://packagist.org/packages/jcalderonzumba/mink-phantomjs-driver)
 
