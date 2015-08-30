@@ -24,7 +24,7 @@
     "behat/mink": "~1.6",
     "behat/mink-extension": "~2.0@dev",
     "twig/twig": "~1.0",
-    "guzzlehttp/guzzle": "~5.0",
+    "guzzlehttp/guzzle": "~6.0",
     "jcalderonzumba/gastonjs": "1.0.*"
   },
   "require-dev": {
