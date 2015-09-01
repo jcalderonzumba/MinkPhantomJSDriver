@@ -30,7 +30,6 @@ class BasePhantomJSDriver extends CoreDriver {
    * @param string $templateCache where we are going to store the templates cache
    */
   public function __construct($phantomHost, $templateCache = null) {
-    \Twig_Autoloader::register();
     $this->phantomHost = $phantomHost;
     $this->browser = new Browser($phantomHost);
     $this->templateLoader = new \Twig_Loader_Filesystem(realpath(__DIR__ . '/Resources/Script'));
