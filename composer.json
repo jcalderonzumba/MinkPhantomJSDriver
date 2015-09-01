@@ -29,6 +29,7 @@
   },
   "require-dev": {
     "symfony/process": "~2.0",
+    "symfony/phpunit-bridge": "~2.7",
     "phpunit/phpunit": "~4.6",
     "silex/silex": "~1.2"
   },
