@@ -20,15 +20,15 @@
     }
   ],
   "require": {
-    "php": ">=5.3.1",
+    "php": ">=5.4",
     "behat/mink": "~1.6",
-    "behat/mink-extension": "~2.0@dev",
-    "twig/twig": "~1.0",
+    "behat/mink-extension": "~2.0",
+    "twig/twig": "~1.4",
     "guzzlehttp/guzzle": "~5.0",
     "jcalderonzumba/gastonjs": "1.0.*"
   },
   "require-dev": {
-    "symfony/process": "~2.0",
+    "symfony/process": "~2.3",
     "symfony/phpunit-bridge": "~2.7",
     "phpunit/phpunit": "~4.6",
     "silex/silex": "~1.2"
