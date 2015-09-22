@@ -39,8 +39,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Zumba\\PhantomJSExtension\\": "src/extension",
-      "Zumba\\Mink\\Driver\\": "src/driver"
+      "Zumba\\Mink\\Driver\\": "src"
     }
   },
   "autoload-dev": {
