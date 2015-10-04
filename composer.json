@@ -51,11 +51,5 @@
     "branch-alias": {
       "dev-master": "0.4.x-dev"
     }
-  },
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/dawehner/gastonjs.git"
-    }
-  ]
+  }
 }
