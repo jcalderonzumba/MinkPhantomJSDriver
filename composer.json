@@ -24,8 +24,8 @@
     "behat/mink": "~1.6",
     "behat/mink-extension": "~2.0",
     "twig/twig": "~1.8",
-    "guzzlehttp/guzzle": "~5.0",
-    "jcalderonzumba/gastonjs": "~1.0"
+    "guzzlehttp/guzzle": "~6.0",
+    "jcalderonzumba/gastonjs": "dev-guzzle6"
   },
   "require-dev": {
     "symfony/process": "~2.3",
