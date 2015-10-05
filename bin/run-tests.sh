@@ -21,7 +21,7 @@ stop_services(){
 star_local_browser(){
   CURRENT_DIR=$(pwd)
   cd ${CURRENT_DIR}/vendor/behat/mink/driver-testsuite/web-fixtures
-  if [ $TRAVIS = true ]; then
+  if [ "$TRAVIS" = true ]; then
     echo "Starting webserver fox fixtures...."
     ~/.phpenv/versions/5.6/bin/php -S 127.0.0.1:6789 > /dev/null 2>&1 &
   else
