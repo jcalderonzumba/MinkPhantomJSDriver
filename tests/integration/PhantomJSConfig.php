@@ -47,6 +47,7 @@ class PhantomJSConfig extends AbstractConfig {
   public function skipMessage($testCase, $test) {
     echo "Running $testCase $test\n";
 
+    /*
     if ($testCase == "Behat\\Mink\\Tests\\Driver\\Basic\\BasicAuthTest" && $test == "testSetBasicAuth") {
       //TODO: Fix this error
       return "TODO: figure out why when sending a bad user is still giving the good login";
@@ -64,7 +65,7 @@ class PhantomJSConfig extends AbstractConfig {
     if ($testCase == "Behat\\Mink\\Tests\\Driver\\Js\\WindowTest") {
       //TODO: This suite is giving random phantomjs crashes, not good for the moment
       return "This suite is giving random phantomjs crashes, not good for the moment";
-    }
+    }*/
 
     return parent::skipMessage($testCase, $test);
   }
