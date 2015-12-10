@@ -143,11 +143,15 @@ class PhantomJSDriver extends BasePhantomJSDriver {
 
   /**
    * Finds elements with specified XPath query.
+   *
+   * @see find()
+   *
    * @param string $xpath
-   * @return NodeElement[]
-   * @throws DriverException                  When the operation cannot be done
+   *
+   * @return string[] The XPath of the matched elements
+   *
    */
-  public function find($xpath) {
+  protected function findElementXpaths($xpath) {
     $elements = $this->browser->find("xpath", $xpath);
     $nodeElements = array();
 
@@ -156,8 +160,9 @@ class PhantomJSDriver extends BasePhantomJSDriver {
     }
 
     foreach ($elements["ids"] as $i => $elementId) {
-      $nodeElements[] = new NodeElement(sprintf('(%s)[%d]', $xpath, $i + 1), $this->session);
+      $nodeElements[] = sprintf('(%s)[%d]', $xpath, $i + 1);
     }
+
     return $nodeElements;
   }
 
