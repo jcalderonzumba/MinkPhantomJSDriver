@@ -14,7 +14,13 @@ trait PageContentTrait {
    * @return string
    */
   public function getContent() {
-    return $this->browser->getBody();
+    $bodyRegexp = "#<body>(.*)</body>#is";
+    $content = $this->browser->getBody();
+    if (preg_match($bodyRegexp, $content, $bodyMatch) !== 1) {
+      //Fail safe in case we don't get body enclosed info
+      return $content;
+    }
+    return trim($bodyMatch[1]);
   }
 
   /**

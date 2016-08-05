@@ -6,3 +6,4 @@ bin/phpunit
 composer.lock
 tmp/*
 tests/integration/ScreenShotContext.php
+*.log

@@ -73,14 +73,6 @@ class BasePhantomJSDriver extends CoreDriver {
   }
 
   /**
-   * {@inheritdoc}
-   * @param Session $session
-   */
-  public function setSession(Session $session) {
-    $this->session = $session;
-  }
-
-  /**
    * @return Browser
    */
   public function getBrowser() {
