@@ -5,6 +5,7 @@
         <testsuite name="PhantomJS Driver test suite">
             <directory>tests/integration</directory>
             <file>vendor/mink/driver-testsuite/tests/Basic/BasicAuthTest.php</file>
+            <file>vendor/mink/driver-testsuite/tests/Basic/BestPracticesTest.php</file>
             <file>vendor/mink/driver-testsuite/tests/Basic/ContentTest.php</file>
             <file>vendor/mink/driver-testsuite/tests/Basic/CookieTest.php</file>
             <file>vendor/mink/driver-testsuite/tests/Basic/ErrorHandlingTest.php</file>
