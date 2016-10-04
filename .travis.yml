@@ -18,6 +18,13 @@ matrix:
     - php: 7.0
     - php: hhvm
 
+env:
+  global:
+    # Force the mink test server to use PHP 5.6 as HHVM does not provide the builtin webserver
+    - MINK_PHP_BIN=~/.phpenv/versions/5.6/bin/php
+    # Force the mink test server to bin on IPv4, as PhantomJS resolves localhost as IPv4 while PHP seems to prefer resolving it as IPv6 on Travis
+    - MINK_HOST=127.0.0.1:8002
+
 cache:
   directories:
     - $HOME/.composer/cache/files

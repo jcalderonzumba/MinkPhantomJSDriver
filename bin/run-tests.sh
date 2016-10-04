@@ -18,22 +18,16 @@ stop_services(){
   sleep 2
 }
 
-star_local_browser(){
+start_local_browser(){
   CURRENT_DIR=$(pwd)
-  cd ${CURRENT_DIR}/vendor/behat/mink/driver-testsuite/web-fixtures
-  if [ "$TRAVIS" = true ]; then
-    echo "Starting webserver fox fixtures...."
-    ~/.phpenv/versions/5.6/bin/php -S 127.0.0.1:6789 > /dev/null 2>&1 &
-  else
-    php -S 127.0.0.1:6789 2>&1 >> /dev/null &
-  fi
+  ${CURRENT_DIR}/bin/mink-test-server > /dev/null 2>&1 &
   sleep 2
 }
 
 mkdir -p /tmp/jcalderonzumba/phantomjs
-stop_services
+stop_services || true
 start_browser_api
-star_local_browser
+start_local_browser
 cd ${CURRENT_DIR}
 ${CURRENT_DIR}/bin/phpunit --configuration integration_tests.xml
 stop_services
