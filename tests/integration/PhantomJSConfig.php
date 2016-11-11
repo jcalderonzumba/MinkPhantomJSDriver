@@ -45,25 +45,14 @@ class PhantomJSConfig extends AbstractConfig {
    * @return string
    */
   public function skipMessage($testCase, $test) {
-    echo "Running $testCase $test\n";
-
     if ($testCase == "Behat\\Mink\\Tests\\Driver\\Basic\\BasicAuthTest" && $test == "testSetBasicAuth") {
       //TODO: Fix this error
       return "TODO: figure out why when sending a bad user is still giving the good login";
     }
 
-    if ($testCase == "Behat\\Mink\\Tests\\Driver\\Form\\Html5Test" && $test == "testHtml5FormRadioAttribute") {
+    if ($testCase == "Behat\\Mink\\Tests\\Driver\\Form\\Html5Test" && $test == "testHtml5Types") {
       //TODO: Fix this.
-      return "TODO: phantomjs is not giving the element in normal conditions, probably a bug in implementation of getValue";
-    }
-
-    if ($testCase == "Behat\\Mink\\Tests\\Driver\\Js\\JavascriptEvaluationTest" && in_array($test, array("testExecuteScript", "testEvaluateJavascript"))) {
-      return "Due to the nature of the phantomjs javascript implementation we can not use this standard tests";
-    }
-
-    if ($testCase == "Behat\\Mink\\Tests\\Driver\\Js\\WindowTest") {
-      //TODO: This suite is giving random phantomjs crashes, not good for the moment
-      return "This suite is giving random phantomjs crashes, not good for the moment";
+      return "TODO: phantomjs does not seem to deal with the color type properly";
     }
 
     return parent::skipMessage($testCase, $test);

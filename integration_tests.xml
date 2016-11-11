@@ -1,25 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<phpunit colors="true" bootstrap="vendor/autoload.php" stopOnFailure="true">
+<phpunit colors="true" bootstrap="vendor/autoload.php">
     <testsuites>
         <testsuite name="PhantomJS Driver test suite">
-            <directory>tests/integration</directory>
-            <file>vendor/mink/driver-testsuite/tests/Basic/BasicAuthTest.php</file>
-            <file>vendor/mink/driver-testsuite/tests/Basic/BestPracticesTest.php</file>
-            <file>vendor/mink/driver-testsuite/tests/Basic/ContentTest.php</file>
-            <file>vendor/mink/driver-testsuite/tests/Basic/CookieTest.php</file>
-            <file>vendor/mink/driver-testsuite/tests/Basic/ErrorHandlingTest.php</file>
-            <file>vendor/mink/driver-testsuite/tests/Basic/IFrameTest.php</file>
-            <file>vendor/mink/driver-testsuite/tests/Basic/ScreenshotTest.php</file>
-            <file>vendor/mink/driver-testsuite/tests/Basic/TraversingTest.php</file>
-            <file>vendor/mink/driver-testsuite/tests/Basic/VisibilityTest.php</file>
-            <directory>vendor/mink/driver-testsuite/tests/Form</directory>
-            <directory>vendor/mink/driver-testsuite/tests/Js</directory>
-            <!-- The following have been disabled and their respective equals added to Custom driver tests -->
-            <!--<directory>vendor/mink/driver-testsuite/tests/Css</directory>-->
-            <!--<file>vendor/mink/driver-testsuite/tests/Basic/StatusCodeTest.php</file>-->
-            <!--<file>vendor/mink/driver-testsuite/tests/Basic/HeaderTest.php</file>-->
-            <!--<file>vendor/mink/driver-testsuite/tests/Basic/NavigationTest.php</file>-->
+            <!--<directory>tests/integration</directory>-->
+            <directory>vendor/mink/driver-testsuite/tests/</directory>
         </testsuite>
     </testsuites>
 
