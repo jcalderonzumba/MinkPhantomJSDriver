@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 start_browser_api(){
@@ -24,11 +24,18 @@ start_local_browser(){
   sleep 2
 }
 
+function finish() {
+  stop_services
+  if [ -z "$MINK_STOP_BROWSER" ]; then
+    start_browser_api
+  fi
+}
+
+trap finish EXIT
+
 mkdir -p /tmp/jcalderonzumba/phantomjs
 stop_services || true
 start_browser_api
 start_local_browser
 cd ${CURRENT_DIR}
 ${CURRENT_DIR}/bin/phpunit --configuration integration_tests.xml
-stop_services
-start_browser_api
