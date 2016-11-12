@@ -1,13 +1,14 @@
 #!/bin/bash
 set -e
 
+BIN_DIR=$(cd $(dirname $0); pwd)
+
 start_browser_api(){
-  CURRENT_DIR=$(pwd)
-  LOCAL_PHANTOMJS="${CURRENT_DIR}/bin/phantomjs"
+  LOCAL_PHANTOMJS="${BIN_DIR}/phantomjs"
   if [ -f ${LOCAL_PHANTOMJS} ]; then
-    ${LOCAL_PHANTOMJS} --ssl-protocol=any --ignore-ssl-errors=true vendor/jcalderonzumba/gastonjs/src/Client/main.js 8510 1024 768 2>&1 &
+    ${LOCAL_PHANTOMJS} --ssl-protocol=any --ignore-ssl-errors=true "$BIN_DIR/../vendor/jcalderonzumba/gastonjs/src/Client/main.js" 8510 1024 768 2>&1 &
   else
-    phantomjs --ssl-protocol=any --ignore-ssl-errors=true vendor/jcalderonzumba/gastonjs/src/Client/main.js 8510 1024 768 2>&1 >> /dev/null &
+    phantomjs --ssl-protocol=any --ignore-ssl-errors=true "$BIN_DIR/../vendor/jcalderonzumba/gastonjs/src/Client/main.js" 8510 1024 768 2>&1 >> /dev/null &
   fi
   sleep 2
 }
@@ -19,8 +20,7 @@ stop_services(){
 }
 
 start_local_browser(){
-  CURRENT_DIR=$(pwd)
-  ${CURRENT_DIR}/bin/mink-test-server > /dev/null 2>&1 &
+  ${BIN_DIR}/mink-test-server > /dev/null 2>&1 &
   sleep 2
 }
 
@@ -37,5 +37,4 @@ mkdir -p /tmp/jcalderonzumba/phantomjs
 stop_services || true
 start_browser_api
 start_local_browser
-cd ${CURRENT_DIR}
-${CURRENT_DIR}/bin/phpunit --configuration integration_tests.xml
+${BIN_DIR}/phpunit --configuration "$BIN_DIR/../integration_tests.xml"
