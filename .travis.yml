@@ -24,6 +24,8 @@ env:
     - MINK_PHP_BIN=~/.phpenv/versions/5.6/bin/php
     # Force the mink test server to bin on IPv4, as PhantomJS resolves localhost as IPv4 while PHP seems to prefer resolving it as IPv6 on Travis
     - MINK_HOST=127.0.0.1:8002
+    # Avoid restarting the browser api at the end of tests (see bin/run_tests.sh)
+    - MINK_STOP_BROWSER=1
 
 cache:
   directories:
@@ -41,7 +43,3 @@ before_script:
 
 script:
   - bin/run-tests.sh
-
-after_script:
-  - ps axo pid,command | grep phantomjs | grep -v grep | awk '{print $1}' | xargs -I {} kill {}
-  - ps axo pid,command | grep php | grep -v grep | awk '{print $1}' | xargs -I {} kill {}
