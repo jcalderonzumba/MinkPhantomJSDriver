@@ -14,7 +14,7 @@ start_browser_api(){
 
 stop_services(){
   ps axo pid,command | grep phantomjs | grep -v grep | awk '{print $1}' | xargs -I {} kill {}
-  ps axo pid,command | grep php | grep -v grep | grep -v phpstorm | awk '{print $1}' | xargs -I {} kill {}
+  ps axo pid,command | grep php | grep -v grep | grep -v phpstorm | grep -v php-fpm | awk '{print $1}' | xargs -I {} kill {}
   sleep 2
 }
 
