@@ -44,6 +44,10 @@ trait JavascriptTrait {
     $end = $start + $timeout / 1000.0;
     do {
       $result = $this->browser->evaluate($condition);
+      if ($result) {
+        // No need to wait any longer when the conidtion is met already.
+        return TRUE;
+      }
       usleep(100000);
     } while (microtime(true) < $end && !$result);
 
