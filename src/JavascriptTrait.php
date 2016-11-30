@@ -45,7 +45,7 @@ trait JavascriptTrait {
     do {
       $result = $this->browser->evaluate($condition);
       if ($result) {
-        // No need to wait any longer when the conidtion is met already.
+        // No need to wait any longer when the condition is met already.
         return TRUE;
       }
       usleep(100000);
