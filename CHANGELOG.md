@@ -9,3 +9,6 @@ This changelog references the relevant changes (bug and security fixes).
 ## 0.3.3
   * Performance improvement fix when JS condition is met
   * Using the new official mink/driver-test-suite repository
+
+## 0.3.4
+  * Issue #69: reset() method should not change started to false
