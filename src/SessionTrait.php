@@ -34,7 +34,9 @@ trait SessionTrait {
   public function stop() {
     //Since we are using a remote browser "API", stopping is just like resetting, say good bye to cookies
     //TODO: In the future we may want to control a start / stop of the remove browser
-    return $this->reset();
+    $this->reset();
+    $this->started = false;
+    return true;
   }
 
   /**
