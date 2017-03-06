@@ -21,18 +21,17 @@ $ composer require --dev behat/mink jcalderonzumba/mink-phantomjs-driver
 
 How to use
 -------------
-Extension configuration (for the moment NONE).
+Driver specific configuration if using BEHAT
 ```yml
 default:
   extensions:
     Zumba\PhantomJSExtension:
-```
-Driver specific configuration:
-```yml
-Behat\MinkExtension:
-phantomjs:
-    phantom_server: "http://localhost:8510/api"
-    template_cache: "/tmp/pjsdrivercache/phantomjs"
+    Behat\MinkExtension:
+      base_url: http://www.google.com/
+      javascript_session: 'phantomjs'
+      phantomjs:
+        phantom_server: "http://127.0.0.1:8510/api"
+        template_cache: "/tmp/jcalderonzumba/phantomjs"
 ```
 PhantomJS browser start:
 ```bash
