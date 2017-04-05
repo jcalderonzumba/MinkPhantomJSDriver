@@ -41,7 +41,7 @@ trait JavascriptTrait {
    */
   public function wait($timeout, $condition) {
     $start = microtime(true);
-    $end = $start + $timeout / 1000.0;
+    $end = $start + $timeout * 1000.0;
     do {
       $result = $this->browser->evaluate($condition);
       if ($result) {
