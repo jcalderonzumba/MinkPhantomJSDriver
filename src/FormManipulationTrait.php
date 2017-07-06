@@ -33,6 +33,8 @@ trait FormManipulationTrait {
     //This stuff is BECAUSE the way the driver works for setting values when being checkboxes, radios, etc.
     if (is_bool($value)) {
       $value = $this->boolToString($value);
+    } elseif (is_numeric($value)) {
+      $value = (string) $value;
     }
 
     $javascript = $this->javascriptTemplateRender("set_value.js.twig", array("xpath" => $xpath, "value" => json_encode($value)));
