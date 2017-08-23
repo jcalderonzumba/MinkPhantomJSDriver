@@ -29,7 +29,7 @@ trait FormManipulationTrait {
    * @throws DriverException
    */
   public function setValue($xpath, $value) {
-    $this->findElement($xpath, 1);
+    $elements = $this->findElement($xpath, 1);
     //This stuff is BECAUSE the way the driver works for setting values when being checkboxes, radios, etc.
     if (is_bool($value)) {
       $value = $this->boolToString($value);
@@ -37,6 +37,7 @@ trait FormManipulationTrait {
       $value = (string) $value;
     }
 
+    $this->browser->sendKeys($elements['page_id'], $elements['ids'][0], $value);
     $javascript = $this->javascriptTemplateRender("set_value.js.twig", array("xpath" => $xpath, "value" => json_encode($value)));
     $this->browser->evaluate($javascript);
   }
