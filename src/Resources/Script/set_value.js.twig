@@ -173,7 +173,7 @@
     }
 
     if (textLikeInputType.indexOf(elementType) !== -1) {
-      return textAreaSetValue(elementXpath, value);
+      return textAreaSetValue(element, value, elementXpath);
     }
 
     //No support for the moment for file stuff or other input types
@@ -181,11 +181,12 @@
 
   }
 
-  function textAreaSetValue(elementXpath, value) {
+  function textAreaSetValue(element, value, elementXpath) {
     var polterAgent = window.__poltergeist;
     var ids = polterAgent.find("xpath", elementXpath, document);
     var polterNode = polterAgent.get(ids[0]);
     polterNode.set(value);
+    dispatchChange(element);
     return true;
   }
 
@@ -203,11 +204,11 @@
   }
 
   if (isTextArea(node)) {
-    return textAreaSetValue(xpath, value);
+    return textAreaSetValue(node, value, xpath);
   }
 
   //for the moment everything else also to textArea stuff
-  return textAreaSetValue(xpath, value);
+  return textAreaSetValue(node, value, xpath);
 
 }('{{xpath}}', JSON.parse('{{ value }}')));
 {% endautoescape %}
